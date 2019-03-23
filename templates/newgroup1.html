@@ -17,7 +17,7 @@
                 <h3>Sélectionnez les étudiants parmi la liste suivante</h3>
 
                 <div class="form-group">
-                    <select multiple class="form-control">
+                    <select id="loaded_students" multiple class="form-control">
 
                         {% for s in students %}
                             <option>{{ s }}</option>
@@ -31,10 +31,10 @@
                 <h3>Actions</h3>
 
                 <div id="arrow_actions">
-                    <button type="button"><i class="material-icons">arrow_back</i></button>
-                    <button type="button"><i class="material-icons md-48">arrow_forward</i></button>
-                    <button type="button"><i class="material-icons md-48">arrow_back_ios</i></button>
-                    <button type="button"><i class="material-icons md-48">arrow_forward_ios</i></button>
+                    <button id="remove_selected" type="button"><i class="material-icons">arrow_back</i></button>
+                    <button id="add_selected" type="button"><i class="material-icons md-48">arrow_forward</i></button>
+                    <button id="remove_all" type="button"><i class="material-icons md-48">arrow_back_ios</i></button>
+                    <button id="add_all" type="button"><i class="material-icons md-48">arrow_forward_ios</i></button>
                 </div>
 
             </div>
@@ -53,6 +53,25 @@
         </div>
     </section>
 
+    <script type="text/javascript">
+        let b1 = document.getElementById('remove_selected');
+        let b2 = document.getElementById('add_selected');
+        let b3 = document.getElementById('remove_all');
+        let b4 = document.getElementById('add_all');
+        let loaded = document.getElementById('loaded_students');
+        let selected = document.getElementById('selected_students');
 
+        b1.addEventListener("click", e => {
+            let remove_elements = selected.options[selected.selectedIndex];
+            loaded.options.add(remove_elements);
+        })
+
+        b2.addEventListener("click", e => {
+            let selected_elements = loaded.options[loaded.selectedIndex];
+            selected.options.add(selected_elements);
+        })
+
+
+    </script>
 
 {% endblock %}
