@@ -25,15 +25,24 @@ def hello():
     """Return a friendly HTTP greeting."""
     return 'Hello World!'
 
+
 @app.route('/register')
 def register():
     """ register """
     return render_template("register.html")
 
+
 @app.route('/signin')
 def signin():
     """ Signin """
     return render_template("signin.html")
+
+@app.route('/newgroup1')
+def newgroup1():
+    #todo : get de input file
+    students = ("Laury", "Benou", "Laurnou")
+    return render_template("newgroup1.html", students=students)
+
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
