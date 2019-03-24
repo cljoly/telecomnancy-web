@@ -35,6 +35,11 @@ def signin():
     """ Signin """
     return render_template("signin.html")
 
+@app.route('/group')
+def group():
+    groupName = "Lightning XIII"
+    return render_template("group.html", groupName=groupName,studentName1="Cloud Strife | ",nb_commits1="7 | ",last_commit1="1997 | ",studentName2="Yuna | ", nb_commits2="10 | ", last_commit2="2001 | ",studentName3="Terra Branford | ", nb_commits3="6 | ", last_commit3="1994 | ",studentName4="Noctis Lucis Caelum | ", nb_commits4="15 | ",last_commit4="2016 | ")
+
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
     # Engine, a webserver process such as Gunicorn will serve the app. This
