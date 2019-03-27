@@ -20,7 +20,7 @@
                     <select id="loaded_students" multiple class="form-control">
 
                         {% for s in students %}
-                            <option>{{ s }}</option>
+                            <option value="{{ s }}">{{ s }}</option>
                         {% endfor %}
 
                     </select>
@@ -54,23 +54,40 @@
     </section>
 
     <script type="text/javascript">
-        let b1 = document.getElementById('remove_selected');
-        let b2 = document.getElementById('add_selected');
-        let b3 = document.getElementById('remove_all');
-        let b4 = document.getElementById('add_all');
+        let button_remove_selected = document.getElementById('remove_selected');
+        let button_add_selected = document.getElementById('add_selected');
+        let button_remove_all = document.getElementById('remove_all');
+        let button_add_all = document.getElementById('add_all');
         let loaded = document.getElementById('loaded_students');
         let selected = document.getElementById('selected_students');
 
-        b1.addEventListener("click", e => {
-            let remove_elements = selected.options[selected.selectedIndex];
-            loaded.options.add(remove_elements);
-        })
+        button_remove_selected.addEventListener("click", e => {
+            while (selected.selectedIndex !== -1){
+                loaded.options.add(selected.options[selected.selectedIndex]);
+            }
+            selected.selectedIndex = -1;
+            loaded.selectedIndex = -1;
+        });
 
-        b2.addEventListener("click", e => {
-            let selected_elements = loaded.options[loaded.selectedIndex];
-            selected.options.add(selected_elements);
-        })
+        button_add_selected.addEventListener("click", e => {
+            while (loaded.selectedIndex !== -1){
+                selected.options.add(loaded.options[loaded.selectedIndex]);
+            }
+            loaded.selectedIndex = -1;
+            selected.selectedIndex = -1;
+        });
 
+        button_remove_all.addEventListener("click", e => {
+            while (selected.options.length !== 0){
+                loaded.options.add(selected.options[0]);
+            }
+        });
+
+        button_add_all.addEventListener("click", e => {
+            while (loaded.options.length !== 0){
+                selected.options.add(loaded.options[0]);
+            }
+        });
 
     </script>
 

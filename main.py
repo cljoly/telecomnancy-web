@@ -40,7 +40,7 @@ def signin():
 @app.route('/newgroup1')
 def newgroup1():
     #todo : get de input file
-    students = ("Laury", "Benou", "Laurnou")
+    students = ("Laury", "Benou", "Laurnou", "Groot", "Gamora", "Rocket")
     return render_template("newgroup1.html", students=students)
 
 
