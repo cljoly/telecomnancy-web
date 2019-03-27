@@ -40,8 +40,8 @@ def signin():
 @app.route('/newgroup1')
 def newgroup1():
     #todo : get de input file
-    students = ("Laury", "Benou", "Laurnou", "Groot", "Gamora", "Rocket")
-    return render_template("newgroup1.html", students=students)
+    teachers = ("Captain", "Iron Man", "Thor", "Scarlett Witch", "Vision", "Black Widow", "Hulk")
+    return render_template("newgroup1.html", teachers=teachers)
 
 
 if __name__ == '__main__':

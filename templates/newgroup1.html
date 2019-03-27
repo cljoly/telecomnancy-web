@@ -6,53 +6,73 @@
 
 {% block content %}
 
-    <section id="add_students" class="container">
+    <header>
+        <!--Message à afficher seulement lorsqu'on clique sur le bouton "Créer le groupe" -->
+        {{ message }}
+    </header>
 
-        <form id="file_students" method="post" action="{{ url_for("newgroup1") }}">
-            <input type="file" accept=".csv" class="button" name="file_students" onchange="document.getElementById('file_students').submit();">
-        </form>
+    <form method="post" action="{{ url_for("newgroup1") }}">
+        <section id="add_teachers" class="container">
+            <h3>Sélectionnez les enseignants référents parmi la liste suivante</h3>
 
-        <div class="row">
-            <div class="col-md">
-                <h3>Sélectionnez les étudiants parmi la liste suivante</h3>
+            <div class="form-group">
+                <select id="teachers" multiple class="form-control">
 
-                <div class="form-group">
-                    <select id="loaded_students" multiple class="form-control">
+                    {% for t in teachers %}
+                        <option value="{{ t }}">{{ t }}</option>
+                    {% endfor %}
 
-                        {% for s in students %}
-                            <option value="{{ s }}">{{ s }}</option>
-                        {% endfor %}
-
-                    </select>
-                </div>
-
+                </select>
             </div>
-            <div class="col-sm">
-                <h3>Actions</h3>
+        </section>
 
-                <div id="arrow_actions">
-                    <button id="remove_selected" type="button"><i class="material-icons">arrow_back</i></button>
-                    <button id="add_selected" type="button"><i class="material-icons md-48">arrow_forward</i></button>
-                    <button id="remove_all" type="button"><i class="material-icons md-48">arrow_back_ios</i></button>
-                    <button id="add_all" type="button"><i class="material-icons md-48">arrow_forward_ios</i></button>
-                </div>
+        <br>
 
-            </div>
-            <div class="col-md">
-                <h3>Étudiants sélectionnés</h3>
+        <section id="add_students" class="container">
 
-                <form>
+            <input type="file" id="file" accept=".csv" class="button" name="file_students">
+
+
+            <div class="row">
+                <div class="col-md">
+                    <h3>Sélectionnez les étudiants parmi la liste suivante</h3>
+
                     <div class="form-group">
-                        <select id="selected_students" multiple class="form-control">
+                        <select id="loaded_students" multiple class="form-control">
 
                         </select>
                     </div>
-                </form>
 
+                </div>
+                <div class="col-sm">
+                    <h3>Actions</h3>
+
+                    <div id="arrow_actions">
+                        <button id="remove_selected" type="button"><i class="material-icons">arrow_back</i></button>
+                        <button id="add_selected" type="button"><i class="material-icons md-48">arrow_forward</i></button>
+                        <button id="remove_all" type="button"><i class="material-icons md-48">arrow_back_ios</i></button>
+                        <button id="add_all" type="button"><i class="material-icons md-48">arrow_forward_ios</i></button>
+                    </div>
+
+                </div>
+                <div class="col-md">
+                    <h3>Étudiants sélectionnés</h3>
+
+                    <form>
+                        <div class="form-group">
+                            <select id="selected_students" multiple class="form-control">
+
+                            </select>
+                        </div>
+                    </form>
+
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
+        <input type="submit" value="Créer le groupe">
+
+    </form>
     <script type="text/javascript">
         let button_remove_selected = document.getElementById('remove_selected');
         let button_add_selected = document.getElementById('add_selected');
@@ -62,7 +82,7 @@
         let selected = document.getElementById('selected_students');
 
         button_remove_selected.addEventListener("click", e => {
-            while (selected.selectedIndex !== -1){
+            while (selected.selectedIndex !== -1) {
                 loaded.options.add(selected.options[selected.selectedIndex]);
             }
             selected.selectedIndex = -1;
@@ -70,7 +90,7 @@
         });
 
         button_add_selected.addEventListener("click", e => {
-            while (loaded.selectedIndex !== -1){
+            while (loaded.selectedIndex !== -1) {
                 selected.options.add(loaded.options[loaded.selectedIndex]);
             }
             loaded.selectedIndex = -1;
@@ -78,16 +98,45 @@
         });
 
         button_remove_all.addEventListener("click", e => {
-            while (selected.options.length !== 0){
+            while (selected.options.length !== 0) {
                 loaded.options.add(selected.options[0]);
             }
         });
 
         button_add_all.addEventListener("click", e => {
-            while (loaded.options.length !== 0){
+            while (loaded.options.length !== 0) {
                 selected.options.add(loaded.options[0]);
             }
         });
+
+        //Gestion du chargement du fichier CSV et de l'affichage des données
+
+
+        var file_html = document.getElementById('file')
+        file_html.addEventListener('change', function(){
+            var reader = new FileReader();
+
+            //A la fin de la lecture d'un fichier, l'événement 'load' se lance, il faut donc créer
+            //un eventListener
+            reader.addEventListener('load', function() {
+                //reader.result stocke le résultat de la lecture du fichier soit son contenu
+
+                //Parse du csv et affichage dans la liste
+                let lines = reader.result.split('\n');
+                for (let l of lines){
+                    let student = l.split(',');
+                    let select = document.getElementById("loaded_students");
+                    select.options.add(new Option(student[0] + " " + student[1], student[2], false, false));
+                }
+
+            });
+
+            reader.readAsText(file_html.files[0]); //on obtient un String
+
+        });
+
+
+
 
     </script>
 
