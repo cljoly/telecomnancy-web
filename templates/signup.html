@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Register{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <form method="post">
+        <div class="form-group">
+            <label for="username">Nom d’utilisateur</label>
+            <input name="username" id="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input type="password" name="password" id="password" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Vérifier le mot de passe</label>
+            <input type="password" name="password" id="password" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Clé d’API Gitlab</label>
+            <input type="password" name="api_key" id="api" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Adresse mail</label>
+            <input type="password" name="mail" id="mail" required>
+        </div>
+        <input class="btn btn-primary" type="submit" value="Register">
+    </form>
+</div>
+{% endblock %}

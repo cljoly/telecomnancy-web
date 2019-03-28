@@ -25,10 +25,10 @@ def hello():
     """Return a friendly HTTP greeting."""
     return 'Hello World!'
 
-@app.route('/register')
+@app.route('/signup')
 def register():
-    """ register """
-    return render_template("register.html")
+    """ Register """
+    return render_template("signup.html")
 
 @app.route('/signin')
 def signin():
