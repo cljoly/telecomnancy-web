@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from flask import Flask, render_template
+import time
 
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
@@ -25,15 +26,39 @@ def hello():
     """Return a friendly HTTP greeting."""
     return 'Hello World!'
 
+
 @app.route('/register')
 def register():
     """ register """
     return render_template("register.html")
 
+
 @app.route('/signin')
 def signin():
     """ Signin """
     return render_template("signin.html")
+
+
+@app.route('/home')
+def home():
+    """Home page"""
+    return render_template("home.html")
+
+    #g = Group("My group", 1000)
+    #return render_template("home.html", groups=[g])
+
+
+class Group:
+    name = ''
+    c_date = ''
+    d_date = ''
+    count = 0
+
+    def __init__(self, name, count):
+        self.c_date = time.strftime("%d/%m/%Y")
+        self.name = name
+        self.count = count
+
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App

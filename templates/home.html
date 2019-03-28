@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div id="grp_top">
+        <div id="grp_title"> Groupes </div>
+        <br>
+        {% if groups %}
+            <form action="/grp_create"><input id="grp_select_btn" type="submit" value="Créer un nv groupe"></form>
+        {% endif %}
+        <br>
+    </div>
+    <div id="grp_select_box">
+        {% if groups %}
+            {% for g in groups %}
+                <div id="grp_entry">
+                    <div id="grp_entry_name">{{ g.name }}</div>
+                    <div id="grp_entry_creation_date">{{ g.c_date }}</div>
+                    <div id="grp_entry_due_date">{{ g.d_date }}</div>
+                    <div id="grp_entry_member_count">{{ g.count }}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <form action="/grp_create"><input id="grp_select_btn" type="submit" value="Créer un nv groupe"></form>
+        {% endif %}
+
+        <div id="test"></div>
+    </div>
+    
+    <a href="home">1</a><a href="home">2</a><a href="home">3</a><a href="home">4</a>
+
+
+{% endblock %}
