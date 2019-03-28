@@ -1,1 +1,4 @@
 /* TODO */
+
+#add_students #arrow_actions button {display: block; margin: 15px; border:0; background: transparent}
+#add_students #arrow_actions {border: 1px solid black}
