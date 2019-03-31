@@ -7,48 +7,90 @@
 {% block content %}
 
     <section id="groupContent" class="container">
-      <div class="container">
-        <button type="button" name="sudo">Sudo power du prof</button>
-      </div>
-      <div class="container" style="border-style: solid; display: in-line; border-color: red;">
-        <button type="button" name="button">Appliquer changements</button>
-        <button type="button" name="button"> Issues</button>
-        <button type="button" name="button"> ... </button>
-        <button type="button" name="button"> ... </button>
+      <div class="container" style="margin-bottom: 100px">
+        <button type="button" name="button" class="btn btn-primary">Appliquer changements</button>
+        <button type="button" name="button" class="btn btn-primary"> Issues</button>
+        <button type="button" name="button" class="btn btn-primary"> ... </button>
+        <button type="button" name="button" class="btn btn-primary"> ... </button>
       </div>
       <div class="container">
-        <textarea id="searchStudent"name="search" rows="1" cols="80">Rechercher un élève</textarea>
+        <input type="search" id="searchStudent" class="form-control" placeholder="Rechercher un élève" style="margin-bottom: 100px">
       </div>
-      <div class="container" style="border-style: solid; border-color: blue;">
-        <div class="container" style="border-style: solid; display: in-line; border-color: red;">
-          <label>{{studentName1}}</label>
-          <label>{{nb_commits1}}</label>
-          <label>{{last_commit1}}</label>
-          <button type="button" name="button">statistiques</button>
-        </div>
-        <div class="container" style="border-style: solid; display: in-line; border-color: red;">
-          <label>{{studentName2}}</label>
-          <label>{{nb_commits2}}</label>
-          <label>{{last_commit2}}</label>
-          <button type="button" name="button">statistiques</button>
-        </div>
-        <div class="container" style="border-style: solid; display: in-line; border-color: red;">
-          <label>{{studentName3}}</label>
-          <label>{{nb_commits3}}</label>
-          <label>{{last_commit3}}</label>
-          <button type="button" name="button">statistiques</button>
-        </div>
-        <div class="container" style="border-style: solid; display: in-line; border-color: red;">
-          <label>{{studentName4}}</label>
-          <label>{{nb_commits4}}</label>
-          <label>{{last_commit4}}</label>
-          <button type="button" name="button">statistiques</button>
-        </div>
-      </div>
+      <table class="table table-striped">
+          <thead>
+            <tr>
+                <th colspan="1">Liste des élèves du groupe</th>
+                <th colspan="1">Nombre de commits</th>
+                <th colspan="1">Date du dernier commit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+                <td><span action="{{ url_for("group") }}">{{studentName1}}</span></td>
+                <td><span>{{nb_commits1}}</span></td>
+                <td><span>{{last_commit1}}</span></td>
+                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
+            </tr>
+          <tr>
+              <td><span action="{{ url_for("group") }}">{{studentName2}}</span></td>
+                <td><span>{{nb_commits2}}</span></td>
+                <td><span>{{last_commit2}}</span></td>
+                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
+          </tr>
+          <tr>
+              <td><span action="{{ url_for("group") }}">{{studentName3}}</span></td>
+                <td><span>{{nb_commits3}}</span></td>
+                <td><span>{{last_commit3}}</span></td>
+                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
+          </tr>
+          <tr>
+              <td><span action="{{ url_for("group") }}">{{studentName4}}</span></td>
+                <td><span>{{nb_commits4}}</span></td>
+                <td><span>{{last_commit4}}</span></td>
+                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
+          </tr>
+          <tr>
+              <td><span action="{{ url_for("group") }}">{{studentName5}}</span></td>
+                <td><span>{{nb_commits5}}</span></td>
+                <td><span>{{last_commit5}}</span></td>
+                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
+          </tr>
+          <tr>
+              <td><span action="{{ url_for("group") }}">{{studentName6}}</span></td>
+                <td><span>{{nb_commits6}}</span></td>
+                <td><span>{{last_commit6}}</span></td>
+                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
+          </tr>
+          <tr>
+              <td><span action="{{ url_for("group") }}">{{studentName7}}</span></td>
+                <td><span>{{nb_commits7}}</span></td>
+                <td><span>{{last_commit7}}</span></td>
+                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
+          </tr>
+          <tr>
+              <td><span action="{{ url_for("group") }}">{{studentName8}}</span></td>
+                <td><span>{{nb_commits8}}</span></td>
+                <td><span>{{last_commit8}}</span></td>
+                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
+          </tr>
+          <tr>
+              <td><span action="{{ url_for("group") }}">{{studentName9}}</span></td>
+                <td><span>{{nb_commits9}}</span></td>
+                <td><span>{{last_commit9}}</span></td>
+                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
+          </tr>
+          <tr>
+              <td><span action="{{ url_for("group") }}">{{studentName10}}</span></td>
+                <td><span>{{nb_commits10}}</span></td>
+                <td><span>{{last_commit10}}</span></td>
+                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
+          </tr>
+        </tbody>
+      </table>
 
-      <div class="container" style="display: in-line;">
-        <button type="button" name="button">Page précédente</button>
-        <button type="button" name="button" style="margin-left: 800px;">Page suivante</button>
+      <div class="container" style="display: inLine;">
+        <button type="button" name="button" class="btn btn-success">Page précédente</button>
+        <button type="button" name="button" style="margin-left: 800px;" class="btn btn-success">Page suivante</button>
       </div>
     </section>
 
