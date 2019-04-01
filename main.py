@@ -26,7 +26,7 @@ def hello():
     return 'Hello World!'
 
 @app.route('/signup')
-def register():
+def signup():
     """ Register """
     return render_template("signup.html")
 
