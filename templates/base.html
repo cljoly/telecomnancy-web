@@ -69,17 +69,23 @@
             </ul>
 
         {% endif %}
-    
+
     </div>
 </nav>
 
 
 <section class="content">
-    <header>
+    <header class="jumbotron">
         {% block header %}{% endblock %}
     </header>
     {% for message in get_flashed_messages() %}
-        <div class="flash">{{ message }}</div>
+        <!-- TODO gérer le type d'alert à afficher (couleur), récupérer le type de l'alerte qu'on envoie. A mettre entre alert et alert-dismissible -->
+        <div class="alert alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
     {% endfor %}
     {% block content %}{% endblock %}
 </section>
