@@ -2,14 +2,14 @@
 from main import db
 from sqlalchemy.orm import relationship
 
-# Utilisateur élève ou enseignants.
+# Utilisateur élève ou enseignants
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     firstname = db.Column(db.String(80), unique=False, nullable=False)
     name = db.Column(db.String(80), unique=False, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
 
-    password = db.Column(db.String(120), unique=False, nullable=False)
+    password_hash = db.Column(db.String(120), unique=False, nullable=False)
     salt = db.Column(db.String(120), unique=True, nullable=False)
 
     gitlab_username = db.Column(db.String(80), unique=True, nullable=False)
@@ -33,9 +33,13 @@ class Unit(db.Model):
     in_charge_id = db.Column(db.Integer, db.ForeignKey('teacher.id'))
     in_charge = relationship("Teacher")
 
-# Par exemple, TP1
+# Projet, TP…
 class Activity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    # Matière
+    unit_id = db.Column(db.Integer, db.ForeignKey('unit.id'))
+    unit = relationship("Unit")
+    # Par exemple, TP1
     name = db.Column(db.String(120), unique=True, nullable=False)
     year = db.Column(db.Integer)
 
@@ -61,3 +65,6 @@ class Repo(db.Model):
     # Groupe d’élève en charge du dépot en charge du dépôt
     userset_id = db.Column(db.Integer, db.ForeignKey('user_set.id'))
     userset = relationship("UserSet")
+    # Activity
+    activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'))
+    activity = relationship("Activity")
