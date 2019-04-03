@@ -39,7 +39,7 @@ class Pagination(object):
 
 class Group:
 
-    def __init__(self, name, count, d_date=time.strftime("%d/%m/%Y"), link='/groups/default'):
+    def __init__(self, name, count, d_date="None", link='/groups/default'):
         self.c_date = time.strftime("%d/%m/%Y")     # the name of the group
         self.name = name                            # date of creation
         self.count = count                          # due date
