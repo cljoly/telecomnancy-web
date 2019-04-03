@@ -1,9 +1,14 @@
 #grp_select_box {
-    margin: auto;
-    height:400px;
+    /*margin: auto;
     width:850px;
+    */
+    height:400px;
     overflow: auto;
     background-color: bisque;
+}
+
+#grp_entry {
+    background-color: chocolate;
 }
 
 #grp_select_btn {

@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from flask import Flask, render_template
-import time
+from flask import Flask, render_template, abort
+from tools import *
 
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
@@ -39,25 +39,33 @@ def signin():
     return render_template("signin.html")
 
 
-@app.route('/home')
-def home():
+allgroups = [Group("My group {}".format(i), 5*i+1) for i in range(20)]
+#allgroups = []
+
+
+@app.route('/home/', defaults={'page': 1})
+@app.route('/home/page/<int:page>')
+def home(page):
     """Home page"""
-    return render_template("home.html")
+    # todo: utiliser la bdd
+    count = len(allgroups)
+    groups = get_groups_for_page(page, allgroups, count)
 
-    #g = Group("My group", 1000)
-    #return render_template("home.html", groups=[g])
+    if not groups and page != 1:
+        abort(404)
+    pagination = Pagination(page, PER_PAGE, count)
+    return render_template("home.html",
+                           pagination=pagination,
+                           groups=groups)
 
 
-class Group:
-    name = ''
-    c_date = ''
-    d_date = ''
-    count = 0
+def url_for_other_page(page):
+    args = request.view_args.copy()
+    args['page'] = page
+    return url_for(request.endpoint, **args)
 
-    def __init__(self, name, count):
-        self.c_date = time.strftime("%d/%m/%Y")
-        self.name = name
-        self.count = count
+
+app.jinja_env.globals['url_for_other_page'] = url_for_other_page
 
 
 if __name__ == '__main__':

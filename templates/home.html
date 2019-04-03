@@ -1,32 +1,69 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div id="grp_top">
-        <div id="grp_title"> Groupes </div>
-        <br>
-        {% if groups %}
-            <form action="/grp_create"><input id="grp_select_btn" type="submit" value="Créer un nv groupe"></form>
-        {% endif %}
-        <br>
-    </div>
-    <div id="grp_select_box">
-        {% if groups %}
-            {% for g in groups %}
-                <div id="grp_entry">
-                    <div id="grp_entry_name">{{ g.name }}</div>
-                    <div id="grp_entry_creation_date">{{ g.c_date }}</div>
-                    <div id="grp_entry_due_date">{{ g.d_date }}</div>
-                    <div id="grp_entry_member_count">{{ g.count }}</div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <form action="/grp_create"><input id="grp_select_btn" type="submit" value="Créer un nv groupe"></form>
-        {% endif %}
 
-        <div id="test"></div>
-    </div>
-    
-    <a href="home">1</a><a href="home">2</a><a href="home">3</a><a href="home">4</a>
+    <div class="container">
+        <h3 class="mx-auto" style="width: 110px"> Groupes </h3>
+        <br>
+        <div class="row" id="grp_top">
+            {% if groups %}
+                <form action="/grp_create"><input type="submit" value="Créer un nv groupe"></form>
+            {% endif %}
+        </div>
+        <br>
 
+        <table class="table table-bordered">
+            {% if groups %}
+                <thead>
+                <tr>
+                    <th scope="col">Nom du groupe</th>
+                    <th scope="col">Date de création</th>
+                    <th scope="col">Date de rendu</th>
+                    <th scope="col">Nombre de membres</th>
+                    <th scope="col">Lien vers la page de gestion</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for g in groups %}
+                    <tr>
+                        <th scope="row">{{ g.name }}</th>
+                        <td>{{ g.c_date }}</td>
+                        <td>{{ g.d_date }}</td>
+                        <td>{{ g.count }}</td>
+                        <td>
+                            <form action="{{ g.link }}"><input type="submit" value="Go"></form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            {% else %}
+                <thead>
+                <tr>
+                    <th scope="col"><form class="mx-auto" style="width: 180px" action="/grp_create"><input type="submit" value="Créer un nv groupe"></form></th>
+                </tr>
+                </thead>
+            {% endif %}
+        </table>
+
+        <div class="pagination">
+            {% if pagination %}
+                {% for page in pagination %}
+                    {% if page %}
+                        {% if page!=pagination.page %}
+                            <a href="{{ url_for_other_page(page) }}">{{ page }}</a>
+                        {% else %}
+                            <strong>{{ page }}</strong>
+                        {% endif %}
+                    {% else %}
+                        <span class="ellipsis">...</span>
+                    {% endif %}
+                {% endfor %}
+                {% if pagination.has_next %}
+                    <a href="{{ url_for_other_page(pagination.page + 1) }}">Next &raquo;</a>
+                {% endif %}
+            {% endif %}
+        </div>
+
+    </div>
 
 {% endblock %}
