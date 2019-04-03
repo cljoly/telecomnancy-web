@@ -1,18 +1,24 @@
 {% extends "base.html" %}
 
+{% block header %}
+    <h1>{% block title %}Groupes{% endblock %}</h1>
+{% endblock %}
+
+
 {% block content %}
 
     <div class="container">
-        <h3 class="mx-auto" style="width: 110px"> Groupes </h3>
-        <br>
+
         <div class="row" id="grp_top">
             {% if groups %}
-                <form action="/grp_create"><input type="submit" value="Créer un nv groupe"></form>
+                <form action="">
+                    <input type="submit" value="Créer un nouveau groupe">
+                </form>
             {% endif %}
         </div>
         <br>
 
-        <table class="table table-bordered">
+        <table class="table table-striped text-center">
             {% if groups %}
                 <thead>
                 <tr>
@@ -39,7 +45,7 @@
             {% else %}
                 <thead>
                 <tr>
-                    <th scope="col"><form class="mx-auto" style="width: 180px" action="/grp_create"><input type="submit" value="Créer un nv groupe"></form></th>
+                    <th scope="col"><form class="mx-auto" style="width: 180px" action=""><input type="submit" value="Créer un nv groupe"></form></th>
                 </tr>
                 </thead>
             {% endif %}
