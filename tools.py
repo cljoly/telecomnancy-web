@@ -7,6 +7,7 @@ PER_PAGE = 10
 
 
 class Pagination(object):
+    """Helper class for pagination - used in the group table"""
 
     def __init__(self, page, per_page, total_count):
         self.page = page
@@ -48,4 +49,5 @@ class Group:
 
 
 def get_groups_for_page(page, all_groups, count):
+    """Helper for the home page, to be used with the pagination class to allow pagination"""
     return [all_groups[i] for i in range((page - 1) * PER_PAGE, min((page - 1) * PER_PAGE + PER_PAGE, count))]

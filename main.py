@@ -38,8 +38,8 @@ def signin():
     """ Signin """
     return render_template("signin.html")
 
-
-allgroups = [Group("My group {}".format(i), 5*i+1) for i in range(20)]
+# todo: utiliser la bdd
+allgroups = [Group("My group {}".format(i), 5*i+1) for i in range(100)]
 #allgroups = []
 
 
@@ -47,7 +47,6 @@ allgroups = [Group("My group {}".format(i), 5*i+1) for i in range(20)]
 @app.route('/home/page/<int:page>')
 def home(page):
     """Home page"""
-    # todo: utiliser la bdd
     count = len(allgroups)
     groups = get_groups_for_page(page, allgroups, count)
 
