@@ -44,3 +44,14 @@
 #signin, #signup {
     font-size: x-large
 }
+/* TODO */
+
+
+/* Fichier group.html" */
+#endPageButton {
+    display: inline
+}
+
+#headOfTabForGroups {
+    font-size: large
+}
