@@ -1,17 +1,12 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<<<<<<< HEAD
-    <h1>{% block title %}Se connecter{% endblock %}</h1>
-||||||| merged common ancestors
-  <h1>{% block title %}Log In{% endblock %}</h1>
-=======
+
   <h1>{% block title %}Se connecter{% endblock %}</h1>
->>>>>>> @{-1}
+
 {% endblock %}
 
 {% block content %}
-<<<<<<< HEAD
 
     <form id="signin" method="post" class="container">
 
@@ -40,31 +35,4 @@
     </form>
 
 
-||||||| merged common ancestors
-  <form method="post">
-    <label for="username">Username</label>
-    <input name="username" id="username" required>
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required>
-    <input type="submit" value="Log In">
-  </form>
-=======
-  <div class="container">
-      <form method="post">
-          <div class="form-group">
-          <label for="username">Nom d’utilisateur ou adresse mail</label>
-          <input name="username" id="username" required>
-          </div>
-          <div class="form-group">
-          <label for="password">Mot de passe</label>
-          <input type="password" name="password" id="password" required>
-          </div>
-          <div class="form-group">
-              <!-- TODO Créer lien -->
-              <a href="">Mot de passe oublié</a>
-          </div>
-          <input class="btn btn-primary" type="submit" value="Se connecter">
-      </form>
-  </div>
->>>>>>> @{-1}
 {% endblock %}
