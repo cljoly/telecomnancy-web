@@ -8,9 +8,9 @@ from db_objects import User
 db.create_all()
 
 # Quelques tests
-u1 = User(username="toto", email="toto@my.mail")
-u2 = User(username="tata", email="tata@my.mail")
-u3 = User(username="tutu", email="tutu@my.mail")
+u1 = User(firstname="Victor", name="Hugo", email="victor@hugo.me", gitlab_username="hugo1802u")
+u2 = User(firstname="Jules-Amédée", name="Barbey d’Aurevilly", email="jules_amedee_barbey_daurelvilly@telecomnancy.univ-lorraine.fr", gitlab_username="1808u")
+u3 = User(firstname="Louis", name="de Rouvroy de Saint-Simon", email="louis-de-rouvroy-de-saint-simon@grand-duc-et-pair-de-france.fr", gitlab_username="derouvroydesaintsimon1675u")
 user_list = [ u1, u2, u3 ]
 for user in user_list:
     db.session.add(user)
