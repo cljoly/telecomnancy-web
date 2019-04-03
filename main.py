@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from flask import Flask, render_template
-
+from flask import Flask, render_template, redirect, url_for
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
@@ -21,15 +20,15 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def hello():
-    """Return a friendly HTTP greeting."""
-    return 'Hello World!'
+def home():
+    """Homepage"""
+    return render_template("home.html")
 
 
-@app.route('/register')
-def register():
-    """ register """
-    return render_template("register.html")
+@app.route('/signup')
+def signup():
+    """ signup """
+    return render_template("signup.html")
 
 
 @app.route('/signin')
@@ -37,11 +36,30 @@ def signin():
     """ Signin """
     return render_template("signin.html")
 
+
 @app.route('/newgroup1')
 def newgroup1():
-    #todo : get de input file
     teachers = ("Captain", "Iron Man", "Thor", "Scarlett Witch", "Vision", "Black Widow", "Hulk")
     return render_template("newgroup1.html", teachers=teachers)
+
+
+@app.route('/logout')
+def logout():
+    """Redirect to homepage"""
+    #TODO : kill cookies / logout user
+    return redirect(url_for("home"))
+
+
+@app.route('/myProfile')
+def myProfile():
+    """ My profile """
+    return render_template("myProfile.html")
+
+
+@app.route('/forgottenPassword')
+def forgottenPassword():
+    """ Forgottent password """
+    return render_template("forgottenPassword.html")
 
 
 if __name__ == '__main__':

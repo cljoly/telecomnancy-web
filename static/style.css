@@ -1,4 +1,46 @@
-/* TODO */
+/*Fichier newgroup1.html*/
 
-#add_students #arrow_actions button {display: block; margin: 15px; border:0; background: transparent}
-#add_students #arrow_actions {border: 1px solid black}
+#add_students #arrow_actions {
+    text-align: center;
+}
+
+#add_students .row {
+    margin: 2rem
+}
+
+#add_students .row:nth-child(2) h4 {
+    text-align: center;
+}
+
+#add_students #file {
+    margin-left: auto;
+    margin-right: auto
+}
+
+#add_students select, #add_students .row:nth-child(2) .form-group {
+    height: 93%
+}
+
+.horiz-bar {
+    color: grey;
+    height: 1px;
+    background-color: grey;
+    margin-bottom: 2rem;
+    margin-top: 2rem
+}
+
+.left-items {
+    margin-left: 2rem;
+    margin-bottom: 1rem
+}
+
+
+.jumbotron {
+    padding: 1rem
+}
+
+/*Fichier signin.html"*/
+
+#signin, #signup {
+    font-size: x-large
+}
