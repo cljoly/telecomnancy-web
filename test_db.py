@@ -3,7 +3,7 @@
 from main import db
 import sys
 sys.path.insert(0, "./db")
-from db_objects import User
+from db_objects import User, UserSet, UserSetUser
 # Création des tables de la base de donnée
 db.create_all()
 
@@ -14,4 +14,13 @@ u3 = User(firstname="Louis", name="de Rouvroy de Saint-Simon", email="louis-de-r
 user_list = [ u1, u2, u3 ]
 for user in user_list:
     db.session.add(user)
+us1 = UserSet(name="17eme")
+us2 = UserSet(name="18eme")
+for us in [ us1, us2 ]:
+    db.session.add(us)
+usu1 = UserSetUser(user=u1, user_set=us1)
+usu2 = UserSetUser(user=u2, user_set=us2)
+usu3 = UserSetUser(user=u3, user_set=us2)
+for usu in [ usu1, usu2, usu3 ]:
+    db.session.add(usu)
 db.session.commit()
