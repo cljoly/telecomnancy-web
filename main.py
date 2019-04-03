@@ -25,10 +25,10 @@ def home():
     return render_template("home.html")
 
 
-@app.route('/register')
-def register():
-    """ register """
-    return render_template("register.html")
+@app.route('/signup')
+def signup():
+    """ signup """
+    return render_template("signup.html")
 
 
 @app.route('/signin')
@@ -54,6 +54,12 @@ def logout():
 def myProfile():
     """ My profile """
     return render_template("myProfile.html")
+
+
+@app.route('/forgottenPassword')
+def forgottenPassword():
+    """ Forgottent password """
+    return render_template("forgottenPassword.html")
 
 
 if __name__ == '__main__':

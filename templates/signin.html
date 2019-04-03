@@ -6,7 +6,7 @@
 
 {% block content %}
 
-    <form id="connect" method="post" class="container">
+    <form id="signin" method="post" class="container">
 
         <div class="form-group">
             <label for="username">Nom d'utilisateur</label>
@@ -19,9 +19,13 @@
         </div>
 
         <div class="form-check form-group">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label " for="exampleCheck1">Se souvenir de moi</label>
+            <input type="checkbox" class="form-check-input" id="check">
+            <label class="form-check-label " for="check">Se souvenir de moi</label>
         </div>
+
+        <div class="form-check form-group text-center">
+              <a href="{{ url_for("forgottenPassword") }}">Mot de passe oublié</a>
+          </div>
 
         <div class="form-group text-center">
             <button type="submit" class="btn btn-lg btn-primary">Se connecter</button>
