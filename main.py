@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from flask import Flask, render_template, redirect, url_for
+
+from flask import Flask, render_template, redirect, url_for, abort
+from tools import *
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
@@ -20,9 +22,9 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def home():
+def homepage():
     """Homepage"""
-    return render_template("home.html")
+    return render_template("homepage.html")
 
 
 @app.route('/signup')
@@ -47,7 +49,7 @@ def newgroup1():
 def logout():
     """Redirect to homepage"""
     #TODO : kill cookies / logout user
-    return redirect(url_for("home"))
+    return redirect(url_for("homepage"))
 
 
 @app.route('/myProfile')
@@ -77,6 +79,35 @@ def group():
                            , studentName9="Linoa Heartilly", nb_commits9="8", last_commit9="1999"
                            , studentName10="Lunafreya Nox Fleuret", nb_commits10="15", last_commit10="2016"
                            )
+
+
+# todo: utiliser la bdd
+allgroups = [Group("My group {}".format(i), 5*i+1) for i in range(100)]
+#allgroups = []
+
+
+@app.route('/home/', defaults={'page': 1})
+@app.route('/home/page/<int:page>')
+def home(page):
+    """Home page"""
+    count = len(allgroups)
+    groups = get_groups_for_page(page, allgroups, count)
+
+    if not groups and page != 1:
+        abort(404)
+    pagination = Pagination(page, PER_PAGE, count)
+    return render_template("home.html",
+                           pagination=pagination,
+                           groups=groups)
+
+
+def url_for_other_page(page):
+    args = request.view_args.copy()
+    args['page'] = page
+    return url_for(request.endpoint, **args)
+
+
+app.jinja_env.globals['url_for_other_page'] = url_for_other_page
 
 
 if __name__ == '__main__':
