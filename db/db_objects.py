@@ -1,76 +1,85 @@
 #!/usr/bin/env python3
 from main import db
+# import datetime
 from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, DateTime
+
 
 # Utilisateur élève ou enseignants
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    firstname = db.Column(db.String(80), unique=False, nullable=False)
-    name = db.Column(db.String(80), unique=False, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    id = Column(Integer, primary_key=True)
+    firstname = Column(db.String(80), unique=False, nullable=False)
+    name = Column(db.String(80), unique=False, nullable=False)
+    email = Column(db.String(120), unique=True, nullable=False)
 
-    password_hash = db.Column(db.String(120), unique=False, nullable=False)
-    salt = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = Column(db.String(120), unique=False, nullable=False)
+    salt = Column(db.String(120), unique=True, nullable=False)
 
-    gitlab_username = db.Column(db.String(80), unique=True, nullable=False)
+    gitlab_username = Column(db.String(80), unique=True, nullable=False)
+
 
 # Propriétés propres à un utilisateur enseignant
 class Teacher(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, db.ForeignKey('user.id'))
     user = relationship('User')
     # API key
-    gitlab_key = db.Column(db.String(80), unique=False, nullable=False)
+    gitlab_key = Column(db.String(80), unique=False, nullable=False)
+
 
 # Matière : POO, CSD…
 class Module(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     # Programmation orienté objet
-    name = db.Column(db.String(120), unique=True, nullable=False)
+    name = Column(db.String(120), unique=True, nullable=False)
     # POO
-    short_name = db.Column(db.String(10), unique=True, nullable=False)
+    short_name = Column(db.String(10), unique=True, nullable=False)
 
 
 # Enseignant responsable
 class InCharge(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    module_id = db.Column(db.Integer, db.ForeignKey('module.id'))
+    id = Column(Integer, primary_key=True)
+    module_id = Column(Integer, db.ForeignKey('module.id'))
     module = relationship("Module")
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'))
+    teacher_id = Column(Integer, db.ForeignKey('teacher.id'))
     teacher = relationship("Teacher")
+
 
 # Projet, TP…
 class Activity(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     # Matière
-    module_id = db.Column(db.Integer, db.ForeignKey('module.id'))
+    module_id = Column(Integer, db.ForeignKey('module.id'))
     module = relationship("Module")
     # Par exemple, TP1
-    name = db.Column(db.String(120), unique=True, nullable=False)
-    year = db.Column(db.Integer)
+    name = Column(db.String(120), unique=True, nullable=False)
+    year = Column(Integer)
+
 
 # Groupe d’élèves ou de prof travaillant sur un dépôt, éventuellement d’une
 # seule personne.
 class UserSet(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     # Nom du groupe, par exemple G1, IL ou Memscarlo
-    name = db.Column(db.String(120), unique=True, nullable=False)
+    name = Column(db.String(120), unique=True, nullable=False)
+
 
 # Chaque élève appartient à plusieurs groupes
 class UserSetUser(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, db.ForeignKey('user.id'))
     user = relationship("User")
-    user_set_id = db.Column(db.Integer, db.ForeignKey('user_set.id'))
+    user_set_id = Column(Integer, db.ForeignKey('user_set.id'))
     user_set = relationship("UserSet")
+
 
 # Dépot git particulier
 class Repository(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    url = db.Column(db.String(120), unique=False, nullable=False)
+    id = Column(Integer, primary_key=True)
+    url = Column(db.String(120), unique=False, nullable=False)
     # Groupe d’élève en charge du dépot en charge du dépôt
-    userset_id = db.Column(db.Integer, db.ForeignKey('user_set.id'))
+    userset_id = Column(Integer, db.ForeignKey('user_set.id'))
     userset = relationship("UserSet")
     # Activity
-    activity_id = db.Column(db.Integer, db.ForeignKey('activity.id'))
+    activity_id = Column(Integer, db.ForeignKey('activity.id'))
     activity = relationship("Activity")
