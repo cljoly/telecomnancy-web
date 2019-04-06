@@ -27,6 +27,15 @@ class Teacher(db.Model):
     gitlab_key = Column(db.String(80), unique=False, nullable=False)
 
 
+# Table d’association des enseignants à une activité
+class ActivityTeacher(db.Model):
+    id = Column(Integer, primary_key=True)
+    teacher_id = Column(Integer, db.ForeignKey('teacher.id'))
+    teacher = relationship('Teacher')
+    activity_id = Column(Integer, db.ForeignKey('activity.id'))
+    activity = relationship('Activity')
+
+
 # Matière : POO, CSD…
 class Module(db.Model):
     id = Column(Integer, primary_key=True)
@@ -36,8 +45,8 @@ class Module(db.Model):
     short_name = Column(db.String(10), unique=True, nullable=False)
 
 
-# Enseignant responsable
-class InCharge(db.Model):
+# Enseignant responsable, table d’association
+class TeacherModule(db.Model):
     id = Column(Integer, primary_key=True)
     module_id = Column(Integer, db.ForeignKey('module.id'))
     module = relationship("Module")
@@ -53,33 +62,27 @@ class Activity(db.Model):
     module = relationship("Module")
     # Par exemple, TP1
     name = Column(db.String(120), unique=True, nullable=False)
+    # Par exemple IL ou groupe 1
+    indepthstudy = Column(db.String(120), unique=True, nullable=False)
     year = Column(Integer)
+    # Dates de début et fin
+    start_date = Column(DateTime, nullable=False)
+    end_date = Column(DateTime, nullable=False)
 
 
-# Groupe d’élèves ou de prof travaillant sur un dépôt, éventuellement d’une
-# seule personne.
-class UserSet(db.Model):
-    id = Column(Integer, primary_key=True)
-    # Nom du groupe, par exemple G1, IL ou Memscarlo
-    name = Column(db.String(120), unique=True, nullable=False)
-
-
-# Chaque élève appartient à plusieurs groupes
-class UserSetUser(db.Model):
+# Table d’association élève / dépôt
+class UserRepository(db.Model):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, db.ForeignKey('user.id'))
     user = relationship("User")
-    user_set_id = Column(Integer, db.ForeignKey('user_set.id'))
-    user_set = relationship("UserSet")
+    user_set_id = Column(Integer, db.ForeignKey('repository.id'))
+    user_set = relationship("Repository")
 
 
 # Dépot git particulier
 class Repository(db.Model):
     id = Column(Integer, primary_key=True)
     url = Column(db.String(120), unique=False, nullable=False)
-    # Groupe d’élève en charge du dépot en charge du dépôt
-    userset_id = Column(Integer, db.ForeignKey('user_set.id'))
-    userset = relationship("UserSet")
     # Activity
     activity_id = Column(Integer, db.ForeignKey('activity.id'))
     activity = relationship("Activity")
