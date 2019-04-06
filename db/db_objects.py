@@ -23,22 +23,28 @@ class Teacher(db.Model):
     gitlab_key = db.Column(db.String(80), unique=False, nullable=False)
 
 # Matière : POO, CSD…
-class Unit(db.Model):
+class Module(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # Programmation orienté objet
     name = db.Column(db.String(120), unique=True, nullable=False)
     # POO
-    short = db.Column(db.String(10), unique=True, nullable=False)
-    # Enseignant responsable
-    in_charge_id = db.Column(db.Integer, db.ForeignKey('teacher.id'))
-    in_charge = relationship("Teacher")
+    short_name = db.Column(db.String(10), unique=True, nullable=False)
+
+
+# Enseignant responsable
+class InCharge(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    module_id = db.Column(db.Integer, db.ForeignKey('module.id'))
+    module = relationship("Module")
+    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'))
+    teacher = relationship("Teacher")
 
 # Projet, TP…
 class Activity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # Matière
-    unit_id = db.Column(db.Integer, db.ForeignKey('unit.id'))
-    unit = relationship("Unit")
+    module_id = db.Column(db.Integer, db.ForeignKey('module.id'))
+    module = relationship("Module")
     # Par exemple, TP1
     name = db.Column(db.String(120), unique=True, nullable=False)
     year = db.Column(db.Integer)
@@ -59,7 +65,7 @@ class UserSetUser(db.Model):
     user_set = relationship("UserSet")
 
 # Dépot git particulier
-class Repo(db.Model):
+class Repository(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(120), unique=False, nullable=False)
     # Groupe d’élève en charge du dépot en charge du dépôt
