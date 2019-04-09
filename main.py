@@ -27,23 +27,30 @@ def signin():
     return render_template("signin.html")
 
 
-@app.route('/newgroup', methods=['GET', 'POST'])
-def newgroup():
+@app.route('/newactivity', methods=['GET', 'POST'])
+def new_activity():
     if request.method == 'POST':
         if create_new_group() == 1:
             flash('Le groupe a bien été créé', 'success')
         else:
             flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes puissent être créés', 'info')
             flash('Formulaire : TODO','warning')
-        return render_template("newgroup.html")
+        return render_template("newActivity.html")
 
     elif request.method == 'GET':
         # TODO: une fois le back fait, aller chercher les profs dans la BD
         teachers = ("Captain", "Iron Man", "Thor", "Scarlett Witch", "Vision", "Black Widow", "Hulk")
-        return render_template("newgroup.html", teachers=teachers)
+        return render_template("newActivity.html", teachers=teachers)
 
     else:
         return redirect(url_for("homepage"))
+
+
+@app.route('/newactivity/form/<int:activityId>')
+def group_form(activityId):
+    # TODO : aller chercher le nombre d'étudiants dans la BD
+    numberOfStudents = 4
+    return render_template("newGroupForm.html", activityId=activityId, numberOfStudents=numberOfStudents)
 
 
 @app.route('/logout')
