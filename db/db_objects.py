@@ -68,6 +68,8 @@ class Activity(db.Model):
     # Dates de début et fin
     start_date = Column(DateTime, nullable=False)
     end_date = Column(DateTime, nullable=False)
+    # Taille maximum d’un groupe
+    nbOfStudent = Column(Integer, nullable=False)
 
 
 # Table d’association élève / dépôt
