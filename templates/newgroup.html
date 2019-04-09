@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-    <h1>{% block title %}Créer un nouveau groupe de cardinalité 1{% endblock %}</h1>
+    <h1>{% block title %}Créer un nouveau groupe{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
@@ -11,13 +11,34 @@
         {{ message }}
     </header>
 
-    <form method="post" action="{{ url_for("newgroup1") }}">
+    <form method="post" action="{{ url_for("newgroup") }}">
+
+        <h3 class="left-items">Nom du groupe :</h3>
+        <div class="container input-group mb-3">
+            <input type="text" name="groupName" class="form-control form-control-lg " placeholder="Nom du groupe">
+        </div>
+
+
+        <h3 class="left-items">Nombre d'étudiants par groupe :</h3>
+
+        <div class="input-group mb-3 container">
+            <select name="numberOfStudents" class="custom-select-lg form-control" id="inputGroupSelect01">
+                <option value="1" selected>Un étudiant</option>
+                <option value="2">Deux étudiants</option>
+                <option value="3">Trois étudiants</option>
+                <option value="4">Quatre étudiants</option>
+                <option value="5">Cinq étudiants</option>
+                <option value="6">Six étudiants</option>
+            </select>
+        </div>
+
+
         <h3 class="left-items">Enseignant(s) référent(s) :</h3>
         <section id="add_teachers" class="container">
 
             <div class="form-group">
-                <select id="teachers" multiple class="form-control custom-select-lg">
-
+                <select name="selectedTeachers" id="teachers" multiple class="form-control custom-select-lg">
+                    <!--TODO : une fois le back fait, aller chercher les profs dans la BD-->
                     {% for t in teachers %}
                         <option value="{{ t }}">{{ t }}</option>
                     {% endfor %}
@@ -37,7 +58,7 @@
                         <h4>
                             <label for="file">Veuillez importer la liste des étudiants que vous souhaitez ajouter :</label>
                         </h4>
-                        <input type="file" id="file" accept=".csv" class="form-control-file" name="file_students">
+                        <input type="file" id="file" accept=".csv" class="form-control-file">
                     </div>
                 </div>
             </div>
@@ -67,13 +88,11 @@
                 <div class="col-5">
                     <h4>Étudiants du groupe</h4>
 
-                    <form>
-                        <div class="form-group">
-                            <select id="selected_students" multiple class="form-control custom-select-lg">
+                    <div class="form-group">
+                        <select name="selectedStudents" id="selected_students" multiple class="form-control custom-select-lg">
 
-                            </select>
-                        </div>
-                    </form>
+                        </select>
+                    </div>
 
                 </div>
             </div>
@@ -82,6 +101,8 @@
         <input type="submit" class="left-items btn btn-lg btn-primary" value="Créer le groupe">
 
     </form>
+
+
     <script type="text/javascript">
         let button_remove_selected = document.getElementById('remove_selected');
         let button_add_selected = document.getElementById('add_selected');
