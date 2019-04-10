@@ -55,3 +55,15 @@
 #headOfTabForGroups {
     font-size: large
 }
+
+.siteTitle
+{
+    font-family: Impact,fantasy;
+}
+
+#homeBody
+{
+    background-image: url("https://about.gitlab.com/images/press/logo/png/gitlab-logo-gray-rgb.png");
+    background-size: cover;
+    opacity: 0.85;
+}
