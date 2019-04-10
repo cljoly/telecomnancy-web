@@ -22,7 +22,7 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     """Homepage"""
-    return render_template("home.html", c="connected")
+    return render_template("homepage.html", c="connected")
 
 
 @app.route('/signup')
