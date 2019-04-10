@@ -15,7 +15,7 @@ db = SQLAlchemy(app)
 @app.route('/')
 def homepage():
     """Homepage"""
-    return render_template("homepage.html")
+    return render_template("homepage.html", c="connected")
 
 
 @app.route('/signup')
@@ -73,6 +73,11 @@ def myProfile():
 def forgottenPassword():
     """ Forgottent password """
     return render_template("forgottenPassword.html")
+
+
+@app.route('/profile')
+def profile():
+    return render_template("myProfile.html", name="Farron", firstName="Serah", mail="serah.farron@ffxiii.jp")
 
 
 @app.route('/group')
