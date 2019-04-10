@@ -27,15 +27,6 @@ class Teacher(db.Model):
     gitlab_key = Column(db.String(80), unique=False, nullable=False)
 
 
-# Table d’association des enseignants à une activité
-class ActivityTeacher(db.Model):
-    id = Column(Integer, primary_key=True)
-    teacher_id = Column(Integer, db.ForeignKey('teacher.id'))
-    teacher = relationship('Teacher')
-    activity_id = Column(Integer, db.ForeignKey('activity.id'))
-    activity = relationship('Activity')
-
-
 # Matière : POO, CSD…
 class Module(db.Model):
     id = Column(Integer, primary_key=True)
@@ -54,6 +45,15 @@ class TeacherModule(db.Model):
     teacher = relationship("Teacher")
 
 
+# Table d’association des enseignants à une activité
+class ActivityTeacher(db.Model):
+    id = Column(Integer, primary_key=True)
+    teacher_id = Column(Integer, db.ForeignKey('teacher.id'))
+    teacher = relationship('Teacher')
+    activity_id = Column(Integer, db.ForeignKey('activity.id'))
+    activity = relationship('Activity')
+
+
 # Projet, TP…
 class Activity(db.Model):
     id = Column(Integer, primary_key=True)
@@ -63,7 +63,7 @@ class Activity(db.Model):
     # Par exemple, TP1
     name = Column(db.String(120), unique=True, nullable=False)
     # Par exemple IL ou groupe 1
-    indepthstudy = Column(db.String(120), unique=True, nullable=False)
+    admingroup = Column(db.String(120), unique=True, nullable=False)
     year = Column(Integer)
     # Dates de début et fin
     start_date = Column(DateTime, nullable=False)

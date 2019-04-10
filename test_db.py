@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-from db.db_objects import User
+from db.db_objects import User, Teacher, Module, TeacherModule
 from main import db
 # Création des tables de la base de donnée
 db.create_all()
 
-# Quelques tests
+# Quelques utilisateurs
 u1 = User(firstname="Victor", name="Hugo", email="victor@hugo.me",
           password_hash="auie", salt="a", gitlab_username="hugo1802u")
 email2 = "jules_amedee_barbey_daurelvilly@telecomnancy.univ-lorraine.fr"
@@ -20,15 +20,16 @@ u3 = User(firstname="Louis", name="de Rouvroy de Saint-Simon",
 user_list = [u1, u2, u3]
 for user in user_list:
     db.session.add(user)
-    """
-us1 = UserSet(name="17eme")
-us2 = UserSet(name="18eme")
-for us in [ us1, us2 ]:
-    db.session.add(us)
-usu1 = UserSetUser(user=u1, user_set=us1)
-usu2 = UserSetUser(user=u2, user_set=us2)
-usu3 = UserSetUser(user=u3, user_set=us2)
-for usu in [ usu1, usu2, usu3 ]:
-    db.session.add(usu)
-    """
+
+# Saint-Simon est prof
+t1 = Teacher(user=u1, gitlab_key="GITLAB-API-KEY")
+db.session.add(t1)
+
+# Un module
+poo = Module(name="Programmation Orienté Objet", short_name="POO")
+db.session.add(poo)
+# Un responsable
+r1 = TeacherModule(module=poo, teacher=t1)
+db.session.add(r1)
+
 db.session.commit()
