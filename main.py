@@ -12,14 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from flask import Flask, render_template, redirect, url_for, abort
+from flask_sqlalchemy import SQLAlchemy
 from tools import *
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
 app = Flask(__name__)
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data/main.sqlite'
+db = SQLAlchemy(app)
 
 @app.route('/')
 def homepage():
