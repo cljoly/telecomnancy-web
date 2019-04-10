@@ -1,23 +1,28 @@
 {% extends 'base.html' %}
 
 {% block header %}
-    <h1>{% block title %}Créer un nouveau groupe de cardinalité 1{% endblock %}</h1>
+    <h1>{% block title %}Créer une nouvelle activité{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
 
-    <header>
-        <!--Message à afficher seulement lorsqu'on clique sur le bouton "Créer le groupe" -->
-        {{ message }}
-    </header>
+    <form method="post" action="{{ url_for("new_activity") }}">
 
-    <form method="post" action="{{ url_for("newgroup1") }}">
+        <h3 class="left-items">Nom de l'activité :</h3>
+        <div class="container input-group mb-3">
+            <input type="text" name="activityName" class="form-control form-control-lg " placeholder="Nom de l'activité">
+        </div>
+
+
+        <hr class="container horiz-bar"/>
+
+
         <h3 class="left-items">Enseignant(s) référent(s) :</h3>
         <section id="add_teachers" class="container">
 
             <div class="form-group">
-                <select id="teachers" multiple class="form-control custom-select-lg">
-
+                <select name="selectedTeachers" id="teachers" multiple class="form-control custom-select-lg">
+                    <!--TODO : une fois le back fait, aller chercher les profs dans la BD-->
                     {% for t in teachers %}
                         <option value="{{ t }}">{{ t }}</option>
                     {% endfor %}
@@ -26,9 +31,28 @@
             </div>
         </section>
 
+
         <hr class="container horiz-bar"/>
 
-        <h3 style="padding-left: 2rem; margin-bottom: 1rem">Étudiants du groupe :</h3>
+
+        <h3 class="left-items">Nombre d'étudiants par activité :</h3>
+
+        <div class="input-group mb-3 container">
+            <select name="numberOfStudents" class="custom-select-lg form-control" id="inputGroupSelect01">
+                <option value="1" selected>Un étudiant</option>
+                <option value="2">Deux étudiants</option>
+                <option value="3">Trois étudiants</option>
+                <option value="4">Quatre étudiants</option>
+                <option value="5">Cinq étudiants</option>
+                <option value="6">Six étudiants</option>
+            </select>
+        </div>
+
+
+        <hr class="container horiz-bar"/>
+
+
+        <h3 style="padding-left: 2rem; margin-bottom: 1rem">Étudiants de l'activité :</h3>
         <section id="add_students" class="container">
 
             <div class="row">
@@ -37,7 +61,7 @@
                         <h4>
                             <label for="file">Veuillez importer la liste des étudiants que vous souhaitez ajouter :</label>
                         </h4>
-                        <input type="file" id="file" accept=".csv" class="form-control-file" name="file_students">
+                        <input type="file" id="file" accept=".csv" class="form-control-file">
                     </div>
                 </div>
             </div>
@@ -57,31 +81,31 @@
                     <h4>Actions</h4>
 
                     <div id="arrow_actions">
-                        <button id="add_selected" title="Ajouter les étudiants choisis au groupe" type="button" class="btn btn-block btn-outline-secondary"><i class="material-icons md-48">arrow_forward</i></button>
-                        <button id="remove_selected" title="Enlever les étudiants choisis du groupe" type="button" class="btn btn-block btn-outline-secondary"><i class="material-icons">arrow_back</i></button>
-                        <button id="add_all" title="Ajouter tous les étudiants disponibles au groupe" type="button" class="btn btn-block btn-outline-secondary"><i class="material-icons md-48">arrow_forward_ios</i></button>
-                        <button id="remove_all" title="Enlever tous les étudiants choisis du groupe" type="button" class="btn btn-block btn-outline-secondary"><i class="material-icons md-48">arrow_back_ios</i></button>
+                        <button id="add_selected" title="Ajouter les étudiants choisis à l'activité" type="button" class="btn btn-block btn-outline-secondary"><i class="material-icons md-48">arrow_forward</i></button>
+                        <button id="remove_selected" title="Enlever les étudiants choisis à l'activité" type="button" class="btn btn-block btn-outline-secondary"><i class="material-icons">arrow_back</i></button>
+                        <button id="add_all" title="Ajouter tous les étudiants disponibles à l'activité" type="button" class="btn btn-block btn-outline-secondary"><i class="material-icons md-48">arrow_forward_ios</i></button>
+                        <button id="remove_all" title="Enlever tous les étudiants choisis à l'activité" type="button" class="btn btn-block btn-outline-secondary"><i class="material-icons md-48">arrow_back_ios</i></button>
                     </div>
 
                 </div>
                 <div class="col-5">
-                    <h4>Étudiants du groupe</h4>
+                    <h4>Étudiants de l'activité</h4>
 
-                    <form>
-                        <div class="form-group">
-                            <select id="selected_students" multiple class="form-control custom-select-lg">
+                    <div class="form-group">
+                        <select name="selectedStudents" id="selected_students" multiple class="form-control custom-select-lg">
 
-                            </select>
-                        </div>
-                    </form>
+                        </select>
+                    </div>
 
                 </div>
             </div>
         </section>
 
-        <input type="submit" class="left-items btn btn-lg btn-primary" value="Créer le groupe">
+        <input type="submit" class="left-items btn btn-lg btn-primary" value="Créer l'activité">
 
     </form>
+
+
     <script type="text/javascript">
         let button_remove_selected = document.getElementById('remove_selected');
         let button_add_selected = document.getElementById('add_selected');

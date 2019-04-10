@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Formulaire de création du groupe pour l'activité TODO_NOM_ACTIVITE{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+    <form id="newGroupForm" method="post" action="{{ url_for("group_form", activityId=activityId) }}">
+
+        <h3 class="left-items">Nom du groupe :</h3>
+        <div class="form-group container">
+            <input type="text" name="repoName" class="form-control form-control-lg" id="repoName" placeholder="Nom de votre groupe" required>
+        </div>
+
+        {% for i in range(numberOfStudents) %}
+
+            <h3 class="left-items">Étudiant n°{{ i }} :</h3>
+
+            <div class="container">
+                <div class="form-group">
+                    <label for="nom">Nom</label>
+                    <input type="text" class="form-control form-control-lg" id="nom" placeholder="Entrez votre nom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prenom">Prénom</label>
+                    <input type="text" class="form-control form-control-lg" id="prenom" placeholder="Entrez votre prénom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Adresse mail</label>
+                    <input type="email" class="form-control form-control-lg" id="email" placeholder="Entrez votre adresse mail" required>
+                </div>
+            </div>
+
+
+        {% endfor %}
+
+        <input type="submit" class="left-items btn btn-lg btn-primary" value="Créer le groupe">
+
+    </form>
+
+{% endblock %}

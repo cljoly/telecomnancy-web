@@ -1,25 +1,16 @@
-# Copyright 2018 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+#!/bin/env python3
+# coding: utf-8
 
 
-from flask import Flask, render_template, redirect, url_for, abort
+from flask import Flask, render_template, redirect, url_for, abort, flash
+from flask_sqlalchemy import SQLAlchemy
 from tools import *
+from createNewGroup import *
 
-# If `entrypoint` is not defined in app.yaml, App Engine will look for an app
-# called `app` in `main.py`.
 app = Flask(__name__)
-
+app.secret_key = ';??f6-*@*HmNjfk.>RLFnQX"<EMUxyNudGVf&[/>rR76q6T)K.k7XNZ2fgsTEV'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data/main.sqlite'
+db = SQLAlchemy(app)
 
 @app.route('/')
 def homepage():
@@ -39,16 +30,36 @@ def signin():
     return render_template("signin.html")
 
 
-@app.route('/newgroup1')
-def newgroup1():
-    teachers = ("Captain", "Iron Man", "Thor", "Scarlett Witch", "Vision", "Black Widow", "Hulk")
-    return render_template("newgroup1.html", teachers=teachers)
+@app.route('/newactivity', methods=['GET', 'POST'])
+def new_activity():
+    if request.method == 'POST':
+        if create_new_group() == 1:
+            flash('Le groupe a bien été créé', 'success')
+        else:
+            flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes puissent être créés', 'info')
+            flash('Formulaire : TODO','warning')
+        return render_template("newActivity.html")
+
+    elif request.method == 'GET':
+        # TODO: une fois le back fait, aller chercher les profs dans la BD
+        teachers = ("Captain", "Iron Man", "Thor", "Scarlett Witch", "Vision", "Black Widow", "Hulk")
+        return render_template("newActivity.html", teachers=teachers)
+
+    else:
+        return redirect(url_for("homepage"))
+
+
+@app.route('/newactivity/form/<int:activityId>')
+def group_form(activityId):
+    # TODO : aller chercher le nombre d'étudiants dans la BD
+    numberOfStudents = 4
+    return render_template("newGroupForm.html", activityId=activityId, numberOfStudents=numberOfStudents)
 
 
 @app.route('/logout')
 def logout():
     """Redirect to homepage"""
-    #TODO : kill cookies / logout user
+    # TODO : kill cookies / logout user
     return redirect(url_for("homepage"))
 
 
