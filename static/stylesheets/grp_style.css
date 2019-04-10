@@ -11,6 +11,11 @@
     background-color: chocolate;
 }
 
+#tab {
+    border: black;
+    background: black;
+}
+
 #grp_select_btn {
     alignment: center;
     border: transparent;

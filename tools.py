@@ -26,7 +26,7 @@ class Pagination(object):
     def has_next(self):
         return self.page < self.pages
 
-    def __iter__(self, left_edge=2, left_current=2, right_current=5, right_edge=2):
+    def __iter__(self, left_edge=2, left_current=2, right_current=2, right_edge=2):
         last = 0
         for num in range(1, self.pages + 1):
             if num <= left_edge or \
@@ -39,7 +39,6 @@ class Pagination(object):
 
 
 class Group:
-
     def __init__(self, name, count, d_date="None", link='/groups/default'):
         self.c_date = time.strftime("%d/%m/%Y")     # the name of the group
         self.name = name                            # date of creation
@@ -51,3 +50,4 @@ class Group:
 def get_groups_for_page(page, all_groups, count):
     """Helper for the home page, to be used with the pagination class to allow pagination"""
     return [all_groups[i] for i in range((page - 1) * PER_PAGE, min((page - 1) * PER_PAGE + PER_PAGE, count))]
+
