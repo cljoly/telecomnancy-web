@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>{% block title %}Groupes{% endblock %}</h1>
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container">
+
+        <div class="row" id="grp_top">
+            {% if groups %}
+                <form action="">
+                    <input type="submit" value="Créer un nouveau groupe">
+                </form>
+            {% endif %}
+        </div>
+        <br>
+
+        <table class="table table-striped text-center">
+            {% if groups %}
+                <thead>
+                <tr>
+                    <th scope="col">Nom du groupe</th>
+                    <th scope="col">Date de création</th>
+                    <th scope="col">Date du prochain rendu</th>
+                    <th scope="col">Nombre de membres</th>
+                    <th scope="col">Lien vers la page de gestion</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for g in groups %}
+                    <tr>
+                        <th scope="row">{{ g.name }}</th>
+                        <td>{{ g.c_date }}</td>
+                        <td>{{ g.d_date }}</td>
+                        <td>{{ g.count }}</td>
+                        <td>
+                            <form action="{{ g.link }}"><input type="submit" value="Go"></form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            {% else %}
+                <thead>
+                <tr>
+                    <th scope="col"><form class="mx-auto" style="width: 180px" action=""><input type="submit" value="Créer un nv groupe"></form></th>
+                </tr>
+                </thead>
+            {% endif %}
+        </table>
+
+        <div class="pagination">
+            {% if pagination %}
+                {% if pagination.page > 1 %}
+                    <a href="{{ url_for_other_page(pagination.page - 1) }}">&laquo; Prev</a>
+                {% endif %}
+                {% for page in pagination %}
+                    {% if page %}
+                        {% if page!=pagination.page %}
+                            <a href="{{ url_for_other_page(page) }}">{{ page }}</a>
+                        {% else %}
+                            <strong>{{ page }}</strong>
+                        {% endif %}
+                    {% else %}
+                        <span class="ellipsis">...</span>
+                    {% endif %}
+                {% endfor %}
+                {% if pagination.has_next %}
+                    <a href="{{ url_for_other_page(pagination.page + 1) }}">Next &raquo;</a>
+                {% endif %}
+            {% endif %}
+        </div>
+
+    </div>
+
+{% endblock %}

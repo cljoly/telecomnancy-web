@@ -1,0 +1,25 @@
+#grp_select_box {
+    /*margin: auto;
+    width:850px;
+    */
+    height:400px;
+    overflow: auto;
+    background-color: bisque;
+}
+
+#grp_entry {
+    background-color: chocolate;
+}
+
+#grp_select_btn {
+    alignment: center;
+    border: transparent;
+}
+
+#test{
+    height: 1000px;
+}
+
+#grp_top {
+    margin: auto;
+}
