@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from db.db_objects import User, Teacher, Module, TeacherModule
+from database.db_objects import User, Teacher, Module, TeacherModule
 from main import db
 # Création des tables de la base de donnée
 db.create_all()
