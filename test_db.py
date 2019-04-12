@@ -2,6 +2,7 @@
 
 from database.db_objects import User, Teacher, Module, TeacherModule
 from main import db
+from sqlalchemy.exc import IntegrityError as IntegrityError
 # Création des tables de la base de donnée
 db.create_all()
 
@@ -19,7 +20,22 @@ u3 = User(firstname="Louis", name="de Rouvroy de Saint-Simon",
           gitlab_username="derouvroydesaintsimon1675u")
 user_list = [u1, u2, u3]
 for user in user_list:
-    db.session.add(user)
+    try:
+        db.session.add(user)
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+
+# Ajout du même utilisateur
+try:
+    u1 = User(firstname="Victor", name="Hugo", email="victor@hugo.me",
+            password_hash="auie", salt="a", gitlab_username="hugo1802u")
+    db.session.add(u1)
+    db.session.flush()
+except IntegrityError:
+    print("Erreur d’intégrité")
+
+print("-8<-----")
 
 # Saint-Simon est prof
 t1 = Teacher(user=u1, gitlab_key="GITLAB-API-KEY")
@@ -33,3 +49,6 @@ r1 = TeacherModule(module=poo, teacher=t1)
 db.session.add(r1)
 
 db.session.commit()
+
+# Voir http://flask-sqlalchemy.pocoo.org/2.3/quickstart/ en complément
+# Pour faire des requêtes SELECT, voir http://flask-sqlalchemy.pocoo.org/2.3/queries/
