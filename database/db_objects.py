@@ -13,7 +13,7 @@ class User(db.Model):
     email = Column(db.String(120), unique=True, nullable=False)
 
     password_hash = Column(db.String(120), unique=False, nullable=False)
-    salt = Column(db.String(120), unique=True, nullable=False)
+    salt = Column(db.String(120), unique=False, nullable=False)
 
     gitlab_username = Column(db.String(80), unique=True, nullable=False)
 
@@ -61,9 +61,9 @@ class Activity(db.Model):
     module_id = Column(Integer, db.ForeignKey('module.id'))
     module = relationship("Module")
     # Par exemple, TP1
-    name = Column(db.String(120), unique=True, nullable=False)
+    name = Column(db.String(120), unique=False, nullable=False)
     # Par exemple IL ou groupe 1
-    admingroup = Column(db.String(120), unique=True, nullable=False)
+    admingroup = Column(db.String(120), unique=False, nullable=False)
     year = Column(Integer)
     # Dates de début et fin
     start_date = Column(DateTime, nullable=False)
