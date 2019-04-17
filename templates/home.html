@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block header %}
-    <h1>{% block title %}Groupes{% endblock %}</h1>
+    <h1>{% block title %}Activités{% endblock %}</h1>
 {% endblock %}
 
 
@@ -10,17 +10,17 @@
     <div class="container">
 
         <div class="row" id="grp_top">
-            {% if groups %}
-                <a class="btn btn-primary">Créer un nouveau groupe</a>
+            {% if activities %}
+                <a class="btn btn-primary">Créer une nouvelle activité</a>
             {% endif %}
         </div>
         <br>
 
         <table class="table table-striped text-center">
-            {% if groups %}
+            {% if activities %}
                 <thead>
                 <tr>
-                    <th scope="col">Nom du groupe</th>
+                    <th scope="col">Nom de l'activité</th>
                     <th scope="col">Date de création</th>
                     <th scope="col">Date du prochain rendu</th>
                     <th scope="col">Nombre de membres</th>
@@ -28,7 +28,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for g in groups %}
+                {% for g in activities %}
                     <tr>
                         <th scope="row">{{ g.name }}</th>
                         <td>{{ g.c_date }}</td>
@@ -42,7 +42,7 @@
                 <thead>
                 <tr>
                     <th scope="col">
-                        <a class="btn btn-primary mx-auto" href="#">Créer un nouveau groupe</a>
+                        <a class="btn btn-primary mx-auto" href="#">Créer une nouvelle activité</a>
                     </th>
                 </tr>
                 </thead>

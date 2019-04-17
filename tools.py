@@ -7,7 +7,7 @@ PER_PAGE = 10
 
 
 class Pagination(object):
-    """Helper class for pagination - used in the group table"""
+    """Helper class for pagination - used in the activity table"""
 
     def __init__(self, page, per_page, total_count):
         self.page = page
@@ -38,16 +38,16 @@ class Pagination(object):
                 last = num
 
 
-class Group:
-    def __init__(self, name, count, d_date="None", link='/groups/default'):
-        self.c_date = time.strftime("%d/%m/%Y")     # the name of the group
+class Activity:
+    def __init__(self, name, count, d_date="None", link='/activities/default'):
+        self.c_date = time.strftime("%d/%m/%Y")     # the name of the activity
         self.name = name                            # date of creation
         self.count = count                          # due date
         self.d_date = d_date                        # nb of members
-        self.link = link                            # link to the group page
+        self.link = link                            # link to the activity page
 
 
-def get_groups_for_page(page, all_groups, count):
+def get_activities_for_page(page, all_activities, count):
     """Helper for the home page, to be used with the pagination class to allow pagination"""
-    return [all_groups[i] for i in range((page - 1) * PER_PAGE, min((page - 1) * PER_PAGE + PER_PAGE, count))]
+    return [all_activities[i] for i in range((page - 1) * PER_PAGE, min((page - 1) * PER_PAGE + PER_PAGE, count))]
 

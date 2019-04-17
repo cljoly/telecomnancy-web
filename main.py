@@ -98,23 +98,23 @@ def group():
 
 
 # todo: utiliser la bdd
-allgroups = [Group("My group {}".format(i), 5*i+1) for i in range(100)]
-#allgroups = []
+allactivities = [Activity("My activity {}".format(i), 5 * i + 1) for i in range(100)]
+#allactivities = []
 
 
 @app.route('/home/', defaults={'page': 1})
 @app.route('/home/page/<int:page>')
 def home(page):
     """Home page"""
-    count = len(allgroups)
-    groups = get_groups_for_page(page, allgroups, count)
+    count = len(allactivities)
+    activities = get_activities_for_page(page, allactivities, count)
 
-    if not groups and page != 1:
+    if not activities and page != 1:
         abort(404)
     pagination = Pagination(page, PER_PAGE, count)
     return render_template("home.html",
                            pagination=pagination,
-                           groups=groups)
+                           activities=activities)
 
 
 def url_for_other_page(page):
