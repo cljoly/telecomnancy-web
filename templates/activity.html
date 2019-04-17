@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block header %}
-    <h1>{% block title %}Groupe {{groupName}} {% endblock %}</h1>
+    <h1>{% block title %}Activité {{ activityName }} {% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
 
-    <section id="groupContent" class="container">
+    <section id="activityContent" class="container">
       <div class="container" style="margin-bottom: 50px; margin-top: 20px">
         <button type="button" name="button" class="btn btn-primary">Appliquer changements</button>
         <button type="button" name="button" class="btn btn-primary"> Issues</button>
@@ -19,7 +19,7 @@
       <table class="table table-striped">
           <thead>
             <tr id="headOfTabForGroups">
-                <th colspan="1">Liste des élèves du groupe</th>
+                <th colspan="1">Liste des groupes de l'activité</th>
                 <th colspan="1">Nombre de commits</th>
                 <th colspan="1">Date du dernier commit</th>
                 <th></th>
@@ -27,61 +27,61 @@
           </thead>
           <tbody>
             <tr>
-                <td><span action="{{ url_for("group") }}">{{studentName1}}</span></td>
+                <td><span action="{{ url_for("activity") }}">{{studentName1}}</span></td>
                 <td><span>{{nb_commits1}}</span></td>
                 <td><span>{{last_commit1}}</span></td>
                 <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
             </tr>
           <tr>
-              <td><span action="{{ url_for("group") }}">{{studentName2}}</span></td>
+              <td><span action="{{ url_for("activity") }}">{{studentName2}}</span></td>
                 <td><span>{{nb_commits2}}</span></td>
                 <td><span>{{last_commit2}}</span></td>
                 <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
           </tr>
           <tr>
-              <td><span action="{{ url_for("group") }}">{{studentName3}}</span></td>
+              <td><span action="{{ url_for("activity") }}">{{studentName3}}</span></td>
                 <td><span>{{nb_commits3}}</span></td>
                 <td><span>{{last_commit3}}</span></td>
                 <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
           </tr>
           <tr>
-              <td><span action="{{ url_for("group") }}">{{studentName4}}</span></td>
+              <td><span action="{{ url_for("activity") }}">{{studentName4}}</span></td>
                 <td><span>{{nb_commits4}}</span></td>
                 <td><span>{{last_commit4}}</span></td>
                 <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
           </tr>
           <tr>
-              <td><span action="{{ url_for("group") }}">{{studentName5}}</span></td>
+              <td><span action="{{ url_for("activity") }}">{{studentName5}}</span></td>
                 <td><span>{{nb_commits5}}</span></td>
                 <td><span>{{last_commit5}}</span></td>
                 <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
           </tr>
           <tr>
-              <td><span action="{{ url_for("group") }}">{{studentName6}}</span></td>
+              <td><span action="{{ url_for("activity") }}">{{studentName6}}</span></td>
                 <td><span>{{nb_commits6}}</span></td>
                 <td><span>{{last_commit6}}</span></td>
                 <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
           </tr>
           <tr>
-              <td><span action="{{ url_for("group") }}">{{studentName7}}</span></td>
+              <td><span action="{{ url_for("activity") }}">{{studentName7}}</span></td>
                 <td><span>{{nb_commits7}}</span></td>
                 <td><span>{{last_commit7}}</span></td>
                 <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
           </tr>
           <tr>
-              <td><span action="{{ url_for("group") }}">{{studentName8}}</span></td>
+              <td><span action="{{ url_for("activity") }}">{{studentName8}}</span></td>
                 <td><span>{{nb_commits8}}</span></td>
                 <td><span>{{last_commit8}}</span></td>
                 <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
           </tr>
           <tr>
-              <td><span action="{{ url_for("group") }}">{{studentName9}}</span></td>
+              <td><span action="{{ url_for("activity") }}">{{studentName9}}</span></td>
                 <td><span>{{nb_commits9}}</span></td>
                 <td><span>{{last_commit9}}</span></td>
                 <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
           </tr>
           <tr>
-              <td><span action="{{ url_for("group") }}">{{studentName10}}</span></td>
+              <td><span action="{{ url_for("activity") }}">{{studentName10}}</span></td>
                 <td><span>{{nb_commits10}}</span></td>
                 <td><span>{{last_commit10}}</span></td>
                 <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>

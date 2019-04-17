@@ -80,14 +80,14 @@ def profile():
     return render_template("myProfile.html", name="Farron", firstName="Serah", mail="serah.farron@ffxiii.jp")
 
 
-@app.route('/group')
-def group():
-    groupName = "Lightning XIII"
-    return render_template("group.html", groupName=groupName
+@app.route('/activity')
+def activity():
+    activityName = "Lightning XIII"
+    return render_template("activity.html", activityName=activityName
                            , studentName1="Cloud Strife  ", nb_commits1="7  ", last_commit1="1997  "
                            , studentName2="Yuna  ", nb_commits2="10  ", last_commit2="2001  "
                            , studentName3="Terra Branford  ", nb_commits3="6  ", last_commit3="1994  "
-                           , studentName4="Noctis Lucis Caelum  ", nb_commits4="15  ",last_commit4="2016  "
+                           , studentName4="Noctis Lucis Caelum  ", nb_commits4="15  ", last_commit4="2016  "
                            , studentName5="Tifa Lockhart", nb_commits5="7", last_commit5="1997"
                            , studentName6="Aeris Gainsborough", nb_commits6="7", last_commit6="1997"
                            , studentName7="Aeris Gainsborough", nb_commits7="7", last_commit7="1997"
