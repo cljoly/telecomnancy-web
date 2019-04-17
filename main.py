@@ -5,7 +5,7 @@
 from flask import Flask, render_template, redirect, url_for, abort, flash
 from flask_sqlalchemy import SQLAlchemy
 from tools import *
-from createNewGroup import *
+from createNewActivity import *
 
 app = Flask(__name__)
 app.secret_key = ';??f6-*@*HmNjfk.>RLFnQX"<EMUxyNudGVf&[/>rR76q6T)K.k7XNZ2fgsTEV'
@@ -33,10 +33,10 @@ def signin():
 @app.route('/newactivity', methods=['GET', 'POST'])
 def new_activity():
     if request.method == 'POST':
-        if create_new_group() == 1:
-            flash('Le groupe a bien été créé', 'success')
+        if create_new_activity() == 1:
+            flash('L\'activité a bien été créée', 'success')
         else:
-            flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes puissent être créés', 'info')
+            flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes pour l\'activité puissent être créés', 'info')
             flash('Formulaire : TODO','warning')
         return render_template("newActivity.html")
 
@@ -53,7 +53,7 @@ def new_activity():
 def group_form(activityId):
     # TODO : aller chercher le nombre d'étudiants dans la BD
     numberOfStudents = 4
-    return render_template("newGroupForm.html", activityId=activityId, numberOfStudents=numberOfStudents)
+    return render_template("newGroupforAnActivityForm.html", activityId=activityId, numberOfStudents=numberOfStudents)
 
 
 @app.route('/logout')
