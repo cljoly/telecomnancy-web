@@ -16,21 +16,9 @@
 
         <hr class="container horiz-bar"/>
 
-        <!--<div class="container">
-            <div class="row">
-                <div class='col-sm-3'>
-                    <div class="form-group">
-                        <div class='input-group date' id='datetimepicker1'>
-                            <input type='text' class="form-control"/>
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>-->
+
         <h3 class="left-items">Dates de début et fin de l'activité :</h3>
-        <div id="activityDates" class="container">
+        <div id="activityDates" class="container input-group mb-3">
             <div class="row">
                 <div class="col-md-auto">
                     <h4>Début :</h4>
@@ -47,7 +35,62 @@
             </div>
         </div>
 
+
         <hr class="container horiz-bar"/>
+
+        <h3 class="left-items">Module associé :</h3>
+
+        <div class="accordion container" id="accordionExample">
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-large" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Module existant
+                        </button>
+                    </h2>
+                </div>
+
+                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                    <div class="card-body">
+                        <select name="modules" id="modules" multiple class="form-control custom-select-lg">
+                            {% for shortName, longName in modules %}
+                                <option value="{{ shortName }}">{{ longName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" id="headingTwo">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link collapsed btn-large" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            Nouveau module
+                        </button>
+                    </h2>
+                </div>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-auto">
+                                <h4>Nom :</h4>
+                            </div>
+                            <div class="col-md-auto">
+                                <input type="text" name="moduleName">
+                            </div>
+                            <div class="col-md-auto">
+                                <h4>Abréviation :</h4>
+                            </div>
+                            <div class="col-md-auto">
+                                <input type="text" name="moduleAbbreviation">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="container horiz-bar"/>
+
 
         <h3 class="left-items">Enseignant(s) référent(s) :</h3>
         <section id="add_teachers" class="container">
@@ -199,54 +242,6 @@
             reader.readAsText(file_html.files[0]); //on obtient un String
 
         });
-
-        //Fonction pour le date-picker
-        /*$(function () {
-            var bindDatePicker = function () {
-                $(".date").datetimepicker({
-                    format: 'YYYY-MM-DD',
-                    icons: {
-                        time: "fa fa-clock-o",
-                        date: "fa fa-calendar",
-                        up: "fa fa-arrow-up",
-                        down: "fa fa-arrow-down"
-                    }
-                }).find('input:first').on("blur", function () {
-                    // check if the date is correct. We can accept dd-mm-yyyy and yyyy-mm-dd.
-                    // update the format if it's yyyy-mm-dd
-                    var date = parseDate($(this).val());
-
-                    if (!isValidDate(date)) {
-                        //create date based on momentjs (we have that)
-                        date = moment().format('YYYY-MM-DD');
-                    }
-
-                    $(this).val(date);
-                });
-            }
-
-            var isValidDate = function (value, format) {
-                format = format || false;
-                // lets parse the date to the best of our knowledge
-                if (format) {
-                    value = parseDate(value);
-                }
-
-                var timestamp = Date.parse(value);
-
-                return isNaN(timestamp) == false;
-            }
-
-            var parseDate = function (value) {
-                var m = value.match(/^(\d{1,2})(\/|-)?(\d{1,2})(\/|-)?(\d{4})$/);
-                if (m)
-                    value = m[5] + '-' + ("00" + m[3]).slice(-2) + '-' + ("00" + m[1]).slice(-2);
-
-                return value;
-            }
-
-            bindDatePicker();
-        });*/
 
     </script>
 
