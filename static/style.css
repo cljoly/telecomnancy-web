@@ -85,3 +85,9 @@
     background-size: cover;
     opacity: 0.85;
 }
+
+/*Fichier myProfile.html */
+#profile label {
+    font-size: 24px;
+    font-weight: 400;
+}
