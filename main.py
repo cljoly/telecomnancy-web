@@ -6,6 +6,7 @@ from flask import Flask, render_template, redirect, url_for, abort, flash
 from flask_sqlalchemy import SQLAlchemy
 from tools import *
 from createNewActivity import *
+from database.db_objects import *
 
 app = Flask(__name__)
 app.secret_key = ';??f6-*@*HmNjfk.>RLFnQX"<EMUxyNudGVf&[/>rR76q6T)K.k7XNZ2fgsTEV'
@@ -64,14 +65,14 @@ def logout():
 
 
 @app.route('/myProfile')
-def myProfile():
+def my_profile():
     """ My profile """
     return render_template("myProfile.html")
 
 
 @app.route('/forgottenPassword')
-def forgottenPassword():
-    """ Forgottent password """
+def forgotten_password():
+    """ Forgotten password """
     return render_template("forgottenPassword.html")
 
 
@@ -83,6 +84,10 @@ def profile():
 @app.route('/activity/', defaults={'page': 1})
 @app.route('/activity/page/<int:page>')
 def activity(page):
+    """
+    activity_example_id = 1
+    all_groups = Repository.query.filter_by(Repository.activity_id == activity_example_id).all()
+    """
     all_groups = [Group("Dalmatien {}".format(i), "/") for i in range(1, 102)]  # TODO : requête à la base de données
     activity_name = "Cruella"  # TODO : requête à la base de données
     count = len(all_groups)
