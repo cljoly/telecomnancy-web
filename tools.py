@@ -1,7 +1,8 @@
 from math import ceil
 import time
-
-from flask import request, url_for
+from database.db_objects import *
+from main import db
+from sqlalchemy import func
 
 PER_PAGE = 10
 
@@ -38,16 +39,15 @@ class Pagination(object):
                 last = num
 
 
-class Activity:
-    def __init__(self, name, count, d_date="None", link='/activities/default'):
-        self.c_date = time.strftime("%d/%m/%Y")     # the name of the activity
+class Group:
+    def __init__(self, name, count, c_date=time.strftime("%d/%m/%Y"), d_date="None", link='/activity'):
+        self.c_date = c_date                        # the name of the activity
         self.name = name                            # date of creation
         self.count = count                          # due date
         self.d_date = d_date                        # nb of members
         self.link = link                            # link to the activity page
 
-
-def get_activities_for_page(page, all_activities, count):
-    """Helper for the home page, to be used with the pagination class to allow pagination"""
-    return [all_activities[i] for i in range((page - 1) * PER_PAGE, min((page - 1) * PER_PAGE + PER_PAGE, count))]
-
+def get_activities_for_page(page, count):
+    #result = Activity.query.filter(Activity.id.between((page - 1) * PER_PAGE, min((page - 1) * PER_PAGE + PER_PAGE, count)))
+    result = db.session.query(Activity.name, func.count(Repository.id), Activity.start_date, Activity.end_date).filter(Activity.id == Repository.activity_id).group_by(Activity.name)
+    return [Group(result[i].name, result[i].count, result[i].start_date, result[i].end_date) for i in range((page - 1) * PER_PAGE, min((page - 1) * PER_PAGE + PER_PAGE, count))]

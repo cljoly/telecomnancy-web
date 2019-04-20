@@ -96,18 +96,12 @@ def activity():
                            , studentName10="Lunafreya Nox Fleuret", nb_commits10="15", last_commit10="2016"
                            )
 
-
-# todo: utiliser la bdd
-allactivities = [Activity("My activity {}".format(i), 5 * i + 1) for i in range(100)]
-#allactivities = []
-
-
 @app.route('/home/', defaults={'page': 1})
 @app.route('/home/page/<int:page>')
 def home(page):
     """Home page"""
-    count = len(allactivities)
-    activities = get_activities_for_page(page, allactivities, count)
+    count = Activity.query.count()
+    activities = get_activities_for_page(page,count)
 
     if not activities and page != 1:
         abort(404)
