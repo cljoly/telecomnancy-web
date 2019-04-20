@@ -1,16 +1,29 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
+from tools import *
 
+from createNewActivity import create_new_activity
 from flask import Flask, render_template, redirect, url_for, abort, flash
 from flask_sqlalchemy import SQLAlchemy
-from tools import *
-from createNewActivity import *
+from flask_login import login_required, LoginManager, current_user
+
 
 app = Flask(__name__)
 app.secret_key = ';??f6-*@*HmNjfk.>RLFnQX"<EMUxyNudGVf&[/>rR76q6T)K.k7XNZ2fgsTEV'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data/main.sqlite'
 db = SQLAlchemy(app)
+
+# Flask Login
+login_manager = LoginManager()
+login_manager.login_view = "signin"
+login_manager.login_message = "S’il vous plaît, identifiez-vous."
+login_manager.login_message_category = "warning"
+login_manager.init_app(app)
+
+# XXX Import nécessaire ici pour avoir le LoginManager, TODO faire en sorte de
+# pouvoir le mettre en haut
+from authentication import AuthUser
 
 @app.route('/')
 def homepage():
@@ -18,19 +31,34 @@ def homepage():
     return render_template("homepage.html", c="connected")
 
 
-@app.route('/signup')
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
     """ signup """
     return render_template("signup.html")
 
 
-@app.route('/signin')
+@app.route('/signin', methods=['GET', 'POST'])
 def signin():
     """ Signin """
+    method = request.method
+    next_page = None
+    if method == 'GET':
+        # Redirection vers la page d’origine : si l’utilisateur arrive sur une
+        # page p1 sans être identifié, il est redirigé vers la page signin et
+        # il faut le rediriger vers p1 après identification. Par conséquent, on
+        # doit conserver p1 dans l’argument next
+        next_page = request.args.get('next')
+        return render_template("signin.html", next_page=next_page)
+    elif request.method == 'POST':
+        form = request.form
+        next_page = request.form.get('next')
+        return redirect(next_page or url_for('homepage'))
     return render_template("signin.html")
 
 
 @app.route('/newactivity', methods=['GET', 'POST'])
+# TOOD Décommenter ça une fois qu’on pourra s’identifier dans l’application
+#@login_required
 def new_activity():
     if request.method == 'POST':
         if create_new_activity() == 1:
@@ -59,7 +87,7 @@ def group_form(activityId):
 @app.route('/logout')
 def logout():
     """Redirect to homepage"""
-    # TODO : kill cookies / logout user
+    logout_user()
     return redirect(url_for("homepage"))
 
 
