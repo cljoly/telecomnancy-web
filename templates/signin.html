@@ -10,12 +10,13 @@
 
     <form id="signin" method="post" action="{{ url_for("signin") }}" class="container">
 
+      {% if next_page is defined and next_page != None %}
         <!-- Renvoyer à la page où l’utilisateur était avant -->
         <div class="form-group d-none">
             <label for="next">Next</label>
-            <input type="text" class="form-control form-control-lg" id="next" name="next" type="hidden" value="{{ next_page }}">
+            <input type="text" class="form-control form-control-lg" id="next" name="next" type="hidden"value="{{ next_page }}">
         </div>
-
+      {% endif %}
 
         <div class="form-group">
             <label for="username">Nom d'utilisateur</label>

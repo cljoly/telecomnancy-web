@@ -1,18 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from main import login_manager
 from flask_login import UserMixin
-import database.db_objects as db_objects
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    """Récupération d’un utilisateur depuis la base de donnée, renvoie None
-    s’il n’existe pas, renvoie un objet AuthUser sinon"""
-    db_user = db_objects.User.query.filter_by(id=int(user_id))
-    auth_user = AuthUser(db_user)
-    return auth_user
+from database.db_objects import User
 
 
 class AuthUser(UserMixin):
@@ -31,3 +21,24 @@ class AuthUser(UserMixin):
         UserMixin.__init__(self)
 
         self._db_user = db_user
+        self.id = db_user.id
+
+def login_form(username, password):
+    """Fonction qui détermine si un couple (nom d’utilisateur, mot de passe)
+    correspond à ce qui est enregistré dans la base de données, i.e. si
+    l’utilisateur est bien inscrit. Si telle est le cas, elle renvoie un objet
+    utilisateur identifié
+
+    :username: Nom d’utilisateur, peut être None
+    :password: Mot de pases, peut être None
+    :returns: Un objet utilisateur identifié (AuthUser) ou None, si le couple
+    nom d’utilisateur / mot de passe est incorrect.
+
+    """
+    if username is None or password is None:
+        return None
+    db_user = User.query.filter(User.email == username and
+                                User.password_hash == password).first()
+    if db_user is None:
+        return None
+    return AuthUser(db_user)

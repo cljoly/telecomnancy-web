@@ -4,9 +4,11 @@
 from tools import *
 
 from createNewActivity import create_new_activity
-from flask import Flask, render_template, redirect, url_for, abort, flash
+from flask import Flask, render_template, redirect, url_for, abort, \
+    flash, request
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import login_required, LoginManager, current_user
+from flask_login import login_required, LoginManager, current_user, \
+    logout_user, login_user
 
 
 app = Flask(__name__)
@@ -14,16 +16,24 @@ app.secret_key = ';??f6-*@*HmNjfk.>RLFnQX"<EMUxyNudGVf&[/>rR76q6T)K.k7XNZ2fgsTEV
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data/main.sqlite'
 db = SQLAlchemy(app)
 
+# XXX Nécessaire de le mettre ici pour avoir la bd
+from authentication import login_form, AuthUser
+
 # Flask Login
 login_manager = LoginManager()
 login_manager.login_view = "signin"
 login_manager.login_message = "S’il vous plaît, identifiez-vous."
 login_manager.login_message_category = "warning"
 login_manager.init_app(app)
+@login_manager.user_loader
+def load_user(user_id):
+    """Récupération d’un utilisateur depuis la base de donnée, renvoie None
+    s’il n’existe pas, renvoie un objet AuthUser sinon"""
+    from database.db_objects import User
+    db_user = User.query.get(int(user_id))
+    auth_user = AuthUser(db_user)
+    return auth_user
 
-# XXX Import nécessaire ici pour avoir le LoginManager, TODO faire en sorte de
-# pouvoir le mettre en haut
-from authentication import AuthUser
 
 @app.route('/')
 def homepage():
@@ -51,8 +61,24 @@ def signin():
         return render_template("signin.html", next_page=next_page)
     elif request.method == 'POST':
         form = request.form
+        username = form.get('username')
+        password = form.get('password')
         next_page = request.form.get('next')
-        return redirect(next_page or url_for('homepage'))
+        if username is None:
+            flash("Nom d’utilisateur requis", "danger")
+        if password is None:
+            flash("Mot de passe requis", "danger")
+
+        auth_user = login_form(username, password)
+        if auth_user is None:
+            flash("Erreur d’identification : nom d’utilisateur ou mot de passe \
+                  incorrect.", "danger")
+        else:
+            login_user(auth_user)
+            flash("Vous êtes identifié", "success")
+            return redirect(next_page or url_for('homepage'))
+
+        return render_template("signin.html", next_page=next_page)
     return render_template("signin.html")
 
 
