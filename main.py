@@ -81,15 +81,16 @@ def profile():
     return render_template("myProfile.html", name="Farron", firstName="Serah", mail="serah.farron@ffxiii.jp")
 
 
-@app.route('/activity/', defaults={'page': 1})
+@app.route('/activity/', defaults={'page': 1})  # TODO : voir pour les liens de la page avec les chnagements effectués.
 @app.route('/activity/page/<int:page>')
 def activity(page):
     """
     activity_example_id = 1
     all_groups = Repository.query.filter_by(Repository.activity_id == activity_example_id).all()
+    count = Repository.query.filter_by(Repository.activity_id == activity_example_id).count()
     """
-    all_groups = [Group("Dalmatien {}".format(i), "/") for i in range(1, 102)]  # TODO : requête à la base de données
-    activity_name = "Cruella"  # TODO : requête à la base de données
+    all_groups = [Group("Dalmatien {}".format(i), "/") for i in range(1, 102)]  # TODO : requête à la base de données (remplacer)
+    activity_name = "Cruella"  # TODO : requête à la base de données ou avec l'url (remplacer)
     count = len(all_groups)
     groups = get_groups_for_page(page, all_groups, count)
 
