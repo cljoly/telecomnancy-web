@@ -32,11 +32,11 @@
     {# Menus à afficher #}
     <div class="collapse navbar-collapse" id="navbarNav">
 
-        {% if g.user %}
+        {% if current_user.is_authenticated %}
 
             <ul class="navbar-nav">
                 <li class="navbar-text ml-auto">
-                    {{ g.user['username'] }}
+                    {{ current_user.display_name() }}
                 </li>
 
                 <li class="nav-item ">
