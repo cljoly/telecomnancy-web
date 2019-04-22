@@ -18,6 +18,8 @@ db = SQLAlchemy(app)
 
 # XXX Nécessaire de le mettre ici pour avoir la bd
 from authentication import login_form, AuthUser
+from database.db_objects import User
+db.create_all()
 
 # Flask Login
 login_manager = LoginManager()
@@ -44,8 +46,29 @@ def homepage():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     """ signup """
-    return render_template("signup.html")
-
+    method = request.method
+    if method == 'GET':
+        return render_template("signup.html")
+    elif method == 'POST':
+        form = request.form
+        username = form.get('username')
+        firstname = form.get('firstname')
+        name = form.get('name')
+        email = form.get('email')
+        password = form.get('password')
+        # TODO Utiliser ces champs
+        password2 = form.get('password2')
+        gitlab_api = form.get('gitlab_api')
+        # TODO Vérifier que les champs ne soient pas déjà définis et que les
+        # mots de passe concordent
+        # TODO Hacher les mots de passe
+        u = User(username=username, firstname=firstname, name=name,
+                 email=email, password_hash=password, salt='',
+                 gitlab_username='')
+        db.session.add(u)
+        db.session.commit()
+        flash("Vous êtes inscrit, identifiez-vous maintenant", 'success')
+        return redirect(url_for("signin"))
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():

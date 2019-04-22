@@ -8,6 +8,7 @@ from sqlalchemy import Column, Integer, DateTime
 # Utilisateur élève ou enseignants
 class User(db.Model):
     id = Column(Integer, primary_key=True)
+    username = Column(db.String(80), unique=True, nullable=False)
     firstname = Column(db.String(80), unique=False, nullable=False)
     name = Column(db.String(80), unique=False, nullable=False)
     email = Column(db.String(120), unique=True, nullable=False)

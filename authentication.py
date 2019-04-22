@@ -40,7 +40,7 @@ def login_form(username, password):
     """
     if username is None or password is None:
         return None
-    db_user = User.query.filter(User.email == username and
+    db_user = User.query.filter(User.username == username and
                                 User.password_hash == password).first()
     if db_user is None:
         return None

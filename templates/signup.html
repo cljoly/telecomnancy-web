@@ -6,36 +6,46 @@
 
 {% block content %}
 
-    <form id="signup" method="post" class="container">
+    <form id="signup" method="post" action="/signup" class="container">
 
         <div class="form-group">
             <label for="username">Nom d'utilisateur</label>
-            <input type="text" class="form-control form-control-lg" id="username" placeholder="Entrez votre nom d'utilisateur" required>
+            <input type="text" class="form-control form-control-lg" id="username" name="username" placeholder="Entrez votre nom d'utilisateur" required>
+        </div>
+
+        <div class="form-group">
+            <label for="firstname">Prénom</label>
+            <input type="text" class="form-control form-control-lg" id="firstname" name="firstname" placeholder="Entrez votre nom d'utilisateur" required>
+        </div>
+
+        <div class="form-group">
+            <label for="name">Nom</label>
+            <input type="text" class="form-control form-control-lg" id="name" name="name" placeholder="Entrez votre nom d'utilisateur" required>
         </div>
 
         <div class="form-group">
             <label for="email">Adresse mail</label>
-            <input type="email" class="form-control form-control-lg" id="email" placeholder="Entrez votre adresse mail">
+            <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="Entrez votre adresse mail">
         </div>
 
         <div class="form-group">
             <label for="password">Mot de passe</label>
-            <input type="password" class="form-control form-control-lg" id="password" placeholder="Entrez votre mot de passe" required>
+            <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Entrez votre mot de passe" required>
         </div>
 
         <div class="form-group">
             <label for="password2">Vérification du mot de passe</label>
-            <input type="password" class="form-control form-control-lg" id="password2" placeholder="Retapez votre mot de passe" required>
+            <input type="password" class="form-control form-control-lg" id="password2" name="password2" placeholder="Retapez votre mot de passe" required>
         </div>
 
         <div class="form-group">
             <label for="password">Clé d’API Gitlab</label>
-            <input type="password" class="form-control form-control-lg" id="api" placeholder="Entrez votre clé d'API" required>
+            <input type="password" class="form-control form-control-lg" id="api" name="gitlab_api" placeholder="Entrez votre clé d'API" required>
         </div>
 
 
         <div class="form-group text-center">
-            <button type="submit" class="btn btn-lg btn-primary">Se connecter</button>
+            <button type="submit" class="btn btn-lg btn-primary">S’inscrire</button>
         </div>
     </form>
 
