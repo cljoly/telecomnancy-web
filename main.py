@@ -7,6 +7,7 @@ from flask import Flask, render_template, redirect, url_for, abort, \
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required, LoginManager, current_user, \
     logout_user, login_user
+from typing import Dict
 
 app = Flask(__name__)
 app.secret_key = ';??f6-*@*HmNjfk.>RLFnQX"<EMUxyNudGVf&[/>rR76q6T)K.k7XNZ2fgsTEV'
@@ -118,7 +119,14 @@ def new_activity():
     elif request.method == 'GET':
         # TODO: une fois le back fait, aller chercher les profs dans la BD
         teachers = ("Captain", "Iron Man", "Thor", "Scarlett Witch", "Vision", "Black Widow", "Hulk")
-        return render_template("newActivity.html", teachers=teachers)
+        modules = {
+            "POO": "Programmation Orientée Objet",
+            "C": "Langage C",
+            "Prog web": "Programmation Web",
+            "SD": "Structures de données"
+        }
+        modules = sorted(modules.items())
+        return render_template("newActivity.html", teachers=teachers, modules=modules)
 
     else:
         return redirect(url_for("homepage"))
@@ -138,10 +146,10 @@ def logout():
     return redirect(url_for("homepage"))
 
 
-@app.route('/myProfile')
+@app.route('/my_profile')
 def my_profile():
     """ My profile """
-    return render_template("myProfile.html")
+    return render_template("my_profile.html")
 
 
 @app.route('/forgottenPassword')
@@ -152,7 +160,7 @@ def forgotten_password():
 
 @app.route('/profile')
 def profile():
-    return render_template("myProfile.html", name="Farron", firstName="Serah", mail="serah.farron@ffxiii.jp")
+    return render_template("my_profile.html", name="Farron", firstName="Serah", mail="serah.farron@ffxiii.jp")
 
 
 @app.route('/activity/', defaults={'page': 1})  # TODO : voir pour les liens de la page avec les chnagements effectués.

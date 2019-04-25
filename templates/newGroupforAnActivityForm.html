@@ -13,7 +13,7 @@
             <input type="text" name="repoName" class="form-control form-control-lg" id="repoName" placeholder="Nom de votre groupe" required>
         </div>
 
-        {% for i in range(numberOfStudents) %}
+        {% for i in range(1, numberOfStudents, 1) %}
 
             <h3 class="left-items">Étudiant n°{{ i }} :</h3>
 
@@ -30,12 +30,31 @@
 
                 <div class="form-group">
                     <label for="email">Adresse mail</label>
-                    <input type="email" class="form-control form-control-lg" id="email" placeholder="Entrez votre adresse mail" required>
+                    <input type="email" class="form-control form-control-lg" id="email" placeholder="@telecomnancy.eu" required>
                 </div>
             </div>
 
 
         {% endfor %}
+
+        <h3 class="left-items">Étudiant n°{{numberOfStudents}} (optionnel) :</h3>
+
+            <div class="container">
+                <div class="form-group">
+                    <label for="nom">Nom</label>
+                    <input type="text" class="form-control form-control-lg" id="nom" placeholder="Entrez votre nom" >
+                </div>
+
+                <div class="form-group">
+                    <label for="prenom">Prénom</label>
+                    <input type="text" class="form-control form-control-lg" id="prenom" placeholder="Entrez votre prénom" >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Adresse mail</label>
+                    <input type="email" class="form-control form-control-lg" id="email" placeholder="@telecomnancy.eu" >
+                </div>
+            </div>
 
         <input type="submit" class="left-items btn btn-lg btn-primary" value="Créer le groupe">
 

@@ -35,6 +35,19 @@
 }
 
 
+[type="date"] {
+  background:#fff url(https://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/calendar_2.png)  97% 50% no-repeat ;
+}
+[type="date"]::-webkit-inner-spin-button {
+  display: none;
+}
+[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+}
+
+
+
+
 .jumbotron {
     padding: 1rem
 }
@@ -71,4 +84,10 @@
     background-image: url("https://about.gitlab.com/images/press/logo/png/gitlab-logo-gray-rgb.png");
     background-size: cover;
     opacity: 0.85;
+}
+
+/*Fichier myProfile.html */
+#profile label {
+    font-size: 24px;
+    font-weight: 400;
 }
