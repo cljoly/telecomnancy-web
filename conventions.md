@@ -1,5 +1,20 @@
 # Conventions
 
+## Identification
+
+Pour qu’une page ne soit accessible que pour un utilisateur identifié, utiliser l’annotation
+
+```
+@app.route('…')
+@login_required
+def my_page():
+    …
+```
+
+### Utilisateur connecté
+
+Pour accéder à l’utilisateur connecté, il y la variable globale `current_user`
+
 ## Flask
 
 ### Spécifier les méthodes des routes (GET, POST)
