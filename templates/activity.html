@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-    <h1>{% block title %}Activité {{ activityName }} {% endblock %}</h1>
+    <h1>{% block title %}Activité {{ activity_name }} {% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
@@ -16,77 +16,37 @@
       <div class="container">
         <input type="search" id="searchStudent" class="form-control" placeholder="Rechercher un élève" style="margin-bottom: 50px">
       </div>
-      <table class="table table-striped">
-          <thead>
-            <tr id="headOfTabForGroups">
-                <th colspan="1">Liste des groupes de l'activité</th>
-                <th colspan="1">Nombre de commits</th>
-                <th colspan="1">Date du dernier commit</th>
-                <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-                <td><span action="{{ url_for("activity") }}">{{studentName1}}</span></td>
-                <td><span>{{nb_commits1}}</span></td>
-                <td><span>{{last_commit1}}</span></td>
-                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
-            </tr>
-          <tr>
-              <td><span action="{{ url_for("activity") }}">{{studentName2}}</span></td>
-                <td><span>{{nb_commits2}}</span></td>
-                <td><span>{{last_commit2}}</span></td>
-                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
-          </tr>
-          <tr>
-              <td><span action="{{ url_for("activity") }}">{{studentName3}}</span></td>
-                <td><span>{{nb_commits3}}</span></td>
-                <td><span>{{last_commit3}}</span></td>
-                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
-          </tr>
-          <tr>
-              <td><span action="{{ url_for("activity") }}">{{studentName4}}</span></td>
-                <td><span>{{nb_commits4}}</span></td>
-                <td><span>{{last_commit4}}</span></td>
-                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
-          </tr>
-          <tr>
-              <td><span action="{{ url_for("activity") }}">{{studentName5}}</span></td>
-                <td><span>{{nb_commits5}}</span></td>
-                <td><span>{{last_commit5}}</span></td>
-                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
-          </tr>
-          <tr>
-              <td><span action="{{ url_for("activity") }}">{{studentName6}}</span></td>
-                <td><span>{{nb_commits6}}</span></td>
-                <td><span>{{last_commit6}}</span></td>
-                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
-          </tr>
-          <tr>
-              <td><span action="{{ url_for("activity") }}">{{studentName7}}</span></td>
-                <td><span>{{nb_commits7}}</span></td>
-                <td><span>{{last_commit7}}</span></td>
-                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
-          </tr>
-          <tr>
-              <td><span action="{{ url_for("activity") }}">{{studentName8}}</span></td>
-                <td><span>{{nb_commits8}}</span></td>
-                <td><span>{{last_commit8}}</span></td>
-                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
-          </tr>
-          <tr>
-              <td><span action="{{ url_for("activity") }}">{{studentName9}}</span></td>
-                <td><span>{{nb_commits9}}</span></td>
-                <td><span>{{last_commit9}}</span></td>
-                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
-          </tr>
-          <tr>
-              <td><span action="{{ url_for("activity") }}">{{studentName10}}</span></td>
-                <td><span>{{nb_commits10}}</span></td>
-                <td><span>{{last_commit10}}</span></td>
-                <td><button type="button" name="button" class="btn btn-primary">statistiques</button></td>
-          </tr>
-        </tbody>
+      <table class="table table-striped text-center">
+          {% if groups %}
+                <thead>
+                <tr>
+                    <th scope="col">Nom du groupe</th>
+                    <th scope="col">Nombre de commits</th>
+                    <th scope="col">Date du dernier commit</th>
+                    <th scope="col">Répertoire git</th>
+                    <th scope="col">Statistiques</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for g in groups %}
+                    <tr>
+                        <th scope="row">{{ g.name }}</th>
+                        <td>{{ g.nb_commits }}</td>
+                        <td>{{ g.last_commit }}</td>
+                        <td><a class="btn btn-primary" href="{{ g.repository }}">Répertoire</a></td>
+                        <td><a class="btn btn-primary" href="{{ g.stat_link }}">Statistiques</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            {% else %}
+                <thead>
+                <tr>
+                    <th scope="col">
+                        <h1 class="display-2">Aucun groupe n'est inscrit</h1>
+                    </th>
+                </tr>
+                </thead>
+            {% endif %}
       </table>
 
       <div class="pagination">

@@ -51,3 +51,15 @@ def get_activities_for_page(page, all_activities, count):
     """Helper for the home page, to be used with the pagination class to allow pagination"""
     return [all_activities[i] for i in range((page - 1) * PER_PAGE, min((page - 1) * PER_PAGE + PER_PAGE, count))]
 
+
+def get_groups_for_page(page, all_groups, count):
+    return [all_groups[i] for i in range((page - 1) * PER_PAGE, min((page - 1) * PER_PAGE + PER_PAGE, count))]
+
+
+class Group:
+    def __init__(self, name, repository):
+        self.name = name
+        self.repository = repository
+        self.nb_commits = 1
+        self.last_commit = time.strftime("%d/%m/%Y")
+        self.stat_link = "/"

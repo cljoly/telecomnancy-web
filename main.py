@@ -10,7 +10,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required, LoginManager, current_user, \
     logout_user, login_user
 
-
 app = Flask(__name__)
 app.secret_key = ';??f6-*@*HmNjfk.>RLFnQX"<EMUxyNudGVf&[/>rR76q6T)K.k7XNZ2fgsTEV'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data/main.sqlite'
@@ -141,14 +140,14 @@ def logout():
 
 
 @app.route('/myProfile')
-def myProfile():
+def my_profile():
     """ My profile """
     return render_template("myProfile.html")
 
 
 @app.route('/forgottenPassword')
-def forgottenPassword():
-    """ Forgottent password """
+def forgotten_password():
+    """ Forgotten password """
     return render_template("forgottenPassword.html")
 
 
@@ -157,26 +156,27 @@ def profile():
     return render_template("myProfile.html", name="Farron", firstName="Serah", mail="serah.farron@ffxiii.jp")
 
 
-@app.route('/activity')
-def activity():
-    activityName = "Lightning XIII"
-    return render_template("activity.html", activityName=activityName
-                           , studentName1="Cloud Strife  ", nb_commits1="7  ", last_commit1="1997  "
-                           , studentName2="Yuna  ", nb_commits2="10  ", last_commit2="2001  "
-                           , studentName3="Terra Branford  ", nb_commits3="6  ", last_commit3="1994  "
-                           , studentName4="Noctis Lucis Caelum  ", nb_commits4="15  ", last_commit4="2016  "
-                           , studentName5="Tifa Lockhart", nb_commits5="7", last_commit5="1997"
-                           , studentName6="Aeris Gainsborough", nb_commits6="7", last_commit6="1997"
-                           , studentName7="Aeris Gainsborough", nb_commits7="7", last_commit7="1997"
-                           , studentName8="Squall Leonhart", nb_commits8="8", last_commit8="1999"
-                           , studentName9="Linoa Heartilly", nb_commits9="8", last_commit9="1999"
-                           , studentName10="Lunafreya Nox Fleuret", nb_commits10="15", last_commit10="2016"
-                           )
+@app.route('/activity/', defaults={'page': 1})  # TODO : voir pour les liens de la page avec les chnagements effectués.
+@app.route('/activity/page/<int:page>')
+def activity(page):
+    """
+    activity_example_id = 1
+    all_groups = Repository.query.filter_by(Repository.activity_id == activity_example_id).all()
+    count = Repository.query.filter_by(Repository.activity_id == activity_example_id).count()
+    """
+    all_groups = [Group("Dalmatien {}".format(i), "/") for i in range(1, 102)]  # TODO : requête à la base de données (remplacer)
+    activity_name = "Cruella"  # TODO : requête à la base de données ou avec l'url (remplacer)
+    count = len(all_groups)
+    groups = get_groups_for_page(page, all_groups, count)
+
+    if not groups and page != 1:
+        abort(404)
+    pagination = Pagination(page, PER_PAGE, count)
+    return render_template("activity.html", pagination=pagination, groups=groups, activity_name=activity_name)
 
 
 # todo: utiliser la bdd
 allactivities = [Activity("My activity {}".format(i), 5 * i + 1) for i in range(100)]
-#allactivities = []
 
 
 @app.route('/home/', defaults={'page': 1})
