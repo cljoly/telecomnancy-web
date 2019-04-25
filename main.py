@@ -4,13 +4,14 @@
 
 from flask import Flask, render_template, redirect, url_for, abort, flash
 from flask_sqlalchemy import SQLAlchemy
-from tools import *
 from createNewActivity import *
 
 app = Flask(__name__)
 app.secret_key = ';??f6-*@*HmNjfk.>RLFnQX"<EMUxyNudGVf&[/>rR76q6T)K.k7XNZ2fgsTEV'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data/main.sqlite'
 db = SQLAlchemy(app)
+
+from tools import *
 
 @app.route('/')
 def homepage():

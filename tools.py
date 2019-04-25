@@ -1,6 +1,6 @@
 from math import ceil
 import time
-from database.db_objects import *
+from database.db_objects import Activity,Repository
 from main import db
 from sqlalchemy import func
 
