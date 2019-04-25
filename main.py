@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-from tools import *
-
 from createNewActivity import create_new_activity
 from flask import Flask, render_template, redirect, url_for, abort, \
     flash, request
@@ -35,6 +33,7 @@ def load_user(user_id):
     auth_user = AuthUser(db_user)
     return auth_user
 
+from tools import *
 
 @app.route('/')
 def homepage():
@@ -174,17 +173,12 @@ def activity(page):
     pagination = Pagination(page, PER_PAGE, count)
     return render_template("activity.html", pagination=pagination, groups=groups, activity_name=activity_name)
 
-
-# todo: utiliser la bdd
-allactivities = [Activity("My activity {}".format(i), 5 * i + 1) for i in range(100)]
-
-
 @app.route('/home/', defaults={'page': 1})
 @app.route('/home/page/<int:page>')
 def home(page):
     """Home page"""
-    count = len(allactivities)
-    activities = get_activities_for_page(page, allactivities, count)
+    count = Activity.query.count()
+    activities = get_activities_for_page(page,count)
 
     if not activities and page != 1:
         abort(404)

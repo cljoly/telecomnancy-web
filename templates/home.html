@@ -11,7 +11,7 @@
 
         <div class="row" id="grp_top">
             {% if activities %}
-                <a class="btn btn-primary">Créer une nouvelle activité</a>
+                <a class="btn btn-primary" href="{{ url_for('new_activity') }}">Créer une nouvelle activité</a>
             {% endif %}
         </div>
         <br>
@@ -42,7 +42,7 @@
                 <thead>
                 <tr>
                     <th scope="col">
-                        <a class="btn btn-primary mx-auto" href="#">Créer une nouvelle activité</a>
+                        <a class="btn btn-primary mx-auto" href="{{ url_for('new_activity') }}">Créer une nouvelle activité</a>
                     </th>
                 </tr>
                 </thead>

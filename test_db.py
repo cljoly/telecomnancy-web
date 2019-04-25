@@ -26,6 +26,7 @@ for user in user_list:
     except IntegrityError:
         db.session.rollback()
 
+
 # Ajout du même utilisateur
 try:
     u1 = User(firstname="Victor", name="Hugo", email="victor@hugo.me",
