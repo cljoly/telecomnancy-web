@@ -39,7 +39,7 @@ class Pagination(object):
                 last = num
 
 
-class Group:
+class ActivityDisplay:
     """Regroupe les informations correspondantes à une activitée"""
 
     def __init__(self, name, count, c_date=time.strftime("%d/%m/%Y"), d_date="None", link='/activity'):
@@ -59,5 +59,5 @@ def get_activities_for_page(page, count):
     ).group_by(
         Activity.name
     )
-    return [Group(result[i].name, result[i].count, result[i].start_date, result[i].end_date)
+    return [ActivityDisplay(result[i].name, result[i].count, result[i].start_date, result[i].end_date)
             for i in range((page - 1) * PER_PAGE, min((page - 1) * PER_PAGE + PER_PAGE, count))]
