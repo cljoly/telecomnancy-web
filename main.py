@@ -98,7 +98,7 @@ def signin():
         else:
             login_user(auth_user)
             flash("Vous êtes identifié", "success")
-            return redirect(next_page or url_for('homepage'))
+            return redirect(next_page or url_for('home'))
 
         return render_template("signin.html", next_page=next_page)
     return render_template("signin.html")
