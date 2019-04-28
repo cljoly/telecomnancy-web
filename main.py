@@ -16,8 +16,9 @@ db = SQLAlchemy(app)
 
 # XXX Nécessaire de le mettre ici pour avoir la bd
 from authentication import login_form, AuthUser
-from database.db_objects import User
+from database.db_objects import User, Teacher
 db.create_all()
+
 
 # Flask Login
 login_manager = LoginManager()
@@ -35,6 +36,7 @@ def load_user(user_id):
     return auth_user
 
 from tools import *
+from gitlab_actions import gitlab_server_connection
 
 @app.route('/')
 def homepage():
@@ -65,6 +67,9 @@ def signup():
                  email=email, password_hash=password, salt='',
                  gitlab_username='')
         db.session.add(u)
+        if gitlab_api is not None:
+            t = Teacher(user=u, user_id=u.id, gitlab_key=gitlab_api)
+            db.session.add(t)
         db.session.commit()
         flash("Vous êtes inscrit, identifiez-vous maintenant", 'success')
         return redirect(url_for("signin"))
@@ -98,6 +103,7 @@ def signin():
         else:
             login_user(auth_user)
             flash("Vous êtes identifié", "success")
+            gitlab_server_connection(username)
             return redirect(next_page or url_for('home'))
 
         return render_template("signin.html", next_page=next_page)
