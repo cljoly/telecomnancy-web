@@ -74,16 +74,9 @@
     font-size: large;
 }
 
-.siteTitle
-{
-    font-family: Impact,fantasy;
-}
+#homepageImage img {
+    width: 80%;
 
-#homeBody
-{
-    background-image: url("https://about.gitlab.com/images/press/logo/png/gitlab-logo-gray-rgb.png");
-    background-size: cover;
-    opacity: 0.85;
 }
 
 /*Fichier my_profile.html */
