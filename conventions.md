@@ -51,3 +51,10 @@ en double alors qu’ils sont définis avec `unique=True`.
 
 Pour les noms de variables, se référer à
 [PEP8](https://pep8.org/#prescriptive-naming-conventions)
+
+## Divers
+
+- Placer les fichiers statiques (feuilles de style CSS, code javascript) dans le dossier `static`.
+
+- Placer les fichiers html des templates dans `templates`. On utilise [base.html](./templates/base.html) comme template de base, les autres templates l’étendent donc.
+

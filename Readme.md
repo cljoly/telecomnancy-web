@@ -19,11 +19,13 @@ FLASK_DEBUG=1 FLASK_APP=main.py flask run
 
 Les fichiers seront actualisés à chaque fois qu’ils seront enregistrés.
 
-### Penser à
+## Release
 
-- Utiliser [`url_for`](http://flask.pocoo.org/docs/1.0/quickstart/#url-building) pour lier les pages entres-elles
-- Placer les fichiers statiques (feuilles de style CSS, code javascript) dans le dossier `static`.
-- Placer les fichiers html des templates dans `templates`. On utilise [base.html](./templates/base.html) comme template de base, les autres templates l’étendent donc.
+### 0.1
+
+- Les pages principales (création d’une nouvelle activité, formulaire de création d’un nouveau groupe d’élèves, pages d’accueil listant toutes les activités, page listant tous les dépôts d’une activité) ont leur partie front-end **uniquement** qui est achevée.
+- Back-end fonctionnel : identification. L’identification fonctionne ( l’utilisateur peut s’inscrire, se connecter, se déconnecter). Les pages où l’utilisateur doit être identifié redirigent vers la page d’identification qui ramène à la page initiale.
+- Par contre, les fonctions « Mot de passe oublié » et « Se souvenir de moi » ne sont pas achevées, 
 
 ### Documentation
 
