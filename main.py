@@ -98,15 +98,14 @@ def signin():
         else:
             login_user(auth_user)
             flash("Vous êtes identifié", "success")
-            return redirect(next_page or url_for('homepage'))
+            return redirect(next_page or url_for('home'))
 
         return render_template("signin.html", next_page=next_page)
     return render_template("signin.html")
 
 
 @app.route('/newactivity', methods=['GET', 'POST'])
-# TOOD Décommenter ça une fois qu’on pourra s’identifier dans l’application
-#@login_required
+@login_required
 def new_activity():
     if request.method == 'POST':
         if create_new_activity() == 1:
@@ -140,6 +139,7 @@ def group_form(activityId):
 
 
 @app.route('/logout')
+@login_required
 def logout():
     """Redirect to homepage"""
     logout_user()
@@ -147,6 +147,7 @@ def logout():
 
 
 @app.route('/my_profile')
+@login_required
 def my_profile():
     """ My profile """
     return render_template("my_profile.html")
@@ -158,13 +159,9 @@ def forgotten_password():
     return render_template("forgottenPassword.html")
 
 
-@app.route('/profile')
-def profile():
-    return render_template("my_profile.html", name="Farron", firstName="Serah", mail="serah.farron@ffxiii.jp")
-
-
 @app.route('/activity/', defaults={'page': 1})  # TODO : voir pour les liens de la page avec les chnagements effectués.
 @app.route('/activity/page/<int:page>')
+@login_required
 def activity(page):
     """
     activity_example_id = 1
@@ -183,6 +180,7 @@ def activity(page):
 
 @app.route('/home/', defaults={'page': 1})
 @app.route('/home/page/<int:page>')
+@login_required
 def home(page):
     """Home page"""
     count = Activity.query.count()

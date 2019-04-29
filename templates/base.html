@@ -14,8 +14,8 @@
 <body>
 
 {# Barre de menu #}
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+{% if current_user.is_authenticated %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
 
     {# Icône de gauche #}
     <a class="navbar-brand" href="{{ url_for('home') }}">
@@ -32,46 +32,61 @@
     {# Menus à afficher #}
     <div class="collapse navbar-collapse" id="navbarNav">
 
-        {% if current_user.is_authenticated %}
+    <ul class="navbar-nav">
+        <li class="navbar-text ml-auto">
+            {{ current_user.display_name() }}
+        </li>
 
-            <ul class="navbar-nav">
-                <li class="navbar-text ml-auto">
-                    {{ current_user.display_name() }}
-                </li>
+        <li class="nav-item ">
+            <a class="nav-link" href="{{ url_for('my_profile') }}">Mon profil</a>
+        </li>
 
-                <li class="nav-item ">
-                    <a class="nav-link" href="{{ url_for('my_profile') }}">Mon profil</a>
-                </li>
+    </ul>
 
-            </ul>
+    {# Search bar #}
+    <form class="form-inline ml-auto">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
 
-            {# Search bar #}
-            <form class="form-inline ml-auto">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('logout') }}">Se déconnecter</a>
+        </li>
 
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('logout') }}">Se déconnecter</a>
-                </li>
+    </ul>
 
-            </ul>
+{% else %}
 
-        {% else %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
 
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('signup') }}">S'inscrire</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('signin') }}">Se connecter</a>
-                </li>
-            </ul>
+    {# Icône de gauche #}
+    <a class="navbar-brand" href="{{ url_for('homepage') }}">
+        <!--<img src="/docs/4.0/assets/brand/bootstrap-solid.svg" width="30" height="30" class="d-inline-block align-top" alt="">-->
+        <i class="material-icons align-top">code</i>
+        Gitly
+    </a>
 
-        {% endif %}
+    {# Bouton du menu sur écran réduit #}
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-    </div>
+    {# Menus à afficher #}
+    <div class="collapse navbar-collapse" id="navbarNav">
+
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('signup') }}">S'inscrire</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('signin') }}">Se connecter</a>
+        </li>
+    </ul>
+
+{% endif %}
+
+</div>
 </nav>
 
 
@@ -81,7 +96,7 @@
     </header>
     {% for category, message in get_flashed_messages(with_categories=true) %}
         <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-            {{ message  }}
+            {{ message }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
