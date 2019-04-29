@@ -149,7 +149,10 @@ def logout():
 @app.route('/my_profile')
 def my_profile():
     """ My profile """
-    return render_template("my_profile.html")
+
+    return render_template("my_profile.html", name=current_user.get_db_user().name,
+                           firstName=current_user.get_db_user().firstname,
+                           mail=current_user.get_db_user().email)
 
 
 @app.route('/forgottenPassword')
@@ -163,17 +166,18 @@ def profile():
     return render_template("my_profile.html", name="Farron", firstName="Serah", mail="serah.farron@ffxiii.jp")
 
 
-@app.route('/activity/', defaults={'page': 1})  # TODO : voir pour les liens de la page avec les chnagements effectués.
-@app.route('/activity/page/<int:page>')
-def activity(page):
-    """
-    activity_example_id = 1
-    all_groups = Repository.query.filter_by(Repository.activity_id == activity_example_id).all()
-    count = Repository.query.filter_by(Repository.activity_id == activity_example_id).count()
-    """
-    all_groups = [Group("Dalmatien {}".format(i), "/") for i in range(1, 102)]  # TODO : requête à la base de données (remplacer)
-    activity_name = "Cruella"  # TODO : requête à la base de données ou avec l'url (remplacer)
-    count = len(all_groups)
+@app.route('/activity/<int:activity_id>', defaults={'page': 1})  # TODO : voir pour les liens de la page avec les chnagements effectués.
+@app.route('/activity<int:activity_id>/page/<int:page>')
+def activity(page, activity_id):
+    activity_example_id = activity_id
+    data_base_eall_groups = Repository.query.filter_by(Repository.activity_id == activity_example_id).all()
+    count = len(data_base_eall_groups)
+    all_groups = [Group(data_base_eall_groups[i].url.split("/")[-1],
+                        data_base_eall_groups[i].url) for i in range(count)]
+    #count = Repository.query.filter_by(Repository.activity_id == activity_example_id).count()
+    #all_groups = [Group("Dalmatien {}".format(i), "/") for i in range(1, 102)]
+    activity_name = Activity.query.filter_by(Activity.id == activity_id).first()
+
     groups = get_groups_for_page(page, all_groups, count)
 
     if not groups and page != 1:

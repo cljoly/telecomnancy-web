@@ -26,6 +26,10 @@ class AuthUser(UserMixin):
     def display_name(self):
         return '{} {}'.format(self._db_user.firstname, self._db_user.name)
 
+    def get_db_user(self):
+        return self._db_user
+
+
 def login_form(username, password):
     """Fonction qui détermine si un couple (nom d’utilisateur, mot de passe)
     correspond à ce qui est enregistré dans la base de données, i.e. si
