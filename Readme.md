@@ -27,4 +27,4 @@ FLASK_DEBUG=1 FLASK_APP=main.py flask run
 
 ### Documentation
 
-Voir [la documentation](docs.md).
+Voir [la documentation](doc.md).
