@@ -27,7 +27,4 @@ FLASK_DEBUG=1 FLASK_APP=main.py flask run
 
 ### Documentation
 
-- Le quickstart aide beaucoup : http://flask.pocoo.org/docs/1.0/quickstart
-
-- Pour utiliser Flask http://flask.pocoo.org/docs/1.0/quickstart/
-- Pour dépolyer sur Google App Engine https://cloud.google.com/appengine/docs/standard/python3/quickstart
+Voir [la documentation](docs.md).
