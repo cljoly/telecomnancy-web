@@ -294,3 +294,5 @@ fabric.properties
 *.sqlite
 
 *.DS_Store
+
+cle_api.txt
