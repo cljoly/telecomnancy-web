@@ -167,7 +167,7 @@ def profile():
 
 
 @app.route('/activity/<int:activity_id>', defaults={'page': 1})  # TODO : voir pour les liens de la page avec les chnagements effectués.
-@app.route('/activity<int:activity_id>/page/<int:page>')
+@app.route('/activity/<int:activity_id>/page/<int:page>')
 def activity(page, activity_id):
     activity_example_id = activity_id
     data_base_eall_groups = Repository.query.filter_by(Repository.activity_id == activity_example_id).all()
