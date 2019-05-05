@@ -17,7 +17,7 @@ db = SQLAlchemy(app)
 
 # XXX Nécessaire de le mettre ici pour avoir la bd
 from authentication import login_form, AuthUser
-from database.db_objects import User, Teacher
+from database.db_objects import User, Teacher, Module
 db.create_all()
 
 
@@ -132,14 +132,8 @@ def new_activity():
             return redirect(url_for("my_profile"))
         else:
             # TODO: une fois le back fait, aller chercher les profs dans la BD
-            teachers = ("Captain", "Iron Man", "Thor", "Scarlett Witch", "Vision", "Black Widow", "Hulk")
-            modules = {
-                "POO": "Programmation Orientée Objet",
-                "C": "Langage C",
-                "Prog web": "Programmation Web",
-                "SD": "Structures de données"
-            }
-            modules = sorted(modules.items())
+            teachers = Teacher.query.all()
+            modules = Module.query.all()
             return render_template("newActivity.html", teachers=teachers, modules=modules)
 
     else:
