@@ -8,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required, LoginManager, current_user, \
     logout_user, login_user
 from typing import Dict
+import gitlab
 
 app = Flask(__name__)
 app.secret_key = ';??f6-*@*HmNjfk.>RLFnQX"<EMUxyNudGVf&[/>rR76q6T)K.k7XNZ2fgsTEV'
@@ -103,8 +104,12 @@ def signin():
         else:
             login_user(auth_user)
             flash("Vous êtes identifié", "success")
-            gitlab_server_connection(username)
-            return redirect(next_page or url_for('home'))
+            if not gitlab_server_connection(current_user.username()):
+                flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
+                return redirect(url_for("my_profile"))
+            else:
+                flash('Connexion à Gitlab effectuée', 'success')
+                return redirect(next_page or url_for('home'))
 
         return render_template("signin.html", next_page=next_page)
     return render_template("signin.html")
@@ -122,16 +127,20 @@ def new_activity():
         return render_template("newActivity.html")
 
     elif request.method == 'GET':
-        # TODO: une fois le back fait, aller chercher les profs dans la BD
-        teachers = ("Captain", "Iron Man", "Thor", "Scarlett Witch", "Vision", "Black Widow", "Hulk")
-        modules = {
-            "POO": "Programmation Orientée Objet",
-            "C": "Langage C",
-            "Prog web": "Programmation Web",
-            "SD": "Structures de données"
-        }
-        modules = sorted(modules.items())
-        return render_template("newActivity.html", teachers=teachers, modules=modules)
+        if not gitlab_server_connection(current_user.username()):
+            flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
+            return redirect(url_for("my_profile"))
+        else:
+            # TODO: une fois le back fait, aller chercher les profs dans la BD
+            teachers = ("Captain", "Iron Man", "Thor", "Scarlett Witch", "Vision", "Black Widow", "Hulk")
+            modules = {
+                "POO": "Programmation Orientée Objet",
+                "C": "Langage C",
+                "Prog web": "Programmation Web",
+                "SD": "Structures de données"
+            }
+            modules = sorted(modules.items())
+            return render_template("newActivity.html", teachers=teachers, modules=modules)
 
     else:
         return redirect(url_for("homepage"))
@@ -156,6 +165,8 @@ def logout():
 @login_required
 def my_profile():
     """ My profile """
+    if not gitlab_server_connection(current_user.username()):
+        flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
     return render_template("my_profile.html")
 
 
