@@ -119,7 +119,8 @@ def signin():
 @login_required
 def new_activity():
     if request.method == 'POST':
-        if create_new_activity() == 1:
+        result = request.form
+        if create_new_activity(result) == 1:
             flash('L\'activité a bien été créée', 'success')
         else:
             flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes pour l\'activité puissent être créés', 'info')

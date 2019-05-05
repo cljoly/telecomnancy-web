@@ -52,7 +52,7 @@
 
                 <div id="collapseOne" class="collapse {% if modules %} show {% endif %}" aria-labelledby="headingOne" data-parent="#accordionExample">
                     <div class="card-body">
-                        <select name="modules" id="modules" multiple class="form-control custom-select-lg">
+                        <select name="module" id="modules" multiple class="form-control custom-select-lg">
 
                             {% for m in modules %}
                                 <option value="{{ m.short_name }}">{{ m.name }}</option>
@@ -99,7 +99,6 @@
 
             <div class="form-group">
                 <select name="selectedTeachers" id="teachers" multiple class="form-control custom-select-lg">
-                    <!--TODO : une fois le back fait, aller chercher les profs dans la BD-->
                     {% for t in teachers %}
                         <option value="{{ t.user.username }}">{{ t.user.firstname }} {{ t.user.name }}</option>
                     {% endfor %}
@@ -169,7 +168,7 @@
                     <h4>Étudiants de l'activité</h4>
 
                     <div class="form-group">
-                        <select name="selectedStudents" id="selected_students" multiple class="form-control custom-select-lg">
+                        <select name="selectedStudents" id="selected_students" multiple class="form-control custom-select-lg" required>
 
                         </select>
                     </div>
@@ -195,7 +194,9 @@
             while (selected.selectedIndex !== -1) {
                 loaded.options.add(selected.options[selected.selectedIndex]);
             }
-            selected.selectedIndex = -1;
+            for (let s of selected.options){
+                s.selected=true;
+            }
             loaded.selectedIndex = -1;
         });
 
@@ -203,8 +204,10 @@
             while (loaded.selectedIndex !== -1) {
                 selected.options.add(loaded.options[loaded.selectedIndex]);
             }
+            for (let s of selected.options){
+                s.selected=true;
+            }
             loaded.selectedIndex = -1;
-            selected.selectedIndex = -1;
         });
 
         button_remove_all.addEventListener("click", e => {
@@ -217,12 +220,15 @@
             while (loaded.options.length !== 0) {
                 selected.options.add(loaded.options[0]);
             }
+            for (let s of selected.options){
+                s.selected=true;
+            }
         });
 
         //Gestion du chargement du fichier CSV et de l'affichage des données
 
 
-        var file_html = document.getElementById('file')
+        var file_html = document.getElementById('file');
         file_html.addEventListener('change', function () {
             var reader = new FileReader();
 
