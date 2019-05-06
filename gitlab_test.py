@@ -23,12 +23,23 @@ try:
     project = gl.projects.get("%s/%s" % (project_namespace, project_name))
 except Exception as e:
     print("Impossible de récupérer le projet %s/%s" % (project_namespace, project_name))
-    print("Création du projet %s/%s" % (project_namespace, project_name))
+    
+    #print("Création du projet %s/%s" % (project_namespace, project_name))
     #project = gl.projects.create({'name': project_name})
 
 try:
     print("Fork du projet %s/%s vers Gitlab Bravo" % (project_namespace, project_name))
     fork = project.forks.create({"name" : "Fork own chocobar", "path" : "fork_own_chocobar"})
+    
+    emails_to_add = ("laury.de-donato@telecomnancy.eu",)
+    all_users = gl.users.list()
+
+    for user in all_users:
+        user_emails = user.emails.list()
+        for email in emails_to_add:
+            if email in user_emails:
+                member = fork.members.create({'user_id': user.id, 'access_level': gitlab.DEVELOPER_ACCESS})
+                
 except Exception as e:
     print("Impossible de forker %s/%s vers Gitlab Bravo" % (project_namespace, project_name))
     print(e)
