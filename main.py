@@ -16,7 +16,7 @@ db = SQLAlchemy(app)
 
 # XXX Nécessaire de le mettre ici pour avoir la bd
 from authentication import login_form, AuthUser
-from database.db_objects import User
+from database.db_objects import User, Teacher
 db.create_all()
 
 # Flask Login
@@ -49,25 +49,44 @@ def signup():
     if method == 'GET':
         return render_template("signup.html")
     elif method == 'POST':
+        error = False
         form = request.form
         username = form.get('username')
+        nb_user_with_username = User.query.filter(username == username).count()
+        if nb_user_with_username > 0:
+            flash("Un utilisateur portant ce nom existe déjà",
+                  "danger")
+            error = True
         firstname = form.get('firstname')
         name = form.get('name')
         email = form.get('email')
+        nb_user_with_email = User.query.filter(email == email).count()
+        if nb_user_with_email > 0:
+            flash("Un utilisateur avec cette adresse mail existe déjà",
+                  "danger")
+            error = True
         password = form.get('password')
-        # TODO Utiliser ces champs
         password2 = form.get('password2')
-        gitlab_api = form.get('gitlab_api')
-        # TODO Vérifier que les champs ne soient pas déjà définis et que les
-        # mots de passe concordent
+        if password != password2:
+            flash("Les mots de passe ne correspondent pas", "danger")
+            error = True
         # TODO Hacher les mots de passe
         u = User(username=username, firstname=firstname, name=name,
                  email=email, password_hash=password, salt='',
                  gitlab_username='')
         db.session.add(u)
-        db.session.commit()
-        flash("Vous êtes inscrit, identifiez-vous maintenant", 'success')
-        return redirect(url_for("signin"))
+
+        gitlab_api_key = form.get('gitlab_api')
+        if gitlab_api_key is not None:
+            # L’utilisateur est prof
+            t = Teacher(user=u, gitlab_key=gitlab_api_key)
+            db.session.add(t)
+        if not error:
+            db.session.commit()
+            flash("Vous êtes inscrit, identifiez-vous maintenant", 'success')
+            return redirect(url_for("signin"))
+        else:
+            return redirect(url_for("signup"))
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
