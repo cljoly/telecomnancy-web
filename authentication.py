@@ -3,6 +3,7 @@
 
 from flask_login import UserMixin
 from database.db_objects import User
+from pass_utils import verify_password
 
 
 class AuthUser(UserMixin):
@@ -40,8 +41,8 @@ def login_form(username, password):
     """
     if username is None or password is None:
         return None
-    db_user = User.query.filter(User.username == username and
-                                User.password_hash == password).first()
-    if db_user is None:
+    db_user = User.query.filter(User.username == username).first()
+    if db_user is None or not verify_password(password, db_user.salt,
+                                              db_user.password_hash):
         return None
     return AuthUser(db_user)

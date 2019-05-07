@@ -8,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required, LoginManager, current_user, \
     logout_user, login_user
 from typing import Dict
+from pass_utils import hashnsalt
 
 app = Flask(__name__)
 app.secret_key = ';??f6-*@*HmNjfk.>RLFnQX"<EMUxyNudGVf&[/>rR76q6T)K.k7XNZ2fgsTEV'
@@ -70,9 +71,9 @@ def signup():
         if password != password2:
             flash("Les mots de passe ne correspondent pas", "danger")
             error = True
-        # TODO Hacher les mots de passe
+        salt, h = hashnsalt(password)
         u = User(username=username, firstname=firstname, name=name,
-                 email=email, password_hash=password, salt='',
+                 email=email, password_hash=h, salt=salt,
                  gitlab_username='')
         db.session.add(u)
 
