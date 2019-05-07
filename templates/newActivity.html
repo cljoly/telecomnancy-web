@@ -10,7 +10,7 @@
 
         <h3 class="left-items">Nom de l'activité :</h3>
         <div class="container input-group mb-3">
-            <input type="text" name="activityName" class="form-control form-control-lg " placeholder="Nom de l'activité">
+            <input type="text" name="activityName" class="form-control form-control-lg " placeholder="Nom de l'activité" required>
         </div>
 
 
@@ -24,13 +24,13 @@
                     <h4>Début :</h4>
                 </div>
                 <div class="col-md-auto">
-                    <input type="date" name="beginDate">
+                    <input type="date" name="beginDate" required>
                 </div>
                 <div class="col-md-auto">
                     <h4>Fin :</h4>
                 </div>
                 <div class="col-md-auto">
-                    <input type="date" name="endDate">
+                    <input type="date" name="endDate" required>
                 </div>
             </div>
         </div>
@@ -52,7 +52,7 @@
 
                 <div id="collapseOne" class="collapse {% if modules %} show {% endif %}" aria-labelledby="headingOne" data-parent="#accordionExample">
                     <div class="card-body">
-                        <select name="module" id="modules" multiple class="form-control custom-select-lg">
+                        <select name="module" id="modules" class="form-control custom-select-lg">
 
                             {% for m in modules %}
                                 <option value="{{ m.short_name }}">{{ m.name }}</option>
@@ -98,7 +98,7 @@
         <section id="add_teachers" class="container">
 
             <div class="form-group">
-                <select name="selectedTeachers" id="teachers" multiple class="form-control custom-select-lg">
+                <select name="selectedTeachers" id="teachers" multiple class="form-control custom-select-lg" required>
                     {% for t in teachers %}
                         <option value="{{ t.user.username }}">{{ t.user.firstname }} {{ t.user.name }}</option>
                     {% endfor %}
@@ -114,7 +114,7 @@
         <h3 class="left-items">Nombre d'étudiants par activité :</h3>
 
         <div class="input-group mb-3 container">
-            <select name="numberOfStudents" class="custom-select-lg form-control" id="inputGroupSelect01">
+            <select name="numberOfStudents" class="custom-select-lg form-control" id="inputGroupSelect01" required>
                 <option value="1" selected>Un étudiant</option>
                 <option value="2">Deux étudiants</option>
                 <option value="3">Trois étudiants</option>
@@ -137,7 +137,7 @@
                         <h4>
                             <label for="file">Veuillez importer la liste des étudiants que vous souhaitez ajouter :</label>
                         </h4>
-                        <input type="file" id="file" accept=".csv" class="form-control-file">
+                        <input type="file" id="file" accept=".csv" class="form-control-file" >
                     </div>
                 </div>
             </div>

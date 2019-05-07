@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-from createNewActivity import create_new_activity
 from flask import Flask, render_template, redirect, url_for, abort, \
     flash, request
 from flask_sqlalchemy import SQLAlchemy
@@ -38,6 +37,7 @@ def load_user(user_id):
 
 from tools import *
 from gitlab_actions import gitlab_server_connection
+from createNewActivity import create_new_activity
 
 @app.route('/')
 def homepage():
@@ -119,12 +119,31 @@ def signin():
 @login_required
 def new_activity():
     if request.method == 'POST':
+
         result = request.form
-        if create_new_activity(result) == 1:
-            flash('L\'activité a bien été créée', 'success')
-        else:
-            flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes pour l\'activité puissent être créés', 'info')
-            flash('Formulaire : TODO','warning')
+        create_new_activity_result = create_new_activity(result, db)
+
+        if  create_new_activity_result == 1:
+            flash('Le module que vous souhaitez créer existe déjà. Activité non créée.', 'danger')
+        elif create_new_activity_result == 2:
+            flash('Veuillez indiquer un nom de module existant ou un nouveau module. Activité non créée.', 'danger')
+        elif create_new_activity_result == 3:
+            flash('Veuillez indiquer un nom d\'activité. Activité non créée.', 'danger')
+        elif create_new_activity_result == 4:
+            flash('Veuillez indiquer une date de début. Activité non créée.', 'danger')
+        elif create_new_activity_result == 5:
+            flash('Veuillez indiquer une date de fin. Activité non créée.', 'danger')
+        elif create_new_activity_result == 6:
+            flash('Veuillez indiquer au moins un enseignant référent. Activité non créée.', 'danger')
+        elif create_new_activity_result == 7:
+            flash('Veuillez indiquer un nombre d\'étudiant par groupe pour cette l\'activité. Activité non créée.', 'danger')
+        elif create_new_activity_result == 8:
+            flash('Veuillez sélectionner des étudiants pour cette l\'activité. Activité non créée.', 'danger')
+        elif create_new_activity_result == 9:
+            flash('Erreur lors de la création de l\'ajout de l\'activité dans la base de données. Activité non créée.', 'danger')
+        elif create_new_activity_result == 0:
+            flash('Activité ajoutée à la base de données', 'success')
+
         return render_template("newActivity.html")
 
     elif request.method == 'GET':

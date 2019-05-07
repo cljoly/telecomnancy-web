@@ -63,8 +63,6 @@ class Activity(db.Model):
     module = relationship("Module")
     # Par exemple, TP1
     name = Column(db.String(120), unique=False, nullable=False)
-    # Par exemple IL ou groupe 1
-    admingroup = Column(db.String(120), unique=False, nullable=False)
     year = Column(Integer)
     # Dates de début et fin
     start_date = Column(DateTime, nullable=False)
