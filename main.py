@@ -37,7 +37,8 @@ def load_user(user_id):
 
 from tools import *
 from gitlab_actions import gitlab_server_connection
-from createNewActivity import create_new_activity
+from createNewActivity import create_new_activity, create_groups_for_an_activity_with_card_1
+
 
 @app.route('/')
 def homepage():
@@ -74,6 +75,7 @@ def signup():
         db.session.commit()
         flash("Vous êtes inscrit, identifiez-vous maintenant", 'success')
         return redirect(url_for("signin"))
+
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -118,12 +120,17 @@ def signin():
 @app.route('/newactivity', methods=['GET', 'POST'])
 @login_required
 def new_activity():
+    success, gl = gitlab_server_connection(current_user.username())
+    if not success:
+        flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
+        return redirect(url_for("my_profile"))
+
     if request.method == 'POST':
 
         result = request.form
-        create_new_activity_result = create_new_activity(result, db)
+        create_new_activity_result, activity_created = create_new_activity(result, db)
 
-        if  create_new_activity_result == 1:
+        if create_new_activity_result == 1:
             flash('Le module que vous souhaitez créer existe déjà. Activité non créée.', 'danger')
         elif create_new_activity_result == 2:
             flash('Veuillez indiquer un nom de module existant ou un nouveau module. Activité non créée.', 'danger')
@@ -143,18 +150,24 @@ def new_activity():
             flash('Erreur lors de la création de l\'ajout de l\'activité dans la base de données. Activité non créée.', 'danger')
         elif create_new_activity_result == 0:
             flash('Activité ajoutée à la base de données', 'success')
+            print(result)
+            if int(result.get('numberOfStudents')) == 1:
+                res = create_groups_for_an_activity_with_card_1(activity_created, db, gl)
+                if res == 0:
+                    flash('Création du dépôt de l\'activité effectuée', 'success')
+                    # flash('Tous les dépôts des élèves ont été créés', 'success')
+                elif res == 1:
+                    flash('Erreur de création du dépôt de l\'activité', 'danger')
+            else:
+                pass
 
         return render_template("newActivity.html")
 
     elif request.method == 'GET':
-        if not gitlab_server_connection(current_user.username()):
-            flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
-            return redirect(url_for("my_profile"))
-        else:
-            # TODO: une fois le back fait, aller chercher les profs dans la BD
-            teachers = Teacher.query.all()
-            modules = Module.query.all()
-            return render_template("newActivity.html", teachers=teachers, modules=modules)
+        # TODO: une fois le back fait, aller chercher les profs dans la BD
+        teachers = Teacher.query.all()
+        modules = Module.query.all()
+        return render_template("newActivity.html", teachers=teachers, modules=modules)
 
     else:
         return redirect(url_for("homepage"))
@@ -208,6 +221,7 @@ def activity(page):
         abort(404)
     pagination = Pagination(page, PER_PAGE, count)
     return render_template("activity.html", pagination=pagination, groups=groups, activity_name=activity_name)
+
 
 @app.route('/home/', defaults={'page': 1})
 @app.route('/home/page/<int:page>')

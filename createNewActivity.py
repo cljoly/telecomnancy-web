@@ -5,11 +5,6 @@ from datetime import datetime
 
 def create_new_activity(result, db):
 
-    print(result)
-    number_of_students = result.get('numberOfStudents', type=int)
-    # number_of_students = int(request.form.get('numberOfStudents'))
-    print("nb stud =", number_of_students)
-
     if result.get('module') is None:
         if result.get('moduleName') is not None and result.get('moduleAbbreviation') is not None:
             module = Module(name=result.get('moduleName'), short_name=result.get('moduleAbbreviation'))
@@ -20,10 +15,10 @@ def create_new_activity(result, db):
                 db.session.commit()
             except IntegrityError:
                 db.session.rollback()
-                return 1
+                return 1, None
 
         else:
-            return 2
+            return 2, None
 
     else:
         module = Module.query.filter(Module.short_name == result.get('module')).first()
@@ -32,22 +27,22 @@ def create_new_activity(result, db):
     print("module après if/else :", module)
 
     if result.get('activityName') is None:
-        return 3
+        return 3, None
 
     if result.get('beginDate') is None:
-        return 4
+        return 4, None
 
     if result.get('endDate') is None:
-        return 5
+        return 5, None
 
     if result.get('selectedTeachers') is None:
-        return 6
+        return 6, None
 
     if result.get('numberOfStudents') is None:
-        return 7
+        return 7, None
 
     if result.get('selectedStudents') is None:
-        return 8
+        return 8, None
 
     beginDate = datetime.strptime(result.get('beginDate'), '%Y-%m-%d')
     endDate = datetime.strptime(result.get('endDate'), '%Y-%m-%d')
@@ -60,6 +55,21 @@ def create_new_activity(result, db):
     except IntegrityError as error:
         print(error)
         db.session.rollback()
-        return 9
+        return 9, None
+
+    return 0, new_activity
+
+
+def create_groups_for_an_activity_with_card_1(activity, db, gl):
+
+    # Création du dépôt de l'activité
+    # TODO insérer dates début et fin au repo
+    try:
+        project = gl.projects.create({'name': activity.name, 'visibility': 'private', 'issues_enabled': True, 'merge_requests_enabled': True, 'jobs_enabled': True, 'wiki_enabled': True })
+    except Exception as e:
+        print("Erreur de création du dépôt de l'activité: ", e)
+        return 1
+
+    # Fork du dépôt de l'activité pour créer un repo par élève
 
     return 0

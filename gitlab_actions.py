@@ -11,9 +11,10 @@ def gitlab_server_connection(username):
         gl = gitlab.Gitlab('https://gitlab.telecomnancy.univ-lorraine.fr', private_token=gitlab_key)
         gl.auth()
     except gitlab.exceptions.GitlabAuthenticationError as authentication_error:
-        return False
+        print("Erreur d'authentification sur gitlab :", authentication_error)
+        return False, None
 
-    return True
+    return True, gl
 
 
 
