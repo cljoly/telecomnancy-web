@@ -4,8 +4,6 @@ from main import db
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, DateTime
 
-# http://flask.pocoo.org/docs/0.12/patterns/wtforms/
-# from wtforms import Form, BooleanField, StringField, PasswordField, validators
 
 # Utilisateur élève ou enseignants
 class User(db.Model):

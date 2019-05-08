@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+# Ne s'exécute plus
 from database.db_objects import User, Teacher, Module, TeacherModule, Activity, Repository
 from main import db
 from sqlalchemy.exc import IntegrityError as IntegrityError

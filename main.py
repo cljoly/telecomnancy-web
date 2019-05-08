@@ -202,7 +202,7 @@ def my_profile():
                                            firstName=current_user.get_db_user().firstname,
                                            mail=current_user.get_db_user().email)
                 else:
-                    flash('Les mots de passes doivent matcher', "danger")
+                    flash('Les mots de passes doivent correspondre', "danger")
                     return render_template("my_profile.html", name=current_user.get_db_user().name,
                                            firstName=current_user.get_db_user().firstname,
                                            mail=current_user.get_db_user().email)
@@ -215,7 +215,7 @@ def my_profile():
             User.query.filter_by(id=current_user.get_db_user().id).delete()
             db.session.commit()
             logout_user()
-            return render_template("homepage.html", c="disconnected")
+            return render_template("homepage.html")
 
 @app.route('/forgottenPassword')
 def forgotten_password():
@@ -223,11 +223,10 @@ def forgotten_password():
     return render_template("forgottenPassword.html")
 
 
-@app.route('/activity/<int:activity_id>', defaults={'page': 1})  # TODO : voir pour les liens de la page avec les chnagements effectués.
+@app.route('/activity/<int:activity_id>', defaults={'page': 1})
 @app.route('/activity/<int:activity_id>/page/<int:page>')
 def activity(page, activity_id):
-    activity_example_id = activity_id
-    data_base_all_groups = Repository.query.filter_by(activity_id=activity_example_id).all()
+    data_base_all_groups = Repository.query.filter_by(activity_id=activity_id).all()
     count = len(data_base_all_groups)
     all_groups = [Group(data_base_all_groups[i].url.split("/")[-1],
                         data_base_all_groups[i].url) for i in range(count)]
@@ -241,6 +240,7 @@ def activity(page, activity_id):
         abort(404)
     pagination = Pagination(page, PER_PAGE, count)
     return render_template("activity.html", pagination=pagination, groups=groups, activity_name=activity_name)
+
 
 @app.route('/home/', defaults={'page': 1})
 @app.route('/home/page/<int:page>')
