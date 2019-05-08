@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-from createNewActivity import create_new_activity
 from flask import Flask, render_template, redirect, url_for, abort, \
     flash, request
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import login_required, LoginManager, current_user, \
+from flask_login import LoginManager, current_user, \
     logout_user, login_user
-from typing import Dict
+from flask_sqlalchemy import SQLAlchemy
+
+from createNewActivity import create_new_activity
 
 app = Flask(__name__)
 app.secret_key = ';??f6-*@*HmNjfk.>RLFnQX"<EMUxyNudGVf&[/>rR76q6T)K.k7XNZ2fgsTEV'
@@ -16,7 +16,8 @@ db = SQLAlchemy(app)
 
 # XXX Nécessaire de le mettre ici pour avoir la bd
 from authentication import login_form, AuthUser
-from database.db_objects import User
+from database.db_objects import User, Activity, Repository, Module
+
 db.create_all()
 
 # Flask Login
@@ -33,6 +34,30 @@ def load_user(user_id):
     db_user = User.query.get(int(user_id))
     auth_user = AuthUser(db_user)
     return auth_user
+
+#Debug test
+
+# Permet de tester les requêtes sur les activités
+'''
+from datetime import datetime
+
+poo = Module(name="Programmation Orienté Objet", short_name="POO")
+db.session.add(poo)
+activity = Activity(id=1, module_id=poo.id, name="Lightning XIII", admingroup="Class 7",
+                    start_date=datetime(year=2019, month=10, day=30),
+                    year=2019, end_date=datetime(year=2019, month=10, day=31), nbOfStudent=15)
+db.session.add(activity)
+rep1 = Repository(url="https://fr.wikipedia.org/wiki/Final_Fantasy_VII", activity_id=activity.id)
+db.session.add(rep1)
+rep2 = Repository(url="https://fr.wikipedia.org/wiki/Final_Fantasy_VI", activity_id=activity.id)
+db.session.add(rep2)
+rep3 = Repository(url="https://fr.wikipedia.org/wiki/Final_Fantasy_X", activity_id=activity.id)
+db.session.add(rep3)
+'''
+# Une activité
+
+
+#db.session.commit()
 
 from tools import *
 
@@ -170,13 +195,13 @@ def profile():
 @app.route('/activity/<int:activity_id>/page/<int:page>')
 def activity(page, activity_id):
     activity_example_id = activity_id
-    data_base_eall_groups = Repository.query.filter_by(Repository.activity_id == activity_example_id).all()
-    count = len(data_base_eall_groups)
-    all_groups = [Group(data_base_eall_groups[i].url.split("/")[-1],
-                        data_base_eall_groups[i].url) for i in range(count)]
+    data_base_all_groups = Repository.query.filter_by(activity_id=activity_example_id).all()
+    count = len(data_base_all_groups)
+    all_groups = [Group(data_base_all_groups[i].url.split("/")[-1],
+                        data_base_all_groups[i].url) for i in range(count)]
     #count = Repository.query.filter_by(Repository.activity_id == activity_example_id).count()
     #all_groups = [Group("Dalmatien {}".format(i), "/") for i in range(1, 102)]
-    activity_name = Activity.query.filter_by(Activity.id == activity_id).first()
+    activity_name = Activity.query.get(activity_id)
 
     groups = get_groups_for_page(page, all_groups, count)
 
