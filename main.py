@@ -10,6 +10,7 @@ from flask_login import login_required, LoginManager, current_user, \
     logout_user, login_user
 from typing import Dict
 import gitlab
+from pass_utils import hashnsalt
 
 
 import os
@@ -21,7 +22,6 @@ db = SQLAlchemy(app)
 # XXX Nécessaire de le mettre ici pour avoir la bd
 from authentication import login_form, AuthUser
 from database.db_objects import User, Activity, Repository, Module, Teacher
-
 db.create_all()
 
 
@@ -82,28 +82,44 @@ def signup():
     if method == 'GET':
         return render_template("signup.html")
     elif method == 'POST':
+        error = False
         form = request.form
         username = form.get('username')
+        nb_user_with_username = User.query.filter(username == username).count()
+        if nb_user_with_username > 0:
+            flash("Un utilisateur portant ce nom existe déjà",
+                  "danger")
+            error = True
         firstname = form.get('firstname')
         name = form.get('name')
         email = form.get('email')
+        nb_user_with_email = User.query.filter(email == email).count()
+        if nb_user_with_email > 0:
+            flash("Un utilisateur avec cette adresse mail existe déjà",
+                  "danger")
+            error = True
         password = form.get('password')
-        # TODO Utiliser ces champs
         password2 = form.get('password2')
-        gitlab_api = form.get('gitlab_api')
-        # TODO Vérifier que les champs ne soient pas déjà définis et que les
-        # mots de passe concordent
-        # TODO Hacher les mots de passe
+        if password != password2:
+            flash("Les mots de passe ne correspondent pas", "danger")
+            error = True
+        salt, h = hashnsalt(password)
         u = User(username=username, firstname=firstname, name=name,
-                 email=email, password_hash=password, salt='',
+                 email=email, password_hash=h, salt=salt,
                  gitlab_username='')
         db.session.add(u)
-        if gitlab_api is not None:
-            t = Teacher(user=u, user_id=u.id, gitlab_key=gitlab_api)
+
+        gitlab_api_key = form.get('gitlab_api')
+        if gitlab_api_key is not None:
+            # L’utilisateur est prof
+            t = Teacher(user=u, user_id=u.id, gitlab_key=gitlab_api_key)
             db.session.add(t)
-        db.session.commit()
-        flash("Vous êtes inscrit, identifiez-vous maintenant", 'success')
-        return redirect(url_for("signin"))
+        if not error:
+            db.session.commit()
+            flash("Vous êtes inscrit, identifiez-vous maintenant", 'success')
+            return redirect(url_for("signin"))
+        else:
+            return redirect(url_for("signup"))
 
 
 @app.route('/signin', methods=['GET', 'POST'])
@@ -227,9 +243,9 @@ def my_profile():
         return render_template("my_profile.html", name=current_user.get_db_user().name,
                                 firstName=current_user.get_db_user().firstname,
                                 mail=current_user.get_db_user().email)
-    
+
     else:
-    
+
         if request.method == 'GET':
             return render_template("my_profile.html", name=current_user.get_db_user().name,
                                 firstName=current_user.get_db_user().firstname,
