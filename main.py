@@ -257,12 +257,6 @@ def home(page):
                            activities=activities)
 
 
-@app.route('/favicon.ico')
-def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.ico', mimetype='minutes/pictures/bd.jpg')
-
-
 def url_for_other_page(page):
     args = request.view_args.copy()
     args['page'] = page
