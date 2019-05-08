@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-
-from database.db_objects import User, Teacher, Module, TeacherModule
+# Ne s'exécute plus
+from database.db_objects import User, Teacher, Module, TeacherModule, Activity, Repository
 from main import db
 from sqlalchemy.exc import IntegrityError as IntegrityError
+from datetime import datetime
 # Création des tables de la base de donnée
 db.create_all()
 
@@ -48,6 +49,19 @@ db.session.add(poo)
 # Un responsable
 r1 = TeacherModule(module=poo, teacher=t1)
 db.session.add(r1)
+
+# Une activité
+activity = Activity(id=1, module_id=poo.id, name="Lightning XIII", admingroup="Class 7",
+                    start_date=datetime(year=2019, month=10, day=30),
+                    year=2019, end_date=datetime(year=2019, month=10, day=31), nbOfStudent=15)
+db.session.add(activity)
+rep1 = Repository(url="https://fr.wikipedia.org/wiki/Final_Fantasy_VII", activity_id=activity.id)
+db.session.add(rep1)
+rep2 = Repository(url="https://fr.wikipedia.org/wiki/Final_Fantasy_VI", activity_id=activity.id)
+db.session.add(rep2)
+rep3 = Repository(url="https://fr.wikipedia.org/wiki/Final_Fantasy_X", activity_id=activity.id)
+db.session.add(rep3)
+
 
 db.session.commit()
 

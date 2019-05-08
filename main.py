@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-from createNewActivity import create_new_activity
 from flask import Flask, render_template, redirect, url_for, abort, \
-    flash, request
+    flash, request, send_from_directory
+from flask_login import LoginManager, current_user, \
+    logout_user, login_user, login_required
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import login_required, LoginManager, current_user, \
-    logout_user, login_user
-from typing import Dict
 
+from createNewActivity import create_new_activity
+import os
 app = Flask(__name__)
 app.secret_key = ';??f6-*@*HmNjfk.>RLFnQX"<EMUxyNudGVf&[/>rR76q6T)K.k7XNZ2fgsTEV'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data/main.sqlite'
@@ -16,7 +16,8 @@ db = SQLAlchemy(app)
 
 # XXX Nécessaire de le mettre ici pour avoir la bd
 from authentication import login_form, AuthUser
-from database.db_objects import User
+from database.db_objects import User, Activity, Repository, Module, Teacher
+
 db.create_all()
 
 # Flask Login
@@ -33,6 +34,30 @@ def load_user(user_id):
     db_user = User.query.get(int(user_id))
     auth_user = AuthUser(db_user)
     return auth_user
+
+#Debug test
+
+# Permet de tester les requêtes sur les activités
+'''
+from datetime import datetime
+
+poo = Module(name="Programmation Orienté Objet", short_name="POO")
+db.session.add(poo)
+activity = Activity(id=1, module_id=poo.id, name="Lightning XIII", admingroup="Class 7",
+                    start_date=datetime(year=2019, month=10, day=30),
+                    year=2019, end_date=datetime(year=2019, month=10, day=31), nbOfStudent=15)
+db.session.add(activity)
+rep1 = Repository(url="https://fr.wikipedia.org/wiki/Final_Fantasy_VII", activity_id=activity.id)
+db.session.add(rep1)
+rep2 = Repository(url="https://fr.wikipedia.org/wiki/Final_Fantasy_VI", activity_id=activity.id)
+db.session.add(rep2)
+rep3 = Repository(url="https://fr.wikipedia.org/wiki/Final_Fantasy_X", activity_id=activity.id)
+db.session.add(rep3)
+'''
+# Une activité
+
+
+#db.session.commit()
 
 from tools import *
 
@@ -146,12 +171,52 @@ def logout():
     return redirect(url_for("homepage"))
 
 
-@app.route('/my_profile')
+@app.route('/my_profile', methods=['GET', 'POST'])
 @login_required
 def my_profile():
     """ My profile """
-    return render_template("my_profile.html")
-
+    if request.method == 'GET':
+        return render_template("my_profile.html", name=current_user.get_db_user().name,
+                               firstName=current_user.get_db_user().firstname,
+                               mail=current_user.get_db_user().email)
+    elif request.method == 'POST':
+        teacher = Teacher.query.filter_by(user_id=current_user.get_db_user().id)
+        form = request.form
+        api = form.get("newApi")
+        pw = form.get("passwordAct")
+        if api is not None:
+            teacher.gitlab_key = api
+            db.session.commit()
+            flash("Changement de clé d'API effectué", "success")
+            return render_template("my_profile.html", name=current_user.get_db_user().name,
+                                   firstName=current_user.get_db_user().firstname,
+                                   mail=current_user.get_db_user().email)
+        elif pw is not None:
+            npw = form.get("newPassword")
+            npw2 = form.get("newPassword2")
+            if pw == current_user.get_db_user().password_hash:
+                if npw == npw2:
+                    current_user.get_db_user().password_hash = npw
+                    flash("Changement de mot de passe effectué", "success")
+                    db.session.commit()
+                    return render_template("my_profile.html", name=current_user.get_db_user().name,
+                                           firstName=current_user.get_db_user().firstname,
+                                           mail=current_user.get_db_user().email)
+                else:
+                    flash('Les mots de passes doivent correspondre', "danger")
+                    return render_template("my_profile.html", name=current_user.get_db_user().name,
+                                           firstName=current_user.get_db_user().firstname,
+                                           mail=current_user.get_db_user().email)
+            else:
+                flash("Erreur dans le mot de passe", "danger")
+                return render_template("my_profile.html", name=current_user.get_db_user().name,
+                                       firstName=current_user.get_db_user().firstname,
+                                       mail=current_user.get_db_user().email)
+        else:
+            User.query.filter_by(id=current_user.get_db_user().id).delete()
+            db.session.commit()
+            logout_user()
+            return render_template("homepage.html")
 
 @app.route('/forgottenPassword')
 def forgotten_password():
@@ -159,24 +224,24 @@ def forgotten_password():
     return render_template("forgottenPassword.html")
 
 
-@app.route('/activity/', defaults={'page': 1})  # TODO : voir pour les liens de la page avec les chnagements effectués.
-@app.route('/activity/page/<int:page>')
-@login_required
-def activity(page):
-    """
-    activity_example_id = 1
-    all_groups = Repository.query.filter_by(Repository.activity_id == activity_example_id).all()
-    count = Repository.query.filter_by(Repository.activity_id == activity_example_id).count()
-    """
-    all_groups = [Group("Dalmatien {}".format(i), "/") for i in range(1, 102)]  # TODO : requête à la base de données (remplacer)
-    activity_name = "Cruella"  # TODO : requête à la base de données ou avec l'url (remplacer)
-    count = len(all_groups)
+@app.route('/activity/<int:activity_id>', defaults={'page': 1})
+@app.route('/activity/<int:activity_id>/page/<int:page>')
+def activity(page, activity_id):
+    data_base_all_groups = Repository.query.filter_by(activity_id=activity_id).all()
+    count = len(data_base_all_groups)
+    all_groups = [Group(data_base_all_groups[i].url.split("/")[-1],
+                        data_base_all_groups[i].url) for i in range(count)]
+    #count = Repository.query.filter_by(Repository.activity_id == activity_example_id).count()
+    #all_groups = [Group("Dalmatien {}".format(i), "/") for i in range(1, 102)]
+    activity_name = Activity.query.get(activity_id).name
+
     groups = get_groups_for_page(page, all_groups, count)
 
     if not groups and page != 1:
         abort(404)
     pagination = Pagination(page, PER_PAGE, count)
     return render_template("activity.html", pagination=pagination, groups=groups, activity_name=activity_name)
+
 
 @app.route('/home/', defaults={'page': 1})
 @app.route('/home/page/<int:page>')
