@@ -43,7 +43,7 @@ from createNewActivity import create_new_activity, create_groups_for_an_activity
 @app.route('/')
 def homepage():
     """Homepage"""
-    return render_template("homepage.html", c="connected")
+    return render_template("homepage.html")
 
 
 @app.route('/signup', methods=['GET', 'POST'])
