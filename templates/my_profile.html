@@ -34,7 +34,7 @@
         <form method="post" action="{{ url_for("my_profile") }}">
             <div class="form-group">
                 <label for="newApi">Clé d’API Gitlab</label>
-                <input type="password" class="form-control form-control-lg" id="newApi" placeholder="Entrez votre nouvelle clé d'API" required>
+                <input type="password" class="form-control form-control-lg" id="newApi" name="newApi" placeholder="Entrez votre nouvelle clé d'API" required>
             </div>
 
             <div class="form-group text-center">
@@ -51,17 +51,17 @@
         <form method="post" action="{{ url_for("my_profile") }}">
             <div class="form-group">
                 <label for="passwordAct">Mot de passe</label>
-                <input type="password" class="form-control form-control-lg" id="passwordAct" placeholder="Entrez votre mot de passe actuel" required>
+                <input type="password" class="form-control form-control-lg" id="passwordAct" name="passwordAct" placeholder="Entrez votre mot de passe actuel" required>
             </div>
 
             <div class="form-group">
                 <label for="newPassword">Nouveau mot de passe</label>
-                <input type="password" class="form-control form-control-lg" id="newPassword" placeholder="Entrez votre nouveau mot de passe" required>
+                <input type="password" class="form-control form-control-lg" id="newPassword" name="newPassword" placeholder="Entrez votre nouveau mot de passe" required>
             </div>
 
             <div class="form-group">
                 <label for="newPassword2">Vérification du nouveau mot de passe</label>
-                <input type="password" class="form-control form-control-lg" id="newPassword2" placeholder="Entrez à nouveau votre nouveau mot de passe" required>
+                <input type="password" class="form-control form-control-lg" id="newPassword2" name="newPassword2" placeholder="Entrez à nouveau votre nouveau mot de passe" required>
             </div>
 
             <div class="form-group text-center">
@@ -75,9 +75,9 @@
         <hr class="container horiz-bar"/>
 
 
-        <div class="form-group text-center">
+        <form method="post" class="form-group text-center" action="{{ url_for("my_profile") }}">
             <button type="submit" class="btn btn-sm btn-danger">Supprimer le compte</button>
-        </div>
+        </form>
 
     </div>
 </body>

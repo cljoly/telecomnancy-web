@@ -2,13 +2,13 @@
 # coding: utf-8
 
 from flask import Flask, render_template, redirect, url_for, abort, \
-    flash, request
+    flash, request, send_from_directory
 from flask_login import LoginManager, current_user, \
     logout_user, login_user
 from flask_sqlalchemy import SQLAlchemy
 
 from createNewActivity import create_new_activity
-
+import os
 app = Flask(__name__)
 app.secret_key = ';??f6-*@*HmNjfk.>RLFnQX"<EMUxyNudGVf&[/>rR76q6T)K.k7XNZ2fgsTEV'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data/main.sqlite'
@@ -16,7 +16,7 @@ db = SQLAlchemy(app)
 
 # XXX Nécessaire de le mettre ici pour avoir la bd
 from authentication import login_form, AuthUser
-from database.db_objects import User, Activity, Repository, Module
+from database.db_objects import User, Activity, Repository, Module, Teacher
 
 db.create_all()
 
@@ -171,24 +171,56 @@ def logout():
     return redirect(url_for("homepage"))
 
 
-@app.route('/my_profile')
+@app.route('/my_profile', methods=['GET', 'POST'])
 def my_profile():
     """ My profile """
-
-    return render_template("my_profile.html", name=current_user.get_db_user().name,
-                           firstName=current_user.get_db_user().firstname,
-                           mail=current_user.get_db_user().email)
-
+    if request.method == 'GET':
+        return render_template("my_profile.html", name=current_user.get_db_user().name,
+                               firstName=current_user.get_db_user().firstname,
+                               mail=current_user.get_db_user().email)
+    elif request.method == 'POST':
+        teacher = Teacher.query.filter_by(user_id=current_user.get_db_user().id)
+        form = request.form
+        api = form.get("newApi")
+        pw = form.get("passwordAct")
+        if api is not None:
+            teacher.gitlab_key = api
+            db.session.commit()
+            flash("Changement de clé d'API effectué", "success")
+            return render_template("my_profile.html", name=current_user.get_db_user().name,
+                                   firstName=current_user.get_db_user().firstname,
+                                   mail=current_user.get_db_user().email)
+        elif pw is not None:
+            npw = form.get("newPassword")
+            npw2 = form.get("newPassword2")
+            if pw == current_user.get_db_user().password_hash:
+                if npw == npw2:
+                    current_user.get_db_user().password_hash = npw
+                    flash("Changement de mot de passe effectué", "success")
+                    db.session.commit()
+                    return render_template("my_profile.html", name=current_user.get_db_user().name,
+                                           firstName=current_user.get_db_user().firstname,
+                                           mail=current_user.get_db_user().email)
+                else:
+                    flash('Les mots de passes doivent matcher', "danger")
+                    return render_template("my_profile.html", name=current_user.get_db_user().name,
+                                           firstName=current_user.get_db_user().firstname,
+                                           mail=current_user.get_db_user().email)
+            else:
+                flash("Erreur dans le mot de passe", "danger")
+                return render_template("my_profile.html", name=current_user.get_db_user().name,
+                                       firstName=current_user.get_db_user().firstname,
+                                       mail=current_user.get_db_user().email)
+        else:
+            User.query.filter_by(id=current_user.get_db_user().id).delete()
+            db.session.commit()
+            logout_user()
+            return render_template("homepage.html", c="disconnected")
 
 @app.route('/forgottenPassword')
 def forgotten_password():
     """ Forgotten password """
     return render_template("forgottenPassword.html")
-
-
-@app.route('/profile')
-def profile():
-    return render_template("my_profile.html", name="Farron", firstName="Serah", mail="serah.farron@ffxiii.jp")
 
 
 @app.route('/activity/<int:activity_id>', defaults={'page': 1})  # TODO : voir pour les liens de la page avec les chnagements effectués.
@@ -201,7 +233,7 @@ def activity(page, activity_id):
                         data_base_all_groups[i].url) for i in range(count)]
     #count = Repository.query.filter_by(Repository.activity_id == activity_example_id).count()
     #all_groups = [Group("Dalmatien {}".format(i), "/") for i in range(1, 102)]
-    activity_name = Activity.query.get(activity_id)
+    activity_name = Activity.query.get(activity_id).name
 
     groups = get_groups_for_page(page, all_groups, count)
 
@@ -223,6 +255,12 @@ def home(page):
     return render_template("home.html",
                            pagination=pagination,
                            activities=activities)
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='minutes/pictures/bd.jpg')
 
 
 def url_for_other_page(page):
