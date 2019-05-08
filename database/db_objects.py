@@ -22,8 +22,8 @@ class User(db.Model):
 # Propriétés propres à un utilisateur enseignant
 class Teacher(db.Model):
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, db.ForeignKey('user.id'))
     user = relationship('User')
+    user_id = Column(Integer, db.ForeignKey('user.id'))
     # API key
     gitlab_key = Column(db.String(80), unique=False, nullable=False)
 
@@ -63,8 +63,6 @@ class Activity(db.Model):
     module = relationship("Module")
     # Par exemple, TP1
     name = Column(db.String(120), unique=False, nullable=False)
-    # Par exemple IL ou groupe 1
-    admingroup = Column(db.String(120), unique=False, nullable=False)
     year = Column(Integer)
     # Dates de début et fin
     start_date = Column(DateTime, nullable=False)

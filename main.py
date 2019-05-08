@@ -6,8 +6,12 @@ from flask import Flask, render_template, redirect, url_for, abort, \
 from flask_login import LoginManager, current_user, \
     logout_user, login_user, login_required
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import login_required, LoginManager, current_user, \
+    logout_user, login_user
+from typing import Dict
+import gitlab
 
-from createNewActivity import create_new_activity
+
 import os
 app = Flask(__name__)
 app.secret_key = ';??f6-*@*HmNjfk.>RLFnQX"<EMUxyNudGVf&[/>rR76q6T)K.k7XNZ2fgsTEV'
@@ -19,6 +23,7 @@ from authentication import login_form, AuthUser
 from database.db_objects import User, Activity, Repository, Module, Teacher
 
 db.create_all()
+
 
 # Flask Login
 login_manager = LoginManager()
@@ -60,11 +65,14 @@ db.session.add(rep3)
 #db.session.commit()
 
 from tools import *
+from gitlab_actions import gitlab_server_connection
+from createNewActivity import create_new_activity, create_groups_for_an_activity_with_card_1
+
 
 @app.route('/')
 def homepage():
     """Homepage"""
-    return render_template("homepage.html", c="connected")
+    return render_template("homepage.html")
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -90,9 +98,13 @@ def signup():
                  email=email, password_hash=password, salt='',
                  gitlab_username='')
         db.session.add(u)
+        if gitlab_api is not None:
+            t = Teacher(user=u, user_id=u.id, gitlab_key=gitlab_api)
+            db.session.add(t)
         db.session.commit()
         flash("Vous êtes inscrit, identifiez-vous maintenant", 'success')
         return redirect(url_for("signin"))
+
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -123,7 +135,12 @@ def signin():
         else:
             login_user(auth_user)
             flash("Vous êtes identifié", "success")
-            return redirect(next_page or url_for('home'))
+            if not gitlab_server_connection(current_user.username()):
+                flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
+                return redirect(url_for("my_profile"))
+            else:
+                flash('Connexion à Gitlab effectuée', 'success')
+                return redirect(next_page or url_for('home'))
 
         return render_template("signin.html", next_page=next_page)
     return render_template("signin.html")
@@ -132,24 +149,53 @@ def signin():
 @app.route('/newactivity', methods=['GET', 'POST'])
 @login_required
 def new_activity():
+    success, gl = gitlab_server_connection(current_user.username())
+    if not success:
+        flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
+        return redirect(url_for("my_profile"))
+
     if request.method == 'POST':
-        if create_new_activity() == 1:
-            flash('L\'activité a bien été créée', 'success')
-        else:
-            flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes pour l\'activité puissent être créés', 'info')
-            flash('Formulaire : TODO','warning')
+
+        result = request.form
+        create_new_activity_result, activity_created = create_new_activity(result, db)
+
+        if create_new_activity_result == 1:
+            flash('Le module que vous souhaitez créer existe déjà. Activité non créée.', 'danger')
+        elif create_new_activity_result == 2:
+            flash('Veuillez indiquer un nom de module existant ou un nouveau module. Activité non créée.', 'danger')
+        elif create_new_activity_result == 3:
+            flash('Veuillez indiquer un nom d\'activité. Activité non créée.', 'danger')
+        elif create_new_activity_result == 4:
+            flash('Veuillez indiquer une date de début. Activité non créée.', 'danger')
+        elif create_new_activity_result == 5:
+            flash('Veuillez indiquer une date de fin. Activité non créée.', 'danger')
+        elif create_new_activity_result == 6:
+            flash('Veuillez indiquer au moins un enseignant référent. Activité non créée.', 'danger')
+        elif create_new_activity_result == 7:
+            flash('Veuillez indiquer un nombre d\'étudiant par groupe pour cette l\'activité. Activité non créée.', 'danger')
+        elif create_new_activity_result == 8:
+            flash('Veuillez sélectionner des étudiants pour cette l\'activité. Activité non créée.', 'danger')
+        elif create_new_activity_result == 9:
+            flash('Erreur lors de la création de l\'ajout de l\'activité dans la base de données. Activité non créée.', 'danger')
+        elif create_new_activity_result == 0:
+            flash('Activité ajoutée à la base de données', 'success')
+            print(result)
+            if int(result.get('numberOfStudents')) == 1:
+                res = create_groups_for_an_activity_with_card_1(activity_created, db, gl)
+                if res == 0:
+                    flash('Création du dépôt de l\'activité effectuée', 'success')
+                    # flash('Tous les dépôts des élèves ont été créés', 'success')
+                elif res == 1:
+                    flash('Erreur de création du dépôt de l\'activité', 'danger')
+            else:
+                pass
+
         return render_template("newActivity.html")
 
     elif request.method == 'GET':
         # TODO: une fois le back fait, aller chercher les profs dans la BD
-        teachers = ("Captain", "Iron Man", "Thor", "Scarlett Witch", "Vision", "Black Widow", "Hulk")
-        modules = {
-            "POO": "Programmation Orientée Objet",
-            "C": "Langage C",
-            "Prog web": "Programmation Web",
-            "SD": "Structures de données"
-        }
-        modules = sorted(modules.items())
+        teachers = Teacher.query.all()
+        modules = Module.query.all()
         return render_template("newActivity.html", teachers=teachers, modules=modules)
 
     else:
@@ -175,48 +221,58 @@ def logout():
 @login_required
 def my_profile():
     """ My profile """
-    if request.method == 'GET':
+
+    if not gitlab_server_connection(current_user.username()):
+        flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
         return render_template("my_profile.html", name=current_user.get_db_user().name,
-                               firstName=current_user.get_db_user().firstname,
-                               mail=current_user.get_db_user().email)
-    elif request.method == 'POST':
-        teacher = Teacher.query.filter_by(user_id=current_user.get_db_user().id)
-        form = request.form
-        api = form.get("newApi")
-        pw = form.get("passwordAct")
-        if api is not None:
-            teacher.gitlab_key = api
-            db.session.commit()
-            flash("Changement de clé d'API effectué", "success")
+                                firstName=current_user.get_db_user().firstname,
+                                mail=current_user.get_db_user().email)
+    
+    else:
+    
+        if request.method == 'GET':
             return render_template("my_profile.html", name=current_user.get_db_user().name,
-                                   firstName=current_user.get_db_user().firstname,
-                                   mail=current_user.get_db_user().email)
-        elif pw is not None:
-            npw = form.get("newPassword")
-            npw2 = form.get("newPassword2")
-            if pw == current_user.get_db_user().password_hash:
-                if npw == npw2:
-                    current_user.get_db_user().password_hash = npw
-                    flash("Changement de mot de passe effectué", "success")
-                    db.session.commit()
-                    return render_template("my_profile.html", name=current_user.get_db_user().name,
-                                           firstName=current_user.get_db_user().firstname,
-                                           mail=current_user.get_db_user().email)
-                else:
-                    flash('Les mots de passes doivent correspondre', "danger")
-                    return render_template("my_profile.html", name=current_user.get_db_user().name,
-                                           firstName=current_user.get_db_user().firstname,
-                                           mail=current_user.get_db_user().email)
-            else:
-                flash("Erreur dans le mot de passe", "danger")
+                                firstName=current_user.get_db_user().firstname,
+                                mail=current_user.get_db_user().email)
+        elif request.method == 'POST':
+            teacher = Teacher.query.filter_by(user_id=current_user.get_db_user().id)
+            form = request.form
+            api = form.get("newApi")
+            pw = form.get("passwordAct")
+            if api is not None:
+                teacher.gitlab_key = api
+                db.session.commit()
+                flash("Changement de clé d'API effectué", "success")
                 return render_template("my_profile.html", name=current_user.get_db_user().name,
-                                       firstName=current_user.get_db_user().firstname,
-                                       mail=current_user.get_db_user().email)
-        else:
-            User.query.filter_by(id=current_user.get_db_user().id).delete()
-            db.session.commit()
-            logout_user()
-            return render_template("homepage.html")
+                                    firstName=current_user.get_db_user().firstname,
+                                    mail=current_user.get_db_user().email)
+            elif pw is not None:
+                npw = form.get("newPassword")
+                npw2 = form.get("newPassword2")
+                if pw == current_user.get_db_user().password_hash:
+                    if npw == npw2:
+                        current_user.get_db_user().password_hash = npw
+                        flash("Changement de mot de passe effectué", "success")
+                        db.session.commit()
+                        return render_template("my_profile.html", name=current_user.get_db_user().name,
+                                            firstName=current_user.get_db_user().firstname,
+                                            mail=current_user.get_db_user().email)
+                    else:
+                        flash('Les mots de passes doivent correspondre', "danger")
+                        return render_template("my_profile.html", name=current_user.get_db_user().name,
+                                            firstName=current_user.get_db_user().firstname,
+                                            mail=current_user.get_db_user().email)
+                else:
+                    flash("Erreur dans le mot de passe", "danger")
+                    return render_template("my_profile.html", name=current_user.get_db_user().name,
+                                        firstName=current_user.get_db_user().firstname,
+                                        mail=current_user.get_db_user().email)
+            else:
+                User.query.filter_by(id=current_user.get_db_user().id).delete()
+                db.session.commit()
+                logout_user()
+                return render_template("homepage.html")
+
 
 @app.route('/forgottenPassword')
 def forgotten_password():
