@@ -172,43 +172,45 @@ def new_activity():
 
         result = request.form
         print(result)
-        create_new_activity_result, activity_created, gitlab_activity_project = create_new_activity(result, db, gl)
+        #TODO : enlever le test du nombre d'élèves ici après implémentation fonctionnalité pour cardinalité > 1
+        if int(result.get('numberOfStudents')) == 1:
+            create_new_activity_result, activity_created, gitlab_activity_project = create_new_activity(result, db, gl)
 
-        if create_new_activity_result == 1:
-            flash('Le module que vous souhaitez créer existe déjà. Activité non créée.', 'danger')
-        elif create_new_activity_result == 3:
-            flash('Veuillez indiquer un nom d\'activité. Activité non créée.', 'danger')
-        elif create_new_activity_result == 4:
-            flash('Veuillez indiquer une date de début. Activité non créée.', 'danger')
-        elif create_new_activity_result == 5:
-            flash('Veuillez indiquer une date de fin. Activité non créée.', 'danger')
-        elif create_new_activity_result == 6:
-            flash('Veuillez indiquer au moins un enseignant référent. Activité non créée.', 'danger')
-        elif create_new_activity_result == 7:
-            flash('Veuillez indiquer un nombre d\'étudiant par groupe pour cette l\'activité. Activité non créée.', 'danger')
-        elif create_new_activity_result == 8:
-            flash('Veuillez sélectionner des étudiants pour cette l\'activité. Activité non créée.', 'danger')
-        elif create_new_activity_result == 9:
-            flash('Erreur lors de la création de l\'ajout de l\'activité dans la base de données. Activité non créée.', 'danger')
-        elif create_new_activity_result == 10:
-            flash('Erreur de création du dépôt de l\'activité. Activité non créée', 'danger')
-        elif create_new_activity_result == 11:
-            flash('Une activité porte déjà le nom de l\'activité que vous souhaitez créer. Activité non créée', 'danger')
-        elif create_new_activity_result == 0:
-            flash('Activité ajoutée à la base de données', 'success')
-            #print(result)
-            #print(result.to_dict(flat=False).get('selectedStudents'))
-            if int(result.get('numberOfStudents')) == 1:
-                res = create_groups_for_an_activity_with_card_1(activity_created, db, gl, gitlab_activity_project, result.to_dict(flat=False).get('selectedStudents'))
-                if res == 0:
-                    flash('Création du dépôt de l\'activité effectuée', 'success')
-                    flash('Tous les dépôts des élèves ont été créés', 'success')
-                elif res == 1:
-                    flash('Erreur dans l\'insertion dans la BD le fork de l\'activité', 'danger')
-                elif res == 2:
-                    flash('Erreur dans le fork de l\'activité', 'danger')
-            else:
-                pass
+            if create_new_activity_result == 1:
+                flash('Le module que vous souhaitez créer existe déjà. Activité non créée.', 'danger')
+            elif create_new_activity_result == 3:
+                flash('Veuillez indiquer un nom d\'activité. Activité non créée.', 'danger')
+            elif create_new_activity_result == 4:
+                flash('Veuillez indiquer une date de début. Activité non créée.', 'danger')
+            elif create_new_activity_result == 5:
+                flash('Veuillez indiquer une date de fin. Activité non créée.', 'danger')
+            elif create_new_activity_result == 6:
+                flash('Veuillez indiquer au moins un enseignant référent. Activité non créée.', 'danger')
+            elif create_new_activity_result == 7:
+                flash('Veuillez indiquer un nombre d\'étudiant par groupe pour cette l\'activité. Activité non créée.', 'danger')
+            elif create_new_activity_result == 8:
+                flash('Veuillez sélectionner des étudiants pour cette l\'activité. Activité non créée.', 'danger')
+            elif create_new_activity_result == 9:
+                flash('Erreur lors de la création de l\'ajout de l\'activité dans la base de données. Activité non créée.', 'danger')
+            elif create_new_activity_result == 10:
+                flash('Erreur de création du dépôt de l\'activité. Activité non créée', 'danger')
+            elif create_new_activity_result == 11:
+                flash('Une activité porte déjà le nom de l\'activité que vous souhaitez créer. Activité non créée', 'danger')
+            elif create_new_activity_result == 0:
+                flash('Activité ajoutée à la base de données', 'success')
+                #print(result)
+                #print(result.to_dict(flat=False).get('selectedStudents'))
+                if int(result.get('numberOfStudents')) == 1:
+                    res = create_groups_for_an_activity_with_card_1(activity_created, db, gl, gitlab_activity_project, result.to_dict(flat=False).get('selectedStudents'))
+                    if res == 0:
+                        flash('Création du dépôt de l\'activité effectuée', 'success')
+                        flash('Tous les dépôts des élèves ont été créés', 'success')
+                    elif res == 1:
+                        flash('Erreur dans l\'insertion dans la BD le fork de l\'activité', 'danger')
+                    elif res == 2:
+                        flash('Erreur dans le fork de l\'activité', 'danger')
+        else:
+            flash('Fonctionnalité encore non implémentée. Tout vient à point qui sait attendre. Essayez avec nb_étudiant = 1 :-)','warning')
 
         teachers = Teacher.query.all()
         modules = Module.query.all()
