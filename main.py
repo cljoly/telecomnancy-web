@@ -206,7 +206,9 @@ def new_activity():
             else:
                 pass
 
-        return render_template("newActivity.html")
+        teachers = Teacher.query.all()
+        modules = Module.query.all()
+        return render_template("newActivity.html", teachers=teachers, modules=modules)
 
     elif request.method == 'GET':
         gl = gitlab_server_connection(current_user.username())
