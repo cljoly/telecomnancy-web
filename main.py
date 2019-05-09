@@ -165,12 +165,10 @@ def signin():
 @app.route('/newactivity', methods=['GET', 'POST'])
 @login_required
 def new_activity():
-    gl = gitlab_server_connection(current_user.username())
-    if not gl:
-        flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
-        return redirect(url_for("my_profile"))
-
     if request.method == 'POST':
+        gl = gitlab_server_connection(current_user.username())
+        if not gl:
+            return redirect(url_for("my_profile"))
 
         result = request.form
         create_new_activity_result, activity_created = create_new_activity(result, db)
@@ -211,7 +209,10 @@ def new_activity():
         return render_template("newActivity.html")
 
     elif request.method == 'GET':
-        # TODO: une fois le back fait, aller chercher les profs dans la BD
+        gl = gitlab_server_connection(current_user.username())
+        if not gl:
+            return redirect(url_for("my_profile"))
+
         teachers = Teacher.query.all()
         modules = Module.query.all()
         return render_template("newActivity.html", teachers=teachers, modules=modules)
@@ -240,10 +241,9 @@ def logout():
 def my_profile():
     """ My profile """
 
-    if gitlab_server_connection(current_user.username()) is None:
-        flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
-
     if request.method == 'GET':
+        if gitlab_server_connection(current_user.username()) is None:
+            flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
         return render_template("my_profile.html", name=current_user.get_db_user().name,
                             firstName=current_user.get_db_user().firstname,
                             mail=current_user.get_db_user().email)
@@ -258,6 +258,8 @@ def my_profile():
 
             db.session.commit()
             flash("Changement de clé d'API effectué", "success")
+            if gitlab_server_connection(current_user.username()) is None:
+                flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
             return render_template("my_profile.html", name=current_user.get_db_user().name,
                                 firstName=current_user.get_db_user().firstname,
                                 mail=current_user.get_db_user().email)
