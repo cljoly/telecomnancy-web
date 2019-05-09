@@ -1,88 +1,97 @@
-from database.db_objects import Activity, Module
+from database.db_objects import Activity, Module, Teacher, Repository
 from sqlalchemy.exc import IntegrityError as IntegrityError
 from datetime import datetime
 import gitlab
 
 
-def create_new_activity(result, db):
+def create_new_activity(result, db, gl):
 
-    if result.get('module') is None:
-        if result.get('moduleName') is not None and result.get('moduleAbbreviation') is not None:
-            module = Module(name=result.get('moduleName'), short_name=result.get('moduleAbbreviation'))
-            print("module nouveau :", module)
+    # Vérification des modules : création d'un nouveau si demandé par l'utilisateur
 
-            try:
-                db.session.add(module)
-                db.session.commit()
-            except IntegrityError:
-                db.session.rollback()
-                return 1, None
+    if result.get('moduleName') and result.get('moduleAbbreviation'):
+        module = Module(name=result.get('moduleName'), short_name=result.get('moduleAbbreviation'))
 
-        else:
-            return 2, None
+        try:
+            db.session.add(module)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return 1, None, None
 
     else:
         module = Module.query.filter(Module.short_name == result.get('module')).first()
-        print("Module de la bd : ", module)
 
-    print("module après if/else :", module)
-
+    # Test des champs vides
     if result.get('activityName') is None:
-        return 3, None
+        return 3, None, None
 
     if result.get('beginDate') is None:
-        return 4, None
+        return 4, None, None
 
     if result.get('endDate') is None:
-        return 5, None
+        return 5, None, None
 
-    if result.get('selectedTeachers') is None:
-        return 6, None
+    if result.get('selectedTeacher') is None:
+        return 6, None, None
 
     if result.get('numberOfStudents') is None:
-        return 7, None
+        return 7, None, None
 
     if result.get('selectedStudents') is None:
-        return 8, None
+        return 8, None, None
 
+    # Conversion des dates
     beginDate = datetime.strptime(result.get('beginDate'), '%Y-%m-%d')
     endDate = datetime.strptime(result.get('endDate'), '%Y-%m-%d')
 
-    new_activity = Activity(module_id=module.id, name=result.get('activityName'), year=int(datetime.now().year), start_date=beginDate, end_date=endDate, nbOfStudent=result.get('numberOfStudents', type=int))
+    teacher = Teacher.query.filter(Teacher.id == result.get('selectedTeacher')).first()
+
+    # Création du dépôt de l'activité
+    # TODO insérer dates début et fin au repo
+    potential_activity = Activity.query.filter(Activity.name == result.get('activityName')).first()
+    if not potential_activity:
+        try:
+            project = gl.projects.create({'name': result.get('activityName'), 'visibility': 'private', 'issues_enabled': True, 'merge_requests_enabled': True, 'jobs_enabled': True, 'wiki_enabled': True })
+        except Exception as e:
+            print("Erreur de création du dépôt de l'activité: ", e)
+            return 10, None, None
+    else:
+        return 11, None, None
+
+    #Création de la nouvelle activité
+    new_activity = Activity(module_id=module.id, name=result.get('activityName'), year=int(datetime.now().year),
+                            start_date=beginDate, end_date=endDate, nbOfStudent=result.get('numberOfStudents', type=int),
+                            teacher_id=teacher.id, url_master_repo=project.web_url)
 
     try:
         db.session.add(new_activity)
         db.session.commit()
     except IntegrityError as error:
+        # Suppression du dépôt créé pour enlever tout résidu
+        project.delete()
         print(error)
         db.session.rollback()
-        return 9, None
+        return 9, None, None
 
-    return 0, new_activity
+    return 0, new_activity, project
 
 
-def create_groups_for_an_activity_with_card_1(activity, db, gl):
-
-    # Création du dépôt de l'activité
-    # TODO insérer dates début et fin au repo
-    try:
-        project = gl.projects.create({'name': activity.name, 'visibility': 'private', 'issues_enabled': True, 'merge_requests_enabled': True, 'jobs_enabled': True, 'wiki_enabled': True })
-    except Exception as e:
-        print("Erreur de création du dépôt de l'activité: ", e)
-        return 1
+def create_groups_for_an_activity_with_card_1(activity, db, gl, gitlab_activity_project, selected_students):
 
     # Fork du dépôt de l'activité pour créer un repo par élève
     try:
-        username_to_add = ("Laury.De-Donato", "toto")
-        for username in username_to_add:
+        print("entrée fonc : ", selected_students)
+        for username in selected_students:
             list_of_users_with_this_username = gl.users.list(username=username)
+            print(username)
             if list_of_users_with_this_username:
                 user = list_of_users_with_this_username[0]
-                name = "%s %s" % (project.name, user.name)
-                path = "%s_%s" % (project.path, user.username)
+                name = "%s %s" % (gitlab_activity_project.name, user.name)
+                path = "%s_%s" % (gitlab_activity_project.path, user.username)
+                print(user)
 
                 # Création du fork
-                fork = project.forks.create({"name": name, "path": path})
+                fork = gitlab_activity_project.forks.create({"name": name, "path": path})
 
                 # Récupération du projet (l'object Fork n'est pas un Project, donc il faut récupérer le bon object Project)
                 fork_project = gl.projects.get(fork.id)
@@ -90,9 +99,21 @@ def create_groups_for_an_activity_with_card_1(activity, db, gl):
                 # Ajout d'un membre en tant que développeur
                 fork_project.members.create({'user_id': user.id, 'access_level': gitlab.DEVELOPER_ACCESS})
 
+                # Liaison du repo à l'activité dans la BD
+                repo = Repository(url=fork_project.web_url, activity=activity)
+
+                try:
+                    db.session.add(repo)
+                    db.session.commit()
+                except IntegrityError as error:
+                    # Suppression du dépôt créé pour enlever tout résidu
+                    fork_project.delete()
+                    print(error)
+                    db.session.rollback()
+                    return 1
+
     except Exception as e:
         print("Erreur dans le fork :", e)
         return 2
-
 
     return 0

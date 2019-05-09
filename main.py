@@ -171,12 +171,11 @@ def new_activity():
             return redirect(url_for("my_profile"))
 
         result = request.form
-        create_new_activity_result, activity_created = create_new_activity(result, db)
+        print(result)
+        create_new_activity_result, activity_created, gitlab_activity_project = create_new_activity(result, db, gl)
 
         if create_new_activity_result == 1:
             flash('Le module que vous souhaitez créer existe déjà. Activité non créée.', 'danger')
-        elif create_new_activity_result == 2:
-            flash('Veuillez indiquer un nom de module existant ou un nouveau module. Activité non créée.', 'danger')
         elif create_new_activity_result == 3:
             flash('Veuillez indiquer un nom d\'activité. Activité non créée.', 'danger')
         elif create_new_activity_result == 4:
@@ -191,16 +190,21 @@ def new_activity():
             flash('Veuillez sélectionner des étudiants pour cette l\'activité. Activité non créée.', 'danger')
         elif create_new_activity_result == 9:
             flash('Erreur lors de la création de l\'ajout de l\'activité dans la base de données. Activité non créée.', 'danger')
+        elif create_new_activity_result == 10:
+            flash('Erreur de création du dépôt de l\'activité. Activité non créée', 'danger')
+        elif create_new_activity_result == 11:
+            flash('Une activité porte déjà le nom de l\'activité que vous souhaitez créer. Activité non créée', 'danger')
         elif create_new_activity_result == 0:
             flash('Activité ajoutée à la base de données', 'success')
-            print(result)
+            #print(result)
+            #print(result.to_dict(flat=False).get('selectedStudents'))
             if int(result.get('numberOfStudents')) == 1:
-                res = create_groups_for_an_activity_with_card_1(activity_created, db, gl)
+                res = create_groups_for_an_activity_with_card_1(activity_created, db, gl, gitlab_activity_project, result.to_dict(flat=False).get('selectedStudents'))
                 if res == 0:
                     flash('Création du dépôt de l\'activité effectuée', 'success')
                     flash('Tous les dépôts des élèves ont été créés', 'success')
                 elif res == 1:
-                    flash('Erreur de création du dépôt de l\'activité', 'danger')
+                    flash('Erreur dans l\'insertion dans la BD le fork de l\'activité', 'danger')
                 elif res == 2:
                     flash('Erreur dans le fork de l\'activité', 'danger')
             else:
