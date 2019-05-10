@@ -99,9 +99,9 @@
         <section id="add_teachers" class="container">
 
             <div class="form-group">
-                <select name="selectedTeachers" id="teachers" multiple class="form-control custom-select-lg" required>
+                <select name="selectedTeacher" id="teachers" multiple class="form-control custom-select-lg" required>
                     {% for t in teachers %}
-                        <option value="{{ t.user.username }}">{{ t.user.firstname }} {{ t.user.name }}</option>
+                        <option value="{{ t.id }}">{{ t.user.firstname }} {{ t.user.name }}</option>
                     {% endfor %}
 
                 </select>
@@ -243,7 +243,7 @@
                 for (let l of lines) {
                     let student = l.split(',');
                     let select = document.getElementById("loaded_students");
-                    select.options.add(new Option(student[0] + " " + student[1], student[2], false, false));
+                    select.options.add(new Option(student[0] + " " + student[1], student[3], false, false));
                 }
 
             });

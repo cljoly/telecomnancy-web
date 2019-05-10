@@ -165,51 +165,62 @@ def signin():
 @app.route('/newactivity', methods=['GET', 'POST'])
 @login_required
 def new_activity():
-    success, gl = gitlab_server_connection(current_user.username())
-    if not success:
-        flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
-        return redirect(url_for("my_profile"))
-
     if request.method == 'POST':
+        gl = gitlab_server_connection(current_user.username())
+        if not gl:
+            return redirect(url_for("my_profile"))
 
         result = request.form
-        create_new_activity_result, activity_created = create_new_activity(result, db)
+        print(result)
+        #TODO : enlever le test du nombre d'élèves ici après implémentation fonctionnalité pour cardinalité > 1
+        if int(result.get('numberOfStudents')) == 1:
+            create_new_activity_result, activity_created, gitlab_activity_project = create_new_activity(result, db, gl)
 
-        if create_new_activity_result == 1:
-            flash('Le module que vous souhaitez créer existe déjà. Activité non créée.', 'danger')
-        elif create_new_activity_result == 2:
-            flash('Veuillez indiquer un nom de module existant ou un nouveau module. Activité non créée.', 'danger')
-        elif create_new_activity_result == 3:
-            flash('Veuillez indiquer un nom d\'activité. Activité non créée.', 'danger')
-        elif create_new_activity_result == 4:
-            flash('Veuillez indiquer une date de début. Activité non créée.', 'danger')
-        elif create_new_activity_result == 5:
-            flash('Veuillez indiquer une date de fin. Activité non créée.', 'danger')
-        elif create_new_activity_result == 6:
-            flash('Veuillez indiquer au moins un enseignant référent. Activité non créée.', 'danger')
-        elif create_new_activity_result == 7:
-            flash('Veuillez indiquer un nombre d\'étudiant par groupe pour cette l\'activité. Activité non créée.', 'danger')
-        elif create_new_activity_result == 8:
-            flash('Veuillez sélectionner des étudiants pour cette l\'activité. Activité non créée.', 'danger')
-        elif create_new_activity_result == 9:
-            flash('Erreur lors de la création de l\'ajout de l\'activité dans la base de données. Activité non créée.', 'danger')
-        elif create_new_activity_result == 0:
-            flash('Activité ajoutée à la base de données', 'success')
-            print(result)
-            if int(result.get('numberOfStudents')) == 1:
-                res = create_groups_for_an_activity_with_card_1(activity_created, db, gl)
-                if res == 0:
-                    flash('Création du dépôt de l\'activité effectuée', 'success')
-                    # flash('Tous les dépôts des élèves ont été créés', 'success')
-                elif res == 1:
-                    flash('Erreur de création du dépôt de l\'activité', 'danger')
-            else:
-                pass
+            if create_new_activity_result == 1:
+                flash('Le module que vous souhaitez créer existe déjà. Activité non créée.', 'danger')
+            elif create_new_activity_result == 3:
+                flash('Veuillez indiquer un nom d\'activité. Activité non créée.', 'danger')
+            elif create_new_activity_result == 4:
+                flash('Veuillez indiquer une date de début. Activité non créée.', 'danger')
+            elif create_new_activity_result == 5:
+                flash('Veuillez indiquer une date de fin. Activité non créée.', 'danger')
+            elif create_new_activity_result == 6:
+                flash('Veuillez indiquer au moins un enseignant référent. Activité non créée.', 'danger')
+            elif create_new_activity_result == 7:
+                flash('Veuillez indiquer un nombre d\'étudiant par groupe pour cette l\'activité. Activité non créée.', 'danger')
+            elif create_new_activity_result == 8:
+                flash('Veuillez sélectionner des étudiants pour cette l\'activité. Activité non créée.', 'danger')
+            elif create_new_activity_result == 9:
+                flash('Erreur lors de la création de l\'ajout de l\'activité dans la base de données. Activité non créée.', 'danger')
+            elif create_new_activity_result == 10:
+                flash('Erreur de création du dépôt de l\'activité. Activité non créée', 'danger')
+            elif create_new_activity_result == 11:
+                flash('Une activité porte déjà le nom de l\'activité que vous souhaitez créer. Activité non créée', 'danger')
+            elif create_new_activity_result == 0:
+                flash('Activité ajoutée à la base de données', 'success')
+                #print(result)
+                #print(result.to_dict(flat=False).get('selectedStudents'))
+                if int(result.get('numberOfStudents')) == 1:
+                    res = create_groups_for_an_activity_with_card_1(activity_created, db, gl, gitlab_activity_project, result.to_dict(flat=False).get('selectedStudents'))
+                    if res == 0:
+                        flash('Création du dépôt de l\'activité effectuée', 'success')
+                        flash('Tous les dépôts des élèves ont été créés', 'success')
+                    elif res == 1:
+                        flash('Erreur dans l\'insertion dans la BD le fork de l\'activité', 'danger')
+                    elif res == 2:
+                        flash('Erreur dans le fork de l\'activité', 'danger')
+        else:
+            flash('Fonctionnalité encore non implémentée. Tout vient à point qui sait attendre. Essayez avec nb_étudiant = 1 :-)','warning')
 
-        return render_template("newActivity.html")
+        teachers = Teacher.query.all()
+        modules = Module.query.all()
+        return render_template("newActivity.html", teachers=teachers, modules=modules)
 
     elif request.method == 'GET':
-        # TODO: une fois le back fait, aller chercher les profs dans la BD
+        gl = gitlab_server_connection(current_user.username())
+        if not gl:
+            return redirect(url_for("my_profile"))
+
         teachers = Teacher.query.all()
         modules = Module.query.all()
         return render_template("newActivity.html", teachers=teachers, modules=modules)
@@ -238,56 +249,54 @@ def logout():
 def my_profile():
     """ My profile """
 
-    if not gitlab_server_connection(current_user.username()):
-        flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
+    if request.method == 'GET':
+        if gitlab_server_connection(current_user.username()) is None:
+            flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
         return render_template("my_profile.html", name=current_user.get_db_user().name,
-                                firstName=current_user.get_db_user().firstname,
-                                mail=current_user.get_db_user().email)
+                            firstName=current_user.get_db_user().firstname,
+                            mail=current_user.get_db_user().email)
 
-    else:
+    elif request.method == 'POST':
+        teacher = Teacher.query.filter_by(user_id=current_user.get_db_user().id).first()
+        form = request.form
+        api = form.get("newApi")
+        pw = form.get("passwordAct")
+        if api is not None:
+            teacher.gitlab_key = api
 
-        if request.method == 'GET':
+            db.session.commit()
+            flash("Changement de clé d'API effectué", "success")
+            if gitlab_server_connection(current_user.username()) is None:
+                flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
             return render_template("my_profile.html", name=current_user.get_db_user().name,
                                 firstName=current_user.get_db_user().firstname,
                                 mail=current_user.get_db_user().email)
-        elif request.method == 'POST':
-            teacher = Teacher.query.filter_by(user_id=current_user.get_db_user().id)
-            form = request.form
-            api = form.get("newApi")
-            pw = form.get("passwordAct")
-            if api is not None:
-                teacher.gitlab_key = api
-                db.session.commit()
-                flash("Changement de clé d'API effectué", "success")
-                return render_template("my_profile.html", name=current_user.get_db_user().name,
-                                    firstName=current_user.get_db_user().firstname,
-                                    mail=current_user.get_db_user().email)
-            elif pw is not None:
-                npw = form.get("newPassword")
-                npw2 = form.get("newPassword2")
-                if pw == current_user.get_db_user().password_hash:
-                    if npw == npw2:
-                        current_user.get_db_user().password_hash = npw
-                        flash("Changement de mot de passe effectué", "success")
-                        db.session.commit()
-                        return render_template("my_profile.html", name=current_user.get_db_user().name,
-                                            firstName=current_user.get_db_user().firstname,
-                                            mail=current_user.get_db_user().email)
-                    else:
-                        flash('Les mots de passes doivent correspondre', "danger")
-                        return render_template("my_profile.html", name=current_user.get_db_user().name,
-                                            firstName=current_user.get_db_user().firstname,
-                                            mail=current_user.get_db_user().email)
+        elif pw is not None:
+            npw = form.get("newPassword")
+            npw2 = form.get("newPassword2")
+            if pw == current_user.get_db_user().password_hash:
+                if npw == npw2:
+                    current_user.get_db_user().password_hash = npw
+                    flash("Changement de mot de passe effectué", "success")
+                    db.session.commit()
+                    return render_template("my_profile.html", name=current_user.get_db_user().name,
+                                        firstName=current_user.get_db_user().firstname,
+                                        mail=current_user.get_db_user().email)
                 else:
-                    flash("Erreur dans le mot de passe", "danger")
+                    flash('Les mots de passes doivent correspondre', "danger")
                     return render_template("my_profile.html", name=current_user.get_db_user().name,
                                         firstName=current_user.get_db_user().firstname,
                                         mail=current_user.get_db_user().email)
             else:
-                User.query.filter_by(id=current_user.get_db_user().id).delete()
-                db.session.commit()
-                logout_user()
-                return render_template("homepage.html")
+                flash("Erreur dans le mot de passe", "danger")
+                return render_template("my_profile.html", name=current_user.get_db_user().name,
+                                    firstName=current_user.get_db_user().firstname,
+                                    mail=current_user.get_db_user().email)
+        else:
+            User.query.filter_by(id=current_user.get_db_user().id).delete()
+            db.session.commit()
+            logout_user()
+            return render_template("homepage.html")
 
 
 @app.route('/forgottenPassword')

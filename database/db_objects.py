@@ -46,15 +46,6 @@ class TeacherModule(db.Model):
     teacher = relationship("Teacher")
 
 
-# Table d’association des enseignants à une activité
-class ActivityTeacher(db.Model):
-    id = Column(Integer, primary_key=True)
-    teacher_id = Column(Integer, db.ForeignKey('teacher.id'))
-    teacher = relationship('Teacher')
-    activity_id = Column(Integer, db.ForeignKey('activity.id'))
-    activity = relationship('Activity')
-
-
 # Projet, TP…
 class Activity(db.Model):
     id = Column(Integer, primary_key=True)
@@ -69,16 +60,11 @@ class Activity(db.Model):
     end_date = Column(DateTime, nullable=False)
     # Taille maximum d’un groupe
     nbOfStudent = Column(Integer, nullable=False)
-
-
-# Table d’association élève / dépôt
-class UserRepository(db.Model):
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, db.ForeignKey('user.id'))
-    user = relationship("User")
-    user_set_id = Column(Integer, db.ForeignKey('repository.id'))
-    user_set = relationship("Repository")
-
+    # Lien vers le repo maitre
+    url_master_repo = Column(db.String(300), unique=False, nullable=False)
+    # Enseignant référent
+    teacher_id = Column(Integer, db.ForeignKey('teacher.id'))
+    teacher = relationship('Teacher')
 
 # Dépot git particulier
 class Repository(db.Model):
