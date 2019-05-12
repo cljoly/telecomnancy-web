@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block header %}
-    <h1>{% block title %}Formulaire de création du groupe pour l'activité TODO_NOM_ACTIVITE{% endblock %}</h1>
+    <h1>{% block title %}Formulaire de création du groupe pour l'activité {{ activityName }}{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
 
-    <form id="newGroupForm" method="post" action="{{ url_for("group_form", activityId=activityId) }}">
+    <form id="newGroupForm" method="post" action="{{ url_for("group_form", form_number=form_number) }}">
 
         <h3 class="left-items">Nom du groupe :</h3>
         <div class="form-group container">
@@ -19,18 +19,8 @@
 
             <div class="container">
                 <div class="form-group">
-                    <label for="nom">Nom</label>
-                    <input type="text" class="form-control form-control-lg" id="nom" placeholder="Entrez votre nom" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="prenom">Prénom</label>
-                    <input type="text" class="form-control form-control-lg" id="prenom" placeholder="Entrez votre prénom" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Adresse mail</label>
-                    <input type="email" class="form-control form-control-lg" id="email" placeholder="@telecomnancy.eu" required>
+                    <label for="nom{{ i }}">Nom d'utilisateur Gitlab</label>
+                    <input type="text" name="username{{ i }}" id="nom{{ i }}" class="form-control form-control-lg" placeholder="Entrez votre nom d'utilisateur Gitlab" required>
                 </div>
             </div>
 
@@ -41,18 +31,8 @@
 
             <div class="container">
                 <div class="form-group">
-                    <label for="nom">Nom</label>
-                    <input type="text" class="form-control form-control-lg" id="nom" placeholder="Entrez votre nom" >
-                </div>
-
-                <div class="form-group">
-                    <label for="prenom">Prénom</label>
-                    <input type="text" class="form-control form-control-lg" id="prenom" placeholder="Entrez votre prénom" >
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Adresse mail</label>
-                    <input type="email" class="form-control form-control-lg" id="email" placeholder="@telecomnancy.eu" >
+                    <label for="nom">Nom d'utilisateur Gitlab</label>
+                    <input type="text" name="username{{ numberOfStudents }}" id="nom{{ numberOfStudents }}" class="form-control form-control-lg" placeholder="Entrez votre nom d'utilisateur Gitlab">
                 </div>
             </div>
 

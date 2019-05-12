@@ -2,6 +2,8 @@ from database.db_objects import Activity, Module, Teacher, Repository
 from sqlalchemy.exc import IntegrityError as IntegrityError
 from datetime import datetime
 import gitlab
+import random
+from flask import flash, url_for
 
 
 def create_new_activity(result, db, gl):
@@ -61,7 +63,7 @@ def create_new_activity(result, db, gl):
     #Création de la nouvelle activité
     new_activity = Activity(module_id=module.id, name=result.get('activityName'), year=int(datetime.now().year),
                             start_date=beginDate, end_date=endDate, nbOfStudent=result.get('numberOfStudents', type=int),
-                            teacher_id=teacher.id, url_master_repo=project.web_url)
+                            teacher_id=teacher.id, id_gitlab_master_repo=project.id)
 
     try:
         db.session.add(new_activity)
@@ -117,3 +119,10 @@ def create_groups_for_an_activity_with_card_1(activity, db, gl, gitlab_activity_
         return 2
 
     return 0
+
+
+def create_groups_for_an_activity_with_multiple_card(activity, db):
+    number = random.randint(1, 100000)
+    activity.form_number = number
+    db.session.commit()
+    return url_for('group_form', form_number=number)

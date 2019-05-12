@@ -66,7 +66,10 @@ db.session.add(rep3)
 
 from tools import *
 from gitlab_actions import gitlab_server_connection
-from createNewActivity import create_new_activity, create_groups_for_an_activity_with_card_1
+from createNewActivity import create_new_activity, create_groups_for_an_activity_with_card_1, \
+    create_groups_for_an_activity_with_multiple_card
+import urllib.parse
+from sqlalchemy.exc import IntegrityError as IntegrityError
 
 
 @app.route('/')
@@ -172,45 +175,45 @@ def new_activity():
 
         result = request.form
         print(result)
-        #TODO : enlever le test du nombre d'élèves ici après implémentation fonctionnalité pour cardinalité > 1
-        if int(result.get('numberOfStudents')) == 1:
-            create_new_activity_result, activity_created, gitlab_activity_project = create_new_activity(result, db, gl)
+        create_new_activity_result, activity_created, gitlab_activity_project = create_new_activity(result, db, gl)
 
-            if create_new_activity_result == 1:
-                flash('Le module que vous souhaitez créer existe déjà. Activité non créée.', 'danger')
-            elif create_new_activity_result == 3:
-                flash('Veuillez indiquer un nom d\'activité. Activité non créée.', 'danger')
-            elif create_new_activity_result == 4:
-                flash('Veuillez indiquer une date de début. Activité non créée.', 'danger')
-            elif create_new_activity_result == 5:
-                flash('Veuillez indiquer une date de fin. Activité non créée.', 'danger')
-            elif create_new_activity_result == 6:
-                flash('Veuillez indiquer au moins un enseignant référent. Activité non créée.', 'danger')
-            elif create_new_activity_result == 7:
-                flash('Veuillez indiquer un nombre d\'étudiant par groupe pour cette l\'activité. Activité non créée.', 'danger')
-            elif create_new_activity_result == 8:
-                flash('Veuillez sélectionner des étudiants pour cette l\'activité. Activité non créée.', 'danger')
-            elif create_new_activity_result == 9:
-                flash('Erreur lors de la création de l\'ajout de l\'activité dans la base de données. Activité non créée.', 'danger')
-            elif create_new_activity_result == 10:
-                flash('Erreur de création du dépôt de l\'activité. Activité non créée', 'danger')
-            elif create_new_activity_result == 11:
-                flash('Une activité porte déjà le nom de l\'activité que vous souhaitez créer. Activité non créée', 'danger')
-            elif create_new_activity_result == 0:
-                flash('Activité ajoutée à la base de données', 'success')
-                #print(result)
-                #print(result.to_dict(flat=False).get('selectedStudents'))
-                if int(result.get('numberOfStudents')) == 1:
-                    res = create_groups_for_an_activity_with_card_1(activity_created, db, gl, gitlab_activity_project, result.to_dict(flat=False).get('selectedStudents'))
-                    if res == 0:
-                        flash('Création du dépôt de l\'activité effectuée', 'success')
-                        flash('Tous les dépôts des élèves ont été créés', 'success')
-                    elif res == 1:
-                        flash('Erreur dans l\'insertion dans la BD le fork de l\'activité', 'danger')
-                    elif res == 2:
-                        flash('Erreur dans le fork de l\'activité', 'danger')
-        else:
-            flash('Fonctionnalité encore non implémentée. Tout vient à point qui sait attendre. Essayez avec nb_étudiant = 1 :-)','warning')
+        if create_new_activity_result == 1:
+            flash('Le module que vous souhaitez créer existe déjà. Activité non créée.', 'danger')
+        elif create_new_activity_result == 3:
+            flash('Veuillez indiquer un nom d\'activité. Activité non créée.', 'danger')
+        elif create_new_activity_result == 4:
+            flash('Veuillez indiquer une date de début. Activité non créée.', 'danger')
+        elif create_new_activity_result == 5:
+            flash('Veuillez indiquer une date de fin. Activité non créée.', 'danger')
+        elif create_new_activity_result == 6:
+            flash('Veuillez indiquer au moins un enseignant référent. Activité non créée.', 'danger')
+        elif create_new_activity_result == 7:
+            flash('Veuillez indiquer un nombre d\'étudiant par groupe pour cette l\'activité. Activité non créée.', 'danger')
+        elif create_new_activity_result == 8:
+            flash('Veuillez sélectionner des étudiants pour cette l\'activité. Activité non créée.', 'danger')
+        elif create_new_activity_result == 9:
+            flash('Erreur lors de la création de l\'ajout de l\'activité dans la base de données. Activité non créée.', 'danger')
+        elif create_new_activity_result == 10:
+            flash('Erreur de création du dépôt de l\'activité. Activité non créée', 'danger')
+        elif create_new_activity_result == 11:
+            flash('Une activité porte déjà le nom de l\'activité que vous souhaitez créer. Activité non créée', 'danger')
+        elif create_new_activity_result == 0:
+            flash('Activité ajoutée à la base de données', 'success')
+            # print(result)
+            # print(result.to_dict(flat=False).get('selectedStudents'))
+            if int(result.get('numberOfStudents')) == 1:
+                res = create_groups_for_an_activity_with_card_1(activity_created, db, gl, gitlab_activity_project, result.to_dict(flat=False).get('selectedStudents'))
+                if res == 0:
+                    flash('Création du dépôt de l\'activité effectuée', 'success')
+                    flash('Tous les dépôts des élèves ont été créés', 'success')
+                elif res == 1:
+                    flash('Erreur dans l\'insertion dans la BD le fork de l\'activité', 'danger')
+                elif res == 2:
+                    flash('Erreur dans le fork de l\'activité', 'danger')
+            elif 1 < int(result.get('numberOfStudents')) <= 6:
+                url_form = create_groups_for_an_activity_with_multiple_card(activity_created, db)
+                flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes pour l\'activité puissent être créés', 'info')
+                flash('Formulaire : ' + url_form, 'warning')
 
         teachers = Teacher.query.all()
         modules = Module.query.all()
@@ -229,11 +232,76 @@ def new_activity():
         return redirect(url_for("homepage"))
 
 
-@app.route('/newactivity/form/<int:activityId>')
-def group_form(activityId):
-    # TODO : aller chercher le nombre d'étudiants dans la BD
-    numberOfStudents = 4
-    return render_template("newGroupforAnActivityForm.html", activityId=activityId, numberOfStudents=numberOfStudents)
+@app.route('/newactivity/form/<form_number>', methods=['GET', 'POST'])
+def group_form(form_number):
+    activity = Activity.query.filter(Activity.form_number == form_number).first()
+
+    if not activity:
+        flash("Le formulaire que vous demandez ne correspond à aucune activité", 'danger')
+        return redirect(url_for("homepage"))
+
+    if request.method == 'GET':
+        return render_template("newGroupforAnActivityForm.html", form_number=form_number, numberOfStudents=activity.nbOfStudent, activityName=activity.name)
+
+    elif request.method == 'POST':
+        fields = request.form
+        try:
+            gl = gitlab.Gitlab('https://gitlab.telecomnancy.univ-lorraine.fr', private_token=activity.teacher.gitlab_key)
+            gl.auth()
+        except gitlab.exceptions.GitlabAuthenticationError as authentication_error:
+            print("Erreur d'authentification sur gitlab :", authentication_error)
+            flash("Veuillez demander à votre enseignant référent de mettre à jour sa clé d'API. Groupe non créé", 'danger')
+            return render_template("newGroupforAnActivityForm.html", form_number=form_number, numberOfStudents=activity.nbOfStudent, activityName=activity.name)
+
+        try:
+            project = gl.projects.get(activity.id_gitlab_master_repo)
+
+            # On vérifie que tous les utilisateurs existent sur giltab
+            for i in range(1, activity.nbOfStudent):
+                users = gl.users.list(username=fields.get("username%s" % i))
+                if not users:
+                    flash("Un des noms d'utilisateur Gitlab n'existe pas. Groupe non créé")
+                    return render_template("newGroupforAnActivityForm.html", form_number=form_number, numberOfStudents=activity.nbOfStudent, activityName=activity.name)
+
+            # Création du fork
+            name = "%s %s" % (project.name, fields.get('repoName'))
+            path = "%s_%s" % (project.path, urllib.parse.quote(fields.get('repoName')))
+            fork = project.forks.create({"name": name, "path": path})
+
+            # Récupération du projet (l'object Fork n'est pas un Project, donc il faut récupérer le bon object Project)
+            fork_project = gl.projects.get(fork.id)
+
+            for i in range(1, activity.nbOfStudent):
+                user = gl.users.list(username=fields.get("username%s" % i))[0]
+                fork_project.members.create({'user_id': user.id, 'access_level': gitlab.DEVELOPER_ACCESS})
+
+            if fields.get("username%s" % activity.nbOfStudent):
+                users = gl.users.list(username=fields.get("username%s" % activity.nbOfStudent))
+                if not users:
+                    flash("Un des noms d'utilisateur Gitlab n'existe pas. Groupe non créé")
+                else:
+                    user = users[0]
+                    fork_project.members.create({'user_id': user.id, 'access_level': gitlab.DEVELOPER_ACCESS})
+
+            # Liaison du repo à l'activité dans la BD
+            repo = Repository(url=fork_project.web_url, activity=activity)
+
+            try:
+                db.session.add(repo)
+                db.session.commit()
+                flash('Dépôt créé avec succès', 'success')
+                return render_template("newGroupforAnActivityForm.html", form_number=form_number, numberOfStudents=activity.nbOfStudent, activityName=activity.name)
+            except IntegrityError as error:
+                # Suppression du dépôt créé pour enlever tout résidu
+                fork_project.delete()
+                print(error)
+                db.session.rollback()
+                flash('Une erreur a été recontrée lors de la création du dépôt.', 'danger')
+                return render_template("newGroupforAnActivityForm.html", form_number=form_number, numberOfStudents=activity.nbOfStudent, activityName=activity.name)
+        except Exception as e:
+            flash('Une erreur a été recontrée lors de la création du dépôt.', 'danger')
+            print(e)
+            return render_template("newGroupforAnActivityForm.html", form_number=form_number, numberOfStudents=activity.nbOfStudent, activityName=activity.name)
 
 
 @app.route('/logout')
