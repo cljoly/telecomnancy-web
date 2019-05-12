@@ -6,22 +6,22 @@
 
 {% block content %}
     <section id="activityContent" class="container">
-        <div class="btn-group" style="margin-bottom: 50px; margin-top: 20px" method="post">
+        <form class="btn-group" style="margin-bottom: 50px; margin-top: 20px" method="post">
             <a class="btn btn-success" href="{{ activity_link }}">Répertoire parent</a>
-            <button type="button" class="btn btn-danger"> Nouvelle Issue</button>
+            <button type="button" name="new_issue" class="btn btn-danger"> Nouvelle Issue</button>
             <div class="btn-group">
-                <button name="merger" type="button" class="btn btn-success">Créer une Merge Request</button>
+                <input name="merger" value="Créer une Merge Request" type="submit" class="btn btn-success">
                 <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <div class="dropdown-menu">
                     {% for b in branches %}
-                    <a class="dropdown-item" href="#">{{ b }}</a>
+                    <input class="dropdown-item" name="{{ b }}" value="{{ b }}" type="submit">
                     {% endfor %}
                 </div>
             </div>
-        </div>
+        </form>
         <div class="container">
             <input type="search" id="searchStudent" class="form-control" placeholder="Rechercher un élève"
                    style="margin-bottom: 50px">

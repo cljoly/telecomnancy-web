@@ -307,8 +307,8 @@ def forgotten_password():
     return render_template("forgottenPassword.html")
 
 
-@app.route('/activity/<int:activity_id>', defaults={'page': 1})
-@app.route('/activity/<int:activity_id>/page/<int:page>')
+@app.route('/activity/<int:activity_id>', defaults={'page': 1}, methods=['GET', 'POST'])
+@app.route('/activity/<int:activity_id>/page/<int:page>', methods=['GET', 'POST'])
 def activity(page, activity_id):
     if request.method == 'GET':
 
@@ -348,8 +348,48 @@ def activity(page, activity_id):
         if not gl:
             return redirect(url_for("my_profile"))
         activity_gitlab = gl.projects.get(gl.user.username + '/' + activity_name)
+        print(activity_gitlab)
         branches = activity_gitlab.branches.list()
         list_branch_name = [b.name for b in branches]
+        for b in branches:
+            if request.form.get(b.name):
+                for projectTmp in activity_gitlab.forks.list():  # TODO : prendre la liste des projets cochets
+                    mr_name = b.name
+                    project = gl.projects.get(projectTmp.id)
+                    branches_from_fork = [br.name for br in project.branches.list()]
+                    while mr_name in branches_from_fork:
+                        mr_name = mr_name + "X"
+                    #print(mr_name)
+                    project.branches.create({'branch': mr_name, 'ref': 'master'})
+                    print("file tree : ")
+                    print(activity_gitlab.repository_tree(ref=b.name))
+                    for tmp_file in activity_gitlab.repository_tree(ref=b.name):
+                        print(tmp_file)
+                        file = activity_gitlab.files.get(file_path=tmp_file.get('path'), ref=b.name)
+                        files_repo = project.repository_tree()
+                        test_bool = False
+                        for file_in_repo in files_repo:
+                            if file_in_repo.get('path') == file.file_path:
+                                test_bool = True
+                        if not test_bool:
+                            if file.ref == b.name:
+                                project.files.create({
+                                    'file_path': file.file_path,
+                                    'branch': mr_name,
+                                    'content': file.content,
+                                    'author_email': current_user.get_db_user().email,
+                                    'author_name': current_user.get_db_user().username,
+                                    'encoding': file.encoding,
+                                    'commit_message': 'Create ' + str(file.file_path)})
+                        else:
+                            test_file = project.files.get(file_path=tmp_file.get('path'), ref=mr_name)
+                            test_file.content = file.content
+                            test_file.save(branch=mr_name, commit_message='Update ' + str(file.file_path))
+                    project.mergerequests.create({'source_branch': mr_name,
+                                                  'target_branch': 'master',
+                                                  'title': 'merge ' + b.name,
+                                                  'labels': ['label1', 'label2']})
+                flash("Merge request de " + b.name + " élaborée !", "success")
         pagination = Pagination(page, PER_PAGE, count)
         return render_template("activity.html", pagination=pagination, groups=groups, activity_name=activity_name,
                                activity_link=activity_link, branches=list_branch_name)
@@ -361,7 +401,7 @@ def activity(page, activity_id):
 def home(page):
     """Home page"""
     count = Activity.query.count()
-    activities = get_activities_for_page(page,count)
+    activities = get_activities_for_page(page, count)
 
     if not activities and page != 1:
         abort(404)
