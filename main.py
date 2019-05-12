@@ -359,7 +359,7 @@ def activity(page, activity_id):
                     branches_from_fork = [br.name for br in project.branches.list()]
                     while mr_name in branches_from_fork:
                         mr_name = mr_name + "X"
-                    #print(mr_name)
+                    # print(mr_name)
                     project.branches.create({'branch': mr_name, 'ref': 'master'})
                     print("file tree : ")
                     print(activity_gitlab.repository_tree(ref=b.name))
@@ -388,7 +388,7 @@ def activity(page, activity_id):
                     project.mergerequests.create({'source_branch': mr_name,
                                                   'target_branch': 'master',
                                                   'title': 'merge ' + b.name,
-                                                  'labels': ['label1', 'label2']})
+                                                  'labels': ['project', current_user.get_db_user().username]})
                 flash("Merge request de " + b.name + " élaborée !", "success")
         pagination = Pagination(page, PER_PAGE, count)
         return render_template("activity.html", pagination=pagination, groups=groups, activity_name=activity_name,
