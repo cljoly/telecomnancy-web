@@ -251,10 +251,11 @@ def my_profile():
 
     if request.method == 'GET':
         if gitlab_server_connection(current_user.username()) is None:
-            flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
+            flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la "
+                  "changer dans votre profil", 'danger')
         return render_template("my_profile.html", name=current_user.get_db_user().name,
-                            firstName=current_user.get_db_user().firstname,
-                            mail=current_user.get_db_user().email)
+                               firstName=current_user.get_db_user().firstname,
+                               mail=current_user.get_db_user().email)
 
     elif request.method == 'POST':
         teacher = Teacher.query.filter_by(user_id=current_user.get_db_user().id).first()
@@ -267,10 +268,11 @@ def my_profile():
             db.session.commit()
             flash("Changement de clé d'API effectué", "success")
             if gitlab_server_connection(current_user.username()) is None:
-                flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
+                flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la "
+                      "changer dans votre profil", 'danger')
             return render_template("my_profile.html", name=current_user.get_db_user().name,
-                                firstName=current_user.get_db_user().firstname,
-                                mail=current_user.get_db_user().email)
+                                   firstName=current_user.get_db_user().firstname,
+                                   mail=current_user.get_db_user().email)
         elif pw is not None:
             npw = form.get("newPassword")
             npw2 = form.get("newPassword2")
@@ -280,18 +282,18 @@ def my_profile():
                     flash("Changement de mot de passe effectué", "success")
                     db.session.commit()
                     return render_template("my_profile.html", name=current_user.get_db_user().name,
-                                        firstName=current_user.get_db_user().firstname,
-                                        mail=current_user.get_db_user().email)
+                                           firstName=current_user.get_db_user().firstname,
+                                           mail=current_user.get_db_user().email)
                 else:
                     flash('Les mots de passes doivent correspondre', "danger")
                     return render_template("my_profile.html", name=current_user.get_db_user().name,
-                                        firstName=current_user.get_db_user().firstname,
-                                        mail=current_user.get_db_user().email)
+                                           firstName=current_user.get_db_user().firstname,
+                                           mail=current_user.get_db_user().email)
             else:
                 flash("Erreur dans le mot de passe", "danger")
                 return render_template("my_profile.html", name=current_user.get_db_user().name,
-                                    firstName=current_user.get_db_user().firstname,
-                                    mail=current_user.get_db_user().email)
+                                       firstName=current_user.get_db_user().firstname,
+                                       mail=current_user.get_db_user().email)
         else:
             User.query.filter_by(id=current_user.get_db_user().id).delete()
             db.session.commit()
@@ -308,20 +310,49 @@ def forgotten_password():
 @app.route('/activity/<int:activity_id>', defaults={'page': 1})
 @app.route('/activity/<int:activity_id>/page/<int:page>')
 def activity(page, activity_id):
-    data_base_all_groups = Repository.query.filter_by(activity_id=activity_id).all()
-    count = len(data_base_all_groups)
-    all_groups = [Group(data_base_all_groups[i].url.split("/")[-1],
-                        data_base_all_groups[i].url) for i in range(count)]
-    #count = Repository.query.filter_by(Repository.activity_id == activity_example_id).count()
-    #all_groups = [Group("Dalmatien {}".format(i), "/") for i in range(1, 102)]
-    activity_name = Activity.query.get(activity_id).name
+    if request.method == 'GET':
 
-    groups = get_groups_for_page(page, all_groups, count)
+        data_base_all_groups = Repository.query.filter_by(activity_id=activity_id).all()
+        count = len(data_base_all_groups)
+        all_groups = [Group(data_base_all_groups[i].url.split("/")[-1],
+                            data_base_all_groups[i].url) for i in range(count)]
+        activity_name = Activity.query.get(activity_id).name
+        activity_link = Activity.query.get(activity_id).url_master_repo
 
-    if not groups and page != 1:
-        abort(404)
-    pagination = Pagination(page, PER_PAGE, count)
-    return render_template("activity.html", pagination=pagination, groups=groups, activity_name=activity_name)
+        groups = get_groups_for_page(page, all_groups, count)
+
+        if not groups and page != 1:
+            abort(404)
+        gl = gitlab_server_connection(current_user.username())
+        if not gl:
+            return redirect(url_for("my_profile"))
+        activity_gitlab = gl.projects.get(gl.user.username + '/' + activity_name)
+        branches = activity_gitlab.branches.list()
+        list_branch_name = [b.name for b in branches]
+        pagination = Pagination(page, PER_PAGE, count)
+        return render_template("activity.html", pagination=pagination, groups=groups, activity_name=activity_name,
+                               activity_link=activity_link, branches=list_branch_name)
+    elif request.method == 'POST':
+        data_base_all_groups = Repository.query.filter_by(activity_id=activity_id).all()
+        count = len(data_base_all_groups)
+        all_groups = [Group(data_base_all_groups[i].url.split("/")[-1],
+                            data_base_all_groups[i].url) for i in range(count)]
+        activity_name = Activity.query.get(activity_id).name
+        activity_link = Activity.query.get(activity_id).url_master_repo
+
+        groups = get_groups_for_page(page, all_groups, count)
+
+        if not groups and page != 1:
+            abort(404)
+        gl = gitlab_server_connection(current_user.username())
+        if not gl:
+            return redirect(url_for("my_profile"))
+        activity_gitlab = gl.projects.get(gl.user.username + '/' + activity_name)
+        branches = activity_gitlab.branches.list()
+        list_branch_name = [b.name for b in branches]
+        pagination = Pagination(page, PER_PAGE, count)
+        return render_template("activity.html", pagination=pagination, groups=groups, activity_name=activity_name,
+                               activity_link=activity_link, branches=list_branch_name)
 
 
 @app.route('/home/', defaults={'page': 1})
