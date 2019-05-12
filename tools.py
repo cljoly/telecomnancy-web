@@ -61,7 +61,7 @@ def get_groups_for_page(page, all_groups, count):
 class ActivityDisplay:
     """Regroupe les informations correspondantes à une activitée"""
 
-    def __init__(self, name, count, c_date=time.strftime("%d/%m/%Y"), d_date="None", link='/activity'):
+    def __init__(self, name, count, link, c_date=time.strftime("%d/%m/%Y"), d_date="None"):
         self.c_date = c_date  # the name of the activity
         self.name = name  # date of creation
         self.count = count  # due date
@@ -72,11 +72,11 @@ class ActivityDisplay:
 def get_activities_for_page(page, count):
     """Effectue les requêtes necessaires pour récupérer les infos de Activities correspondantes à la page page"""
     result = db.session.query(
-        Activity.name, func.count(Repository.id), Activity.start_date, Activity.end_date
+        Activity.id, Activity.name, func.count(Repository.id), Activity.start_date, Activity.end_date
     ).filter(
         Activity.id == Repository.activity_id
     ).group_by(
         Activity.name
     )
-    return [ActivityDisplay(result[i].name, result[i].count, result[i].start_date, result[i].end_date)
+    return [ActivityDisplay(result[i].name, result[i].count, "/activity/" + str(result[i].id), result[i].start_date, result[i].end_date)
             for i in range((page - 1) * PER_PAGE, min((page - 1) * PER_PAGE + PER_PAGE, count))]

@@ -7,12 +7,12 @@
 {% block content %}
 
     <section id="activityContent" class="container">
-      <div class="container" style="margin-bottom: 50px; margin-top: 20px">
-        <button type="button" name="button" class="btn btn-primary">Appliquer changements</button>
-        <button type="button" name="button" class="btn btn-primary"> Issues</button>
-        <button type="button" name="button" class="btn btn-primary"> ... </button>
-        <button type="button" name="button" class="btn btn-primary"> ... </button>
-      </div>
+      <form class="container" style="margin-bottom: 50px; margin-top: 20px" method="post">
+        <a type="button" name="button" class="btn btn-success">Répertoire parent</a>
+        <a type="button" name="button" class="btn btn-danger"> Nouvelle Issue</a>
+        <a type="button" name="button" class="btn btn-success"> Créer une Merge Request</a>
+        <a type="button" name="button" class="btn btn-primary"> ... </a>
+      </form>
       <div class="container">
         <input type="search" id="searchStudent" class="form-control" placeholder="Rechercher un élève" style="margin-bottom: 50px">
       </div>
