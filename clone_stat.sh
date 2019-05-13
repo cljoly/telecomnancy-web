@@ -3,7 +3,9 @@
 LOCKFILE=lock
 SSHKEY=tmp.key
 REPOURL=$1
+REPONAME=$(echo $REPOURL | sed -e 's/.*\/\(.*\)$/\1/')
 TOKEN=$2
+JSON_RESULT=../stat.json
 
 ssh-keygen -y -t rsa -N "" -f $SSHKEY
 
@@ -18,11 +20,14 @@ curl --data-urlencode "key=$(cat $SSHKEY)" --data-urlencode "title=Gitly" \
 
 if [ $? -ne 0 ]; then
   rm $LOCKFILE
-  exit 1
+  exit 2
 fi
 echo "Clé SSH genérée"
 
-GIT_SSH_COMMAND="ssh -i ./$SSHKEY -F /dev/null" git clone "$REPOURL"
+GIT_SSH_COMMAND="ssh -i ./$SSHKEY -F /dev/null" git clone "$REPOURL" $REPONAME
 
+cd $REPONAME
 
+gitinspector --format=json -HlmrTw >$JSON_RESULT
 
+cd - || exit 3
