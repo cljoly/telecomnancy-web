@@ -63,7 +63,7 @@ def create_new_activity(result, db, gl):
     #Création de la nouvelle activité
     new_activity = Activity(module_id=module.id, name=result.get('activityName'), year=int(datetime.now().year),
                             start_date=beginDate, end_date=endDate, nbOfStudent=result.get('numberOfStudents', type=int),
-                            teacher_id=teacher.id, id_gitlab_master_repo=project.id)
+                            teacher_id=teacher.id, id_gitlab_master_repo=project.id, url_master_repo=project.web_url)
 
     try:
         db.session.add(new_activity)
