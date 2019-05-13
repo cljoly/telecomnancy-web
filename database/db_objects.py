@@ -61,10 +61,13 @@ class Activity(db.Model):
     # Taille maximum d’un groupe
     nbOfStudent = Column(Integer, nullable=False)
     # Lien vers le repo maitre
+    id_gitlab_master_repo = Column(Integer, unique=False, nullable=False)
     url_master_repo = Column(db.String(300), unique=False, nullable=False)
     # Enseignant référent
     teacher_id = Column(Integer, db.ForeignKey('teacher.id'))
     teacher = relationship('Teacher')
+    # Nombre aléatoire pour retrouver le formulaire associé si cardinalité > 1
+    form_number = Column(Integer, nullable=True)
 
 # Dépot git particulier
 class Repository(db.Model):
