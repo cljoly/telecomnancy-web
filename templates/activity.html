@@ -5,21 +5,32 @@
 {% endblock %}
 
 {% block content %}
-
     <section id="activityContent" class="container">
-      <div class="container" style="margin-bottom: 50px; margin-top: 20px">
-        <button type="button" name="button" class="btn btn-primary">Appliquer changements</button>
-        <button type="button" name="button" class="btn btn-primary"> Issues</button>
-        <button type="button" name="button" class="btn btn-primary"> ... </button>
-        <button type="button" name="button" class="btn btn-primary"> ... </button>
-      </div>
-      <div class="container">
-        <input type="search" id="searchStudent" class="form-control" placeholder="Rechercher un élève" style="margin-bottom: 50px">
-      </div>
-      <table class="table table-striped text-center">
-          {% if groups %}
+        <form class="btn-group" style="margin-bottom: 50px; margin-top: 20px" method="post">
+            <a class="btn btn-success" href="{{ activity_link }}">Répertoire parent</a>
+            <button type="button" name="new_issue" class="btn btn-danger"> Nouvelle Issue</button>
+            <div class="btn-group">
+                <input name="merger" value="Créer une Merge Request" type="submit" class="btn btn-success">
+                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu">
+                    {% for b in branches %}
+                    <input class="dropdown-item" name="{{ b }}" value="{{ b }}" type="submit">
+                    {% endfor %}
+                </div>
+            </div>
+        </form>
+        <div class="container">
+            <input type="search" id="searchStudent" class="form-control" placeholder="Rechercher un élève"
+                   style="margin-bottom: 50px">
+        </div>
+        <table class="table table-striped text-center">
+            {% if groups %}
                 <thead>
                 <tr>
+                    <th scope="col"><input id="multiSelection" type="checkbox"></th>
                     <th scope="col">Nom du groupe</th>
                     <th scope="col">Nombre de commits</th>
                     <th scope="col">Date du dernier commit</th>
@@ -30,6 +41,7 @@
                 <tbody>
                 {% for g in groups %}
                     <tr>
+                        <td><input name="check" type="checkbox"></td>
                         <th scope="row">{{ g.name }}</th>
                         <td>{{ g.nb_commits }}</td>
                         <td>{{ g.last_commit }}</td>
@@ -47,19 +59,22 @@
                 </tr>
                 </thead>
             {% endif %}
-      </table>
+        </table>
 
-      <div class="pagination">
+        <div class="pagination">
             {% if pagination %}
                 {% if pagination.page > 1 %}
-                    <li class="page-item"><a href="{{ url_for_other_page(pagination.page - 1) }}" class="page-link">&laquo; Prev</a></li>
+                    <li class="page-item"><a href="{{ url_for_other_page(pagination.page - 1) }}" class="page-link">&laquo;
+                        Prev</a></li>
                 {% else %}
-                    <li class="page-item disabled"><a href="{{ url_for_other_page(pagination.page - 1) }}" class="page-link">&laquo; Prev</a></li>
+                    <li class="page-item disabled"><a href="{{ url_for_other_page(pagination.page - 1) }}"
+                                                      class="page-link">&laquo; Prev</a></li>
                 {% endif %}
                 {% for page in pagination %}
                     {% if page %}
                         {% if page!=pagination.page %}
-                            <li class="page-item"><a href="{{ url_for_other_page(page) }}" class="page-link">{{ page }}</a></li>
+                            <li class="page-item"><a href="{{ url_for_other_page(page) }}"
+                                                     class="page-link">{{ page }}</a></li>
                         {% else %}
                             <li class="page-item-active"><a class="page-link" href="#">{{ page }}</a></li>
                         {% endif %}
@@ -68,13 +83,26 @@
                     {% endif %}
                 {% endfor %}
                 {% if pagination.has_next %}
-                    <li class="page-item"><a href="{{ url_for_other_page(pagination.page + 1) }}" class="page-link">Next &raquo;</a></li>
+                    <li class="page-item"><a href="{{ url_for_other_page(pagination.page + 1) }}" class="page-link">Next
+                        &raquo;</a></li>
                 {% else %}
-                    <li class="page-item disabled"><a href="{{ url_for_other_page(pagination.page + 1) }}" class="page-link">Next &raquo;</a></li>
+                    <li class="page-item disabled"><a href="{{ url_for_other_page(pagination.page + 1) }}"
+                                                      class="page-link">Next &raquo;</a></li>
                 {% endif %}
             {% endif %}
-      </div>
+        </div>
     </section>
+    <script type="text/javascript">
+        function tole()
+        {
+            let source = document.getElementById("multiSelection");
+            let checkboxes = document.getElementsByName('check');
+            for (let i = 0; i < checkboxes.length; i++)
+            {
+                checkboxes[i].checked = source.checked;
+            }
+        }
 
-
+        document.getElementById("multiSelection").addEventListener("click", tole, false);
+    </script>
 {% endblock %}
