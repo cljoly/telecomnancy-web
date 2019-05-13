@@ -72,11 +72,15 @@ class ActivityDisplay:
 def get_activities_for_page(page, count):
     """Effectue les requêtes necessaires pour récupérer les infos de Activities correspondantes à la page page"""
     result = db.session.query(
-        Activity.name, func.count(Repository.id), Activity.start_date, Activity.end_date
+        Activity.name, func.count(Repository.id).label("count"), Activity.start_date, Activity.end_date, Activity.id
     ).filter(
         Activity.id == Repository.activity_id
     ).group_by(
         Activity.name
     )
-    return [ActivityDisplay(result[i].name, result[i].count, result[i].start_date, result[i].end_date)
+    return [ActivityDisplay(result[i].name,
+                            result[i].count,
+                            result[i].start_date.strftime("%d/%m/%Y"),
+                            result[i].end_date.strftime("%d/%m/%Y"),
+                            "/activity/%s" % result[i].id)
             for i in range((page - 1) * PER_PAGE, min((page - 1) * PER_PAGE + PER_PAGE, count))]
