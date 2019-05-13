@@ -67,7 +67,7 @@ db.session.add(rep3)
 from tools import *
 from gitlab_actions import gitlab_server_connection
 from createNewActivity import create_new_activity, create_groups_for_an_activity_with_card_1, \
-    create_groups_for_an_activity_with_multiple_card
+    create_groups_for_an_activity_with_multiple_card, send_email_to_students
 import urllib.parse
 from sqlalchemy.exc import IntegrityError as IntegrityError
 
@@ -212,8 +212,14 @@ def new_activity():
                     flash('Erreur dans le fork de l\'activité', 'danger')
             elif 1 < int(result.get('numberOfStudents')) <= 6:
                 url_form = create_groups_for_an_activity_with_multiple_card(activity_created, db)
-                flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes pour l\'activité puissent être créés', 'info')
-                flash('Formulaire : ' + url_form, 'warning')
+                # TODO : aller récupérer la liste des élèves
+                res = send_email_to_students(url_form, activity_created)
+                if res == 0:
+                    flash("Un mail vient d'être envoyé à vos étudiants pour s'inscrire et ainsi créer leur dépôt", 'success')
+                elif res == 3:
+                    flash("Erreur dans l'envoi du mail. Lien à envoyer aux élèves : " + url_form, 'warning')
+                # flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes pour l\'activité puissent être créés', 'info')
+                # flash('Formulaire : ' + url_form, 'warning')
 
         teachers = Teacher.query.all()
         modules = Module.query.all()

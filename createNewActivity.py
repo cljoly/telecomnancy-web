@@ -4,6 +4,7 @@ from datetime import datetime
 import gitlab
 import random
 from flask import flash, url_for
+import smtplib
 
 
 def create_new_activity(result, db, gl):
@@ -126,3 +127,36 @@ def create_groups_for_an_activity_with_multiple_card(activity, db):
     activity.form_number = number
     db.session.commit()
     return url_for('group_form', form_number=number)
+
+def send_email_to_students(url_form, activity):
+    server = smtplib.SMTP()
+    server.connect('smtp.telecomnancy.eu')
+    server.helo()
+    fromaddr = "Gitlab-bravo <gitlab-bravo@telecomnancy.eu"
+    # TODO changer à la maison pour récupérer les adresses mail des élèves
+    toaddrs = ['laury.de-donato@telecomnancy.eu', 'clement.joly@telecomnancy.eu']
+    sujet = "Lien d'inscription pour l'activité %s" % activity.name
+    message = u"""\
+    Bonjour,\
+    \
+    Voici le lien pour vous inscrire à l'activité %s : %s.\
+    \
+    Ceci est un mail automatique, merci de ne pas y répondre.\
+    \
+    Gitly for Gitlab TÉLÉCOM Nancy\
+    """ % (activity.name, url_form)
+
+    msg = """\
+    From: %s\n\
+    To: %s\n\
+    Subject: %s\n\
+    \n\
+    %s
+    """ % (fromaddr, ",".join(toaddrs), sujet, message)
+
+    try:
+        server.sendmail(fromaddr, toaddrs, msg)
+        return 0
+    except smtplib.SMTPException as e:
+        print(e)
+        return 3
