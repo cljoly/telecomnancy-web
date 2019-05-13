@@ -329,8 +329,8 @@ def activity(page, activity_id):
 @login_required
 def home(page):
     """Home page"""
-    count = Activity.query.group_by(Activity.name).count()
-    activities = get_activities_for_page(page,count)
+    count = Activity.query.filter(Activity.teacher_id == current_user.id).group_by(Activity.name).count()
+    activities = get_activities_for_page(page, count)
 
     if not activities and page != 1:
         abort(404)

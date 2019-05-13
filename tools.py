@@ -3,6 +3,7 @@ import time
 from database.db_objects import Activity, Repository
 from main import db
 from sqlalchemy import func
+from main import current_user
 
 PER_PAGE = 10
 
@@ -74,7 +75,8 @@ def get_activities_for_page(page, count):
     result = db.session.query(
         Activity.name, func.count(Repository.id).label("count"), Activity.start_date, Activity.end_date, Activity.id
     ).filter(
-        Activity.id == Repository.activity_id
+        Activity.id == Repository.activity_id and
+        Activity.teacher_id == current_user.id
     ).group_by(
         Activity.name
     )
