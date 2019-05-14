@@ -386,6 +386,7 @@ def activity(page, activity_id):
                             data_base_all_groups[i].url) for i in range(count)]
         activity_name = Activity.query.get(activity_id).name
         activity_link = Activity.query.get(activity_id).url_master_repo
+        activity_bdd = Activity.query.get(activity_id)
 
         groups = get_groups_for_page(page, all_groups, count)
 
@@ -394,7 +395,7 @@ def activity(page, activity_id):
         gl = gitlab_server_connection(current_user.username())
         if not gl:
             return redirect(url_for("my_profile"))
-        activity_gitlab = gl.projects.get(gl.user.username + '/' + activity_name)
+        activity_gitlab = gl.projects.get(activity_bdd.id_gitlab_master_repo)
         branches = activity_gitlab.branches.list()
         list_branch_name = [b.name for b in branches]
         pagination = Pagination(page, PER_PAGE, count)
