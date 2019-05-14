@@ -17,7 +17,26 @@ Pour ajouter des dépendances, il suffit de les référencer dans le fichier
 FLASK_DEBUG=1 FLASK_APP=main.py flask run
 ```
 
+### Démonstration en ligne
+
+Nous avons déployé en ligne sur une version gratuite du service Heroku. Il n’y
+a donc pas de persistance des actions utilisateurs au delà de quelques heures.
+
+https://pweb2019.herokuapp.com/
+
 ## Release
+
+### 0.2
+
+- Création de dépot avec l’API de Gitlab dans le cas de groupe d’un seul élève
+  et dans le cas de groupes de plusieurs élèves.
+  - Vérification systématique de la clé d’API à la connexion
+- Déploiement sur Heroku d’une démonstration.
+- Hachage des mots de passe dans la base de donnée, avec du sel pour éviter les
+  attaques par dictionnaire.
+- Correction d’un certain nombre de bugs et amélioration de l’esthétique
+  générale de l’application (par exemple en ajoutant une image comme favicon et
+  en la reprennant dans le menu)
 
 ### 0.1
 
