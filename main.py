@@ -11,6 +11,7 @@ from flask_login import login_required, LoginManager, current_user, \
 from typing import Dict
 import gitlab
 from pass_utils import hashnsalt
+from stats import get_stat_for
 
 
 import os
@@ -482,7 +483,10 @@ def home(page):
 @app.route("/activity/<int:activity_id>/stats")
 @login_required
 def stats(activity_id):
-    #todo: backend pour récupérer les données
+    # TODO Attraper les exceptions pour afficher les messages d’erreur
+    # adéquates à l’utilisateur
+    # TODO Rendre générique pour n’importe quel projet
+    json_result = get_stat_for("git@gitlab.telecomnancy.univ-lorraine.fr:gitlab-bravo/ne-pas-supprimer-sert-aux-stats.git")
     labels = ["January", "February", "March", "April", "May", "June", "July", "August"]
     values = [10, 9, 8, 7, 6, 4, 7, 8]
     legend = "user1"
