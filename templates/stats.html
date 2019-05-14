@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <script src="{{ url_for('static', filename='script/chart.min.js') }}"></script>
+{% endblock %}
+
+{% block header %}
+    <h1>{% block title %}Stats{% endblock %}</h1>
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <div style="margin-left: auto; margin-right: auto; width: 600px">
+            <canvas class="centered" id="histograme" width="600" height="400"></canvas>
+        </div>
+        <p class="text-center" id="caption">Histograme</p>
+
+        <br>
+        <br>
+
+        <div style="margin-left: auto; margin-right: auto; width: 600px">
+            <canvas class="centered" id="doughnut" width="600" height="400"></canvas>
+        </div>
+        <p class="text-center" id="caption">Doughnut</p>
+    </div>
+
+
+
+    <script>
+        /* inspired by https://www.patricksoftwareblog.com/creating-charts-with-chart-js-in-a-flask-application/ */
+        //////////////////////////////////HISTOGRAME//////////////////////////////////
+        // Global parameters:
+        // do not resize the chart canvas when its container does (keep at 600x400px)
+        Chart.defaults.global.responsive = false;
+
+        // define the chart data
+        var histogrameData = {
+            labels: [{% for item in histLabels %}
+                "{{item}}",
+            {% endfor %}],
+            datasets: [{
+                label: '{{ histLegend }}',
+                fill: true,
+                lineTension: 0.1,
+                backgroundColor: "rgba(75,192,192,0.4)",
+                borderColor: "rgba(75,192,192,1)",
+                borderCapStyle: 'butt',
+                borderDash: [],
+                borderDashOffset: 0.0,
+                borderJoinStyle: 'miter',
+                pointBorderColor: "rgba(75,192,192,1)",
+                pointBackgroundColor: "#fff",
+                pointBorderWidth: 1,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                pointHoverBorderColor: "rgba(220,220,220,1)",
+                pointHoverBorderWidth: 2,
+                pointRadius: 1,
+                pointHitRadius: 10,
+                data: [{% for item in histValues %}
+                    {{item}},
+                {% endfor %}],
+                spanGaps: false
+            }]
+        };
+
+        // get chart canvas
+        var ctx = document.getElementById("histograme").getContext("2d");
+
+        // create the chart using the chart canvas
+        var myhistograme = new Chart(ctx, {
+            type: 'line',
+            data: histogrameData,
+        });
+
+        /////////////////////////////////doughnut//////////////////////////////////
+        var doughnutData = {
+            labels: [{% for item in doLabels %}
+                "{{item}}",
+            {% endfor %}],
+            datasets: [{
+                data: [{% for item in doValues %}
+                    {{item}},
+                {% endfor %}],
+                backgroundColor:
+                    [{% for item in doValues %}
+                    getRandomColor(),
+                {% endfor %}],
+            }]
+        };
+
+        // get chart canvas
+        var ctx = document.getElementById("doughnut").getContext("2d");
+
+        // create the chart using the chart canvas
+        var mydoughnut = new Chart(ctx, {
+            type: 'doughnut',
+            data: doughnutData,
+        });
+
+        function getRandomColor() {
+            // helper function inpired from https://stackoverflow.com/questions/25594478/different-color-for-each-bar-in-a-bar-chart-chartjs
+            var letters = '0123456789ABCDEF'.split('');
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+    </script>
+{% endblock %}

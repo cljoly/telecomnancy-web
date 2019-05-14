@@ -468,7 +468,7 @@ def activity(page, activity_id):
 @login_required
 def home(page):
     """Home page"""
-    count = Activity.query.count()
+    count = Activity.query.filter(Activity.teacher_id == current_user.id).group_by(Activity.name).count()
     activities = get_activities_for_page(page, count)
 
     if not activities and page != 1:
@@ -477,6 +477,22 @@ def home(page):
     return render_template("home.html",
                            pagination=pagination,
                            activities=activities)
+
+
+@app.route("/activity/<int:activity_id>/stats")
+@login_required
+def stats(activity_id):
+    #todo: backend pour récupérer les données
+    labels = ["January", "February", "March", "April", "May", "June", "July", "August"]
+    values = [10, 9, 8, 7, 6, 4, 7, 8]
+    legend = "user1"
+    return render_template('stats.html',
+                           histValues=values,
+                           histLabels=labels,
+                           histLegend=legend,
+
+                           doValues=values,
+                           doLabels=labels)
 
 
 def url_for_other_page(page):
