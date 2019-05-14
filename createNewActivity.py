@@ -5,6 +5,7 @@ import gitlab
 import random
 from flask import flash, url_for
 import smtplib
+from email.message import EmailMessage
 
 
 def create_new_activity(result, db, gl):
@@ -128,31 +129,36 @@ def create_groups_for_an_activity_with_multiple_card(activity, db):
     db.session.commit()
     return url_for('group_form', form_number=number)
 
-def send_email_to_students(url_form, activity):
-    server = smtplib.SMTP()
-    server.connect('smtp.telecomnancy.eu')
-    server.helo()
-    fromaddr = "Gitlab-bravo <gitlab-bravo@telecomnancy.eu"
-    # TODO changer à la maison pour récupérer les adresses mail des élèves
-    toaddrs = ['laury.de-donato@telecomnancy.eu', 'clement.joly@telecomnancy.eu']
-    sujet = "Lien d'inscription pour l'activité %s" % activity.name
-    message = u"""\
-    Bonjour,\
-    \
-    Voici le lien pour vous inscrire à l'activité %s : %s.\
-    \
-    Ceci est un mail automatique, merci de ne pas y répondre.\
-    \
-    Gitly for Gitlab TÉLÉCOM Nancy\
-    """ % (activity.name, url_form)
 
+def send_email_to_students(url_form, activity):
+    server = smtplib.SMTP_SSL(host="venus.telecomnancy.eu",port=465)
+    server.connect(host='venus.telecomnancy.eu',port=465)
+    server.login("gitlab-bravo@telecomnancy.eu", "prioriteaudirect")
+    server.helo()
+
+    sujet = "Lien d'inscription pour l'activite %s" % activity.name.encode("ascii", "replace")
+    fromaddr = "Gitlab-bravo <gitlab-bravo@telecomnancy.eu>"
+
+    # TODO changer à la maison pour récupérer les adresses mail des élèves
+    toaddrs = ['laury.de-donato@telecomnancy.eu']
+
+    message = """\
+        Bonjour,\
+        \
+        Voici le lien pour vous inscrire a l'activite %s : %s.\
+        \
+        Ceci est un mail automatique, merci de ne pas y repondre.\
+        \
+        Gitly for Gitlab TELECOM Nancy\
+        """ % (activity.name.encode("ascii", "replace"), url_form)
     msg = """\
-    From: %s\n\
-    To: %s\n\
-    Subject: %s\n\
-    \n\
-    %s
-    """ % (fromaddr, ",".join(toaddrs), sujet, message)
+         From: %s\n\
+         To: %s\n\
+         Subject: %s\n\
+         \n\
+         %s
+         """ % (fromaddr, ",".join(toaddrs), sujet, message)
+    server.sendmail(fromaddr, toaddrs, msg)
 
     try:
         server.sendmail(fromaddr, toaddrs, msg)
