@@ -218,7 +218,8 @@ def new_activity():
                     flash('Erreur dans le fork de l\'activité', 'danger')
             elif 1 < int(result.get('numberOfStudents')) <= 6:
                 url_form = create_groups_for_an_activity_with_multiple_card(activity_created, db)
-                res = send_email_to_students(url_form, activity_created, emails)
+                url = "http://%s%s" % (request.host, url_form)
+                res = send_email_to_students(url, activity_created, emails)
                 if res == 0:
                     flash("Un mail vient d'être envoyé à vos étudiants pour s'inscrire et ainsi créer leur dépôt", 'success')
                 elif res == 3:

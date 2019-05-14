@@ -152,26 +152,25 @@ def send_email_to_students(url_form, activity, emails):
     server.helo()
 
     sujet = "Lien d'inscription pour l'activite %s" % activity.name.encode("ascii", "replace")
-    fromaddr = "Gitlab-bravo <gitlab-bravo@telecomnancy.eu>"
+    fromaddr = '"Gitly from TELECOM Nancy" <gitlab-bravo@telecomnancy.eu>'
 
     toaddrs = emails
 
-    message = """
-        Bonjour,
+    message = """Bonjour,
 
-        Voici le lien pour vous inscrire a l'activite %s : %s.
+Voici le lien pour vous inscrire a l'activite %s : %s.
         
-        Ceci est un mail automatique, merci de ne pas y repondre.
+Ceci est un mail automatique, merci de ne pas y repondre.
         
-        Gitly for Gitlab TELECOM Nancy
-        """ % (activity.name.encode("ascii", "replace"), url_form)
+Gitly for Gitlab TELECOM Nancy
+""" % (activity.name.encode("ascii", "replace"), url_form)
 
-    msg = """
-         From: %s\n
-         To: %s\n
-         Subject: %s\n
-         \n
-         %s
+    msg = """From: %s
+To: %s
+Subject: %s
+         
+         
+%s
          """ % (fromaddr, ",".join(toaddrs), sujet, message)
     server.sendmail(fromaddr, toaddrs, msg)
 
