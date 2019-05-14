@@ -30,7 +30,13 @@ https://pweb2019.herokuapp.com/
 
 - Création de dépot avec l’API de Gitlab dans le cas de groupe d’un seul élève
   et dans le cas de groupes de plusieurs élèves.
-  - Vérification systématique de la clé d’API à la connexion
+  - Vérification systématique de la clé d’API à la connexion et sur chaque page
+    où l’utilisateur est connecté (s’il est connecté, il peut potentiellement
+    intéragir avec l’API Gitlab).
+- Possibilité pour l’enseignant de mettre à jour un dépôt d’un ou plusieurs élèves,
+  au travers d’une merge request.
+- Les activités associés à un utilisateur sont affichées sur la page d’accueil.
+  Il y a des liens pour aller vers l’activité.
 - Déploiement sur Heroku d’une démonstration.
 - Hachage des mots de passe dans la base de donnée, avec du sel pour éviter les
   attaques par dictionnaire.
