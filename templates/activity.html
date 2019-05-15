@@ -6,9 +6,10 @@
 
 {% block content %}
     <section id="activityContent" class="container">
-        <form class="btn-group" style="margin-bottom: 50px; margin-top: 20px" method="post">
-            <a class="btn btn-success" href="{{ activity_link }}">Répertoire parent</a>
-            <button type="button" name="new_issue" class="btn btn-danger"> Nouvelle Issue</button>
+        <form method="post">
+        <div class="btn-group" style="margin-bottom: 50px; margin-top: 20px">
+            <a class="btn btn-success" href="{{ activity_link }}">Dépôt de l'activité</a>
+            <button type="button" name="new_issue" class="btn btn-danger" onclick="show()"> Nouvelle Issue</button>
             <div class="btn-group">
                 <input name="merger" value="Créer une Merge Request" type="submit" class="btn btn-success">
                 <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
@@ -17,50 +18,56 @@
                 </button>
                 <div class="dropdown-menu">
                     {% for b in branches %}
-                    <input class="dropdown-item" name="{{ b }}" value="{{ b }}" type="submit">
+                        <input class="dropdown-item" name="{{ b }}" value="{{ b }}" type="submit">
                     {% endfor %}
                 </div>
             </div>
-        </form>
-        <div class="container">
-            <input type="search" id="searchStudent" class="form-control" placeholder="Rechercher un élève"
-                   style="margin-bottom: 50px">
         </div>
-        <table class="table table-striped text-center">
-            {% if groups %}
-                <thead>
-                <tr>
-                    <th scope="col"><input id="multiSelection" type="checkbox"></th>
-                    <th scope="col">Nom du groupe</th>
-                    <th scope="col">Nombre de commits</th>
-                    <th scope="col">Date du dernier commit</th>
-                    <th scope="col">Répertoire git</th>
-                    <th scope="col">Statistiques</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for g in groups %}
+        </form>
+        <form method="post">
+            <div id="issueDiv" class="container" style="display: none; margin-bottom: 10px">
+                <label for="titleIssue">Titre de l'issue</label>
+                <input class="form-control" id="titleIssue" name="titleIssue" type="text" placeholder="Titre de l'issue"
+                       required>
+                <label for="descIssue">Description de l'issue</label>
+                <textarea class="form-control" id="descIssue" name="descIssue" type="text"
+                          placeholder="Description de l'issue" required></textarea>
+                <div class="btn-group" style="margin-top: 5px">
+                    <input class="btn btn-success" id="createIssue" name="createIssue" value="Créer l'issue" type="submit">
+                    <button class="btn btn-danger" onclick="hide()">Annuler</button>
+                </div>
+            </div>
+            <table class="table table-striped text-center">
+                {% if groups %}
+                    <thead>
                     <tr>
-                        <td><input name="check" type="checkbox"></td>
-                        <th scope="row">{{ g.name }}</th>
-                        <td>{{ g.nb_commits }}</td>
-                        <td>{{ g.last_commit }}</td>
-                        <td><a class="btn btn-primary" href="{{ g.repository }}">Répertoire</a></td>
-                        <td><a class="btn btn-primary" href="{{ g.stat_link }}">Statistiques</a></td>
+                        <th scope="col"><input id="multiSelection" type="checkbox" style="display: none"></th>
+                        <th scope="col">Nom du groupe</th>
+                        <th scope="col">Liens vers les dépôts git</th>
+                        <th scope="col">Statistiques</th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            {% else %}
-                <thead>
-                <tr>
-                    <th scope="col">
-                        <h1 class="display-2">Aucun groupe n'est inscrit</h1>
-                    </th>
-                </tr>
-                </thead>
-            {% endif %}
-        </table>
-
+                    </thead>
+                    <tbody>
+                    {% for g in groups %}
+                        <tr>
+                            <td><input class="check" name="{{ g.name }}" type="checkbox" style="display: none"></td>
+                            <th scope="row">{{ g.name }}</th>
+                            <td><a class="btn btn-primary" href="{{ g.repository }}">Dépôt</a></td>
+                            <td><a class="btn btn-primary" href="{{ g.stat_link }}">Statistiques</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                {% else %}
+                    <thead>
+                    <tr>
+                        <th scope="col">
+                            <h1 class="display-2">Aucun groupe n'est inscrit</h1>
+                        </th>
+                    </tr>
+                    </thead>
+                {% endif %}
+            </table>
+        </form>
         <div class="pagination">
             {% if pagination %}
                 {% if pagination.page > 1 %}
@@ -96,10 +103,34 @@
         function tole()
         {
             let source = document.getElementById("multiSelection");
-            let checkboxes = document.getElementsByName('check');
+            let checkboxes = document.getElementsByClassName('check');
             for (let i = 0; i < checkboxes.length; i++)
             {
                 checkboxes[i].checked = source.checked;
+            }
+        }
+
+        function hide()
+        {
+            document.getElementById("issueDiv").style.display = "none";
+            document.getElementById("titleIssue").value = "";
+            document.getElementById("descIssue").value = "";
+            document.getElementById("multiSelection").style.display = "none";
+            let checkboxes = document.getElementsByClassName('check');
+            for (let i = 0; i < checkboxes.length; i++)
+            {
+                checkboxes[i].style.display = "none";
+            }
+        }
+
+        function show()
+        {
+            document.getElementById("issueDiv").style.display = "block";
+            document.getElementById("multiSelection").style.display = "block";
+            let checkboxes = document.getElementsByClassName('check');
+            for (let i = 0; i < checkboxes.length; i++)
+            {
+                checkboxes[i].style.display = "block";
             }
         }
 

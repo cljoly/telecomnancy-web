@@ -68,7 +68,7 @@ db.session.add(rep3)
 from tools import *
 from gitlab_actions import gitlab_server_connection
 from createNewActivity import create_new_activity, create_groups_for_an_activity_with_card_1, \
-    create_groups_for_an_activity_with_multiple_card
+    create_groups_for_an_activity_with_multiple_card, send_email_to_students
 import urllib.parse
 from sqlalchemy.exc import IntegrityError as IntegrityError
 
@@ -175,7 +175,14 @@ def new_activity():
             return redirect(url_for("my_profile"))
 
         result = request.form
-        print(result)
+        usernames = list()
+        emails = list()
+        selected_students = result.to_dict(flat=False).get('selectedStudents')
+        for student in selected_students:
+            s = student.split(',')
+            usernames.append(s[3])
+            emails.append(s[2])
+
         create_new_activity_result, activity_created, gitlab_activity_project = create_new_activity(result, db, gl)
 
         if create_new_activity_result == 1:
@@ -200,10 +207,9 @@ def new_activity():
             flash('Une activité porte déjà le nom de l\'activité que vous souhaitez créer. Activité non créée', 'danger')
         elif create_new_activity_result == 0:
             flash('Activité ajoutée à la base de données', 'success')
-            # print(result)
-            # print(result.to_dict(flat=False).get('selectedStudents'))
+
             if int(result.get('numberOfStudents')) == 1:
-                res = create_groups_for_an_activity_with_card_1(activity_created, db, gl, gitlab_activity_project, result.to_dict(flat=False).get('selectedStudents'))
+                res = create_groups_for_an_activity_with_card_1(activity_created, db, gl, gitlab_activity_project, usernames)
                 if res == 0:
                     flash('Création du dépôt de l\'activité effectuée', 'success')
                     flash('Tous les dépôts des élèves ont été créés', 'success')
@@ -213,8 +219,14 @@ def new_activity():
                     flash('Erreur dans le fork de l\'activité', 'danger')
             elif 1 < int(result.get('numberOfStudents')) <= 6:
                 url_form = create_groups_for_an_activity_with_multiple_card(activity_created, db)
-                flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes pour l\'activité puissent être créés', 'info')
-                flash('Formulaire : ' + url_form, 'warning')
+                url = "http://%s%s" % (request.host, url_form)
+                res = send_email_to_students(url, activity_created, emails)
+                if res == 0:
+                    flash("Un mail vient d'être envoyé à vos étudiants pour s'inscrire et ainsi créer leur dépôt", 'success')
+                elif res == 3:
+                    flash("Erreur dans l'envoi du mail. Lien à envoyer aux élèves : " + url, 'warning')
+                # flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes pour l\'activité puissent être créés', 'info')
+                # flash('Formulaire : ' + url_form, 'warning')
 
         teachers = Teacher.query.all()
         modules = Module.query.all()
@@ -387,6 +399,7 @@ def activity(page, activity_id):
                             data_base_all_groups[i].url) for i in range(count)]
         activity_name = Activity.query.get(activity_id).name
         activity_link = Activity.query.get(activity_id).url_master_repo
+        activity_bdd = Activity.query.get(activity_id)
 
         groups = get_groups_for_page(page, all_groups, count)
 
@@ -395,7 +408,7 @@ def activity(page, activity_id):
         gl = gitlab_server_connection(current_user.username())
         if not gl:
             return redirect(url_for("my_profile"))
-        activity_gitlab = gl.projects.get(gl.user.username + '/' + activity_name)
+        activity_gitlab = gl.projects.get(activity_bdd.id_gitlab_master_repo)
         branches = activity_gitlab.branches.list()
         list_branch_name = [b.name for b in branches]
         pagination = Pagination(page, PER_PAGE, count)
@@ -408,6 +421,7 @@ def activity(page, activity_id):
                             data_base_all_groups[i].url) for i in range(count)]
         activity_name = Activity.query.get(activity_id).name
         activity_link = Activity.query.get(activity_id).url_master_repo
+        activity_bdd = Activity.query.get(activity_id)
 
         groups = get_groups_for_page(page, all_groups, count)
 
@@ -416,7 +430,7 @@ def activity(page, activity_id):
         gl = gitlab_server_connection(current_user.username())
         if not gl:
             return redirect(url_for("my_profile"))
-        activity_gitlab = gl.projects.get(gl.user.username + '/' + activity_name)
+        activity_gitlab = gl.projects.get(activity_bdd.id_gitlab_master_repo)
         print(activity_gitlab)
         branches = activity_gitlab.branches.list()
         list_branch_name = [b.name for b in branches]
@@ -429,6 +443,8 @@ def activity(page, activity_id):
                     while mr_name in branches_from_fork:
                         mr_name = mr_name + "X"
                     # print(mr_name)
+                    if mr_name == "master":
+                        mr_name = mr_name + "X"
                     project.branches.create({'branch': mr_name, 'ref': 'master'})
                     print("file tree : ")
                     print(activity_gitlab.repository_tree(ref=b.name))
@@ -459,6 +475,14 @@ def activity(page, activity_id):
                                                   'title': 'merge ' + b.name,
                                                   'labels': ['project', current_user.get_db_user().username]})
                 flash("Merge request de " + b.name + " élaborée !", "success")
+        if request.form.get("createIssue"):
+            for projectTmp in activity_gitlab.forks.list():
+                project = gl.projects.get(projectTmp.id)
+                if request.form.get(project.path):
+                    project.issues.create({'title': request.form.get("titleIssue"),
+                                           'description': request.form.get("descIssue")})
+            flash("Issue créée avec succès", "success")
+
         pagination = Pagination(page, PER_PAGE, count)
         return render_template("activity.html", pagination=pagination, groups=groups, activity_name=activity_name,
                                activity_link=activity_link, branches=list_branch_name)
