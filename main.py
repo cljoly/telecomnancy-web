@@ -408,6 +408,7 @@ def activity(page, activity_id):
                             data_base_all_groups[i].url) for i in range(count)]
         activity_name = Activity.query.get(activity_id).name
         activity_link = Activity.query.get(activity_id).url_master_repo
+        activity_bdd = Activity.query.get(activity_id)
 
         groups = get_groups_for_page(page, all_groups, count)
 
@@ -416,7 +417,7 @@ def activity(page, activity_id):
         gl = gitlab_server_connection(current_user.username())
         if not gl:
             return redirect(url_for("my_profile"))
-        activity_gitlab = gl.projects.get(gl.user.username + '/' + activity_name)
+        activity_gitlab = gl.projects.get(activity_bdd.id_gitlab_master_repo)
         print(activity_gitlab)
         branches = activity_gitlab.branches.list()
         list_branch_name = [b.name for b in branches]
@@ -429,6 +430,8 @@ def activity(page, activity_id):
                     while mr_name in branches_from_fork:
                         mr_name = mr_name + "X"
                     # print(mr_name)
+                    if mr_name == "master":
+                        mr_name = mr_name + "X"
                     project.branches.create({'branch': mr_name, 'ref': 'master'})
                     print("file tree : ")
                     print(activity_gitlab.repository_tree(ref=b.name))
@@ -459,6 +462,14 @@ def activity(page, activity_id):
                                                   'title': 'merge ' + b.name,
                                                   'labels': ['project', current_user.get_db_user().username]})
                 flash("Merge request de " + b.name + " élaborée !", "success")
+        if request.form.get("createIssue"):
+            for projectTmp in activity_gitlab.forks.list():
+                project = gl.projects.get(projectTmp.id)
+                if request.form.get(project.path):
+                    project.issues.create({'title': request.form.get("titleIssue"),
+                                           'description': request.form.get("descIssue")})
+            flash("Issue créée avec succès", "success")
+
         pagination = Pagination(page, PER_PAGE, count)
         return render_template("activity.html", pagination=pagination, groups=groups, activity_name=activity_name,
                                activity_link=activity_link, branches=list_branch_name)
