@@ -17,7 +17,7 @@ SSH_KEY = "./gitly_ssh.key"
 # Dossier pour conserver les dépôts clonés le temps de faire des statistiques
 CLONE_DIR = "./clone_dir"
 # Chemin vers le script Gitinspector
-GITINSPECTOR_PATH="gitinspector"
+GITINSPECTOR_PATH="./gitinspector/gitinspector.py"
 
 
 class InvalidKey(Exception):
