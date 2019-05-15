@@ -7,7 +7,7 @@ from flask import url_for
 
 
 def make_url(db, user):
-    current_datetime = datetime.datetime.now()
+    current_datetime = datetime.now()
     url_password_hash = UrlPasswordHash.query.filter(UrlPasswordHash.user == user, UrlPasswordHash.expire_date > current_datetime).first()
     if not url_password_hash:
         hash_for_url = uuid.uuid4().hex
@@ -30,10 +30,10 @@ def send_email_to_reset_password(email_address, url):
     server.login("gitlab-bravo@telecomnancy.eu", "prioriteaudirect")
     server.helo()
 
-    sujet = "Réinitialisation de votre mot de passe"
+    sujet = "Reinitialisation de votre mot de passe"
     fromaddr = '"Gitly from TELECOM Nancy" <gitlab-bravo@telecomnancy.eu>'
 
-    toaddrs = [email_address]
+    toaddrs = email_address
 
     message = """Bonjour,
 
@@ -51,8 +51,7 @@ def send_email_to_reset_password(email_address, url):
 
 
     %s
-             """ % (fromaddr, ",".join(toaddrs), sujet, message)
-    server.sendmail(fromaddr, toaddrs, msg)
+             """ % (fromaddr, toaddrs, sujet, message)
 
     try:
         server.sendmail(fromaddr, toaddrs, msg)

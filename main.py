@@ -370,7 +370,8 @@ def forgotten_password():
     if request.method == 'GET':
         return render_template("forgottenPassword.html")
     elif request.method == 'POST':
-        email_address = request.get("email")
+        email_address = request.form.get("email")
+        print(email_address)
         if not email_address:
             flash("Veuillez entrez votre adresse email afin de pouvoir réinitialiser votre mot de passe", 'danger')
             return render_template("forgottenPassword.html")
@@ -407,7 +408,7 @@ def reset_password(hash_url):
         if not viable_link:
             flash('Lien de réinitialisation du mot de passe expiré.  Veuillez recommencer la procédure pour réinitialiser votre mot de passe.', 'danger')
             return redirect(url_for('homepage'))
-        render_template("reset_password.html")
+        return render_template("reset_password.html")
 
     elif request.method == 'POST':
         current_datetime = datetime.datetime.now()
