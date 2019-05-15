@@ -223,7 +223,7 @@ def new_activity():
                 if res == 0:
                     flash("Un mail vient d'être envoyé à vos étudiants pour s'inscrire et ainsi créer leur dépôt", 'success')
                 elif res == 3:
-                    flash("Erreur dans l'envoi du mail. Lien à envoyer aux élèves : " + url_form, 'warning')
+                    flash("Erreur dans l'envoi du mail. Lien à envoyer aux élèves : " + url, 'warning')
                 # flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes pour l\'activité puissent être créés', 'info')
                 # flash('Formulaire : ' + url_form, 'warning')
 
