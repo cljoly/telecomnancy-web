@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block head %}
+{% block import %}
     <script src="{{ url_for('static', filename='script/chart.min.js') }}"></script>
 {% endblock %}
 
@@ -11,10 +11,17 @@
 
 {% block content %}
     <div class="container">
+        <p class="text-center"><strong>Les extensions suivantes ont été ignorées:
+            {% for item in ignored %}
+            {{ item }}
+            {% endfor %}
+        </strong></p>
+
+        <br>
         <div style="margin-left: auto; margin-right: auto; width: 600px">
             <canvas class="centered" id="histograme" width="600" height="400"></canvas>
         </div>
-        <p class="text-center" id="caption">Histograme</p>
+        <p class="text-center">Historique des changements</p>
 
         <br>
         <br>
@@ -22,8 +29,34 @@
         <div style="margin-left: auto; margin-right: auto; width: 600px">
             <canvas class="centered" id="doughnut" width="600" height="400"></canvas>
         </div>
-        <p class="text-center" id="caption">Doughnut</p>
+        <p class="text-center">Part des changements par utilisateur</p>
+
+        <br>
+        <br>
+
+        <p class="text-center"><strong>Responsabilitées par fichier</strong></p>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">Fichier</th>
+                {% for name in respNames %}
+                <th scope="col">{{ name }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for file in respFiles %}
+            <tr>
+                <th scope="row">{{ file }}</th>
+                {% for value in respValues[loop.index -1] %}
+                <td>{{ value }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
+
 
 
 
@@ -31,7 +64,7 @@
         /* inspired by https://www.patricksoftwareblog.com/creating-charts-with-chart-js-in-a-flask-application/ */
         //////////////////////////////////HISTOGRAME//////////////////////////////////
         // Global parameters:
-        // do not resize the chart canvas when its container does (keep at 600x400px)
+        // do not resize the chart canvas when its container does
         Chart.defaults.global.responsive = false;
 
         // define the chart data
@@ -39,30 +72,33 @@
             labels: [{% for item in histLabels %}
                 "{{item}}",
             {% endfor %}],
-            datasets: [{
-                label: '{{ histLegend }}',
-                fill: true,
-                lineTension: 0.1,
-                backgroundColor: "rgba(75,192,192,0.4)",
-                borderColor: "rgba(75,192,192,1)",
-                borderCapStyle: 'butt',
-                borderDash: [],
-                borderDashOffset: 0.0,
-                borderJoinStyle: 'miter',
-                pointBorderColor: "rgba(75,192,192,1)",
-                pointBackgroundColor: "#fff",
-                pointBorderWidth: 1,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: "rgba(75,192,192,1)",
-                pointHoverBorderColor: "rgba(220,220,220,1)",
-                pointHoverBorderWidth: 2,
-                pointRadius: 1,
-                pointHitRadius: 10,
-                data: [{% for item in histValues %}
-                    {{item}},
-                {% endfor %}],
-                spanGaps: false
-            }]
+            datasets: [{% for user in histLegend %}
+                {
+                    label: '{{ user }}',
+                    fill: true,
+                    lineTension: 0.1,
+                    backgroundColor: random_rgba(0.2),
+                    borderColor: random_rgba(1),
+                    borderCapStyle: 'butt',
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    borderJoinStyle: 'miter',
+                    pointBorderColor: "rgba(75,192,192,1)",
+                    pointBackgroundColor: "#fff",
+                    pointBorderWidth: 1,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                    pointHoverBorderColor: "rgba(220,220,220,1)",
+                    pointHoverBorderWidth: 2,
+                    pointRadius: 1,
+                    pointHitRadius: 10,
+                    data: [{% for item in histValues[loop.index -1] %}
+                        {{item}},
+                    {% endfor %}],
+                    spanGaps: false
+                },
+            {% endfor %}]
+
         };
 
         // get chart canvas
@@ -85,13 +121,13 @@
                 {% endfor %}],
                 backgroundColor:
                     [{% for item in doValues %}
-                    getRandomColor(),
-                {% endfor %}],
+                        getRandomColor(),
+                    {% endfor %}],
             }]
         };
 
         // get chart canvas
-        var ctx = document.getElementById("doughnut").getContext("2d");
+        ctx = document.getElementById("doughnut").getContext("2d");
 
         // create the chart using the chart canvas
         var mydoughnut = new Chart(ctx, {
@@ -108,5 +144,11 @@
             }
             return color;
         }
+
+        function random_rgba(t) {
+            var o = Math.round, r = Math.random, s = 255;
+            return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + t + ')';
+        }
+
     </script>
 {% endblock %}
