@@ -6,7 +6,7 @@
 
 {% block content %}
 
-    <form method="post" action="{{ url_for("new_activity") }}">
+    <form method="post" action="{{ url_for("new_activity") }}" id="formContainer">
 
         <h3 class="left-items">Nom de l'activité :</h3>
         <div class="container input-group mb-3">
@@ -178,10 +178,15 @@
             </div>
         </section>
 
-        <input type="submit" class="left-items btn btn-lg btn-primary" value="Créer l'activité">
+        <input type="submit" class="left-items btn btn-lg btn-primary" onclick="waiting()" value="Créer l'activité">
 
     </form>
 
+    <div id="waiting" style="display: none" class="container text-center">
+        <img class="img-fluid" src="{{ url_for('static', filename='waiting.jpg') }}" alt="">
+        <h1 class="display-1">L'équipe est en chemin ...</h1>
+        <h2 class="display-2">Veuillez patienter.</h2>
+    </div>
 
     <script type="text/javascript">
         let button_remove_selected = document.getElementById('remove_selected');
@@ -252,6 +257,25 @@
 
         });
 
+        function waiting()
+        {
+            let form = document.forms["formContainer"];
+            if(form["activityName"].value !== "" && form["beginDate"].value !== "" && form["endDate"].value !== "" && (form["module"].value !== "" || form["moduleName"].value !== "" && form["moduleAbbreviation"].value !== "") && form["selectedTeacher"].value !== "" && form["selectedStudents"].value !== "")
+            {
+                /*
+                console.log(form["activityName"].value);
+                console.log(form["beginDate"].value);
+                console.log(form["endDate"].value);
+                console.log(form["module"].value);
+                console.log(form["moduleName"].value);
+                console.log(form["moduleAbbreviation"].value);
+                console.log(form["selectedTeacher"].value);
+                console.log(form["selectedStudents"].value);
+                 */
+                document.getElementById("formContainer").style.display = "none";
+                document.getElementById("waiting").style.display = "block";
+            }
+        }
     </script>
 
 {% endblock %}

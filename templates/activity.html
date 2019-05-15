@@ -7,24 +7,24 @@
 {% block content %}
     <section id="activityContent" class="container">
         <form method="post">
-        <div class="btn-group" style="margin-bottom: 50px; margin-top: 20px">
-            <a class="btn btn-success" href="{{ activity_link }}">Dépôt de l'activité</a>
-            <button type="button" name="new_issue" class="btn btn-danger" onclick="show()"> Nouvelle Issue</button>
-            <div class="btn-group">
-                <input name="merger" value="Créer une Merge Request" type="submit" class="btn btn-success">
-                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <div class="dropdown-menu">
-                    {% for b in branches %}
-                        <input class="dropdown-item" name="{{ b }}" value="{{ b }}" type="submit">
-                    {% endfor %}
+            <div class="btn-group" style="margin-bottom: 50px; margin-top: 20px">
+                <a class="btn btn-success" href="{{ activity_link }}">Dépôt de l'activité</a>
+                <button type="button" name="new_issue" class="btn btn-danger" onclick="show()"> Nouvelle Issue</button>
+                <div class="btn-group">
+                    <input name="merger" value="Créer une Merge Request" type="submit" class="btn btn-success">
+                    <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <div class="dropdown-menu">
+                        {% for b in branches %}
+                            <input class="dropdown-item" onclick="waiting()" name="{{ b }}" value="{{ b }}" type="submit">
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
-        </div>
         </form>
-        <form method="post">
+        <form method="post" id="issueForm">
             <div id="issueDiv" class="container" style="display: none; margin-bottom: 10px">
                 <label for="titleIssue">Titre de l'issue</label>
                 <input class="form-control" id="titleIssue" name="titleIssue" type="text" placeholder="Titre de l'issue"
@@ -33,7 +33,8 @@
                 <textarea class="form-control" id="descIssue" name="descIssue" type="text"
                           placeholder="Description de l'issue" required></textarea>
                 <div class="btn-group" style="margin-top: 5px">
-                    <input class="btn btn-success" id="createIssue" name="createIssue" value="Créer l'issue" type="submit">
+                    <input class="btn btn-success" onclick="waiting2()" id="createIssue" name="createIssue" value="Créer l'issue"
+                           type="submit">
                     <button class="btn btn-danger" onclick="hide()">Annuler</button>
                 </div>
             </div>
@@ -53,7 +54,7 @@
                             <td><input class="check" name="{{ g.name }}" type="checkbox" style="display: none"></td>
                             <th scope="row">{{ g.name }}</th>
                             <td><a class="btn btn-primary" href="{{ g.repository }}">Dépôt</a></td>
-                            <td><a class="btn btn-primary" href="{{ g.stat_link }}">Statistiques</a></td>
+                            <td><a class="btn btn-primary" onclick="waiting()" href="{{ g.stat_link }}">Statistiques</a></td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -99,6 +100,11 @@
             {% endif %}
         </div>
     </section>
+    <div id="waiting" style="display: none" class="container text-center">
+        <img class="img-fluid" src="{{ url_for('static', filename='waiting.jpg') }}" alt="">
+        <h1 class="display-1">L'équipe est en chemin ...</h1>
+        <h2 class="display-2">Veuillez patienter.</h2>
+    </div>
     <script type="text/javascript">
         function tole()
         {
@@ -131,6 +137,21 @@
             for (let i = 0; i < checkboxes.length; i++)
             {
                 checkboxes[i].style.display = "block";
+            }
+        }
+
+        function waiting()
+        {
+            document.getElementById("activityContent").style.display = "none";
+            document.getElementById("waiting").style.display = "block";
+        }
+
+        function waiting2()
+        {
+            if(document.forms["issueForm"]["descIssue"].value !== "" && document.forms["issueForm"]["titleIssue"].value !== "")
+            {
+                document.getElementById("activityContent").style.display = "none";
+                document.getElementById("waiting").style.display = "block";
             }
         }
 
