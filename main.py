@@ -42,29 +42,6 @@ def load_user(user_id):
     auth_user = AuthUser(db_user)
     return auth_user
 
-#Debug test
-
-# Permet de tester les requêtes sur les activités
-'''
-from datetime import datetime
-
-poo = Module(name="Programmation Orienté Objet", short_name="POO")
-db.session.add(poo)
-activity = Activity(id=1, module_id=poo.id, name="Lightning XIII", admingroup="Class 7",
-                    start_date=datetime(year=2019, month=10, day=30),
-                    year=2019, end_date=datetime(year=2019, month=10, day=31), nbOfStudent=15)
-db.session.add(activity)
-rep1 = Repository(url="https://fr.wikipedia.org/wiki/Final_Fantasy_VII", activity_id=activity.id)
-db.session.add(rep1)
-rep2 = Repository(url="https://fr.wikipedia.org/wiki/Final_Fantasy_VI", activity_id=activity.id)
-db.session.add(rep2)
-rep3 = Repository(url="https://fr.wikipedia.org/wiki/Final_Fantasy_X", activity_id=activity.id)
-db.session.add(rep3)
-'''
-# Une activité
-
-
-#db.session.commit()
 
 from tools import *
 from gitlab_actions import gitlab_server_connection
@@ -154,7 +131,11 @@ def signin():
             flash("Erreur d’identification : nom d’utilisateur ou mot de passe \
                   incorrect.", "danger")
         else:
-            login_user(auth_user)
+            remember_me = form.get('check')
+            if remember_me:
+                login_user(auth_user, remember=True)
+            else:
+                login_user(auth_user)
             flash("Vous êtes identifié", "success")
             if not gitlab_server_connection(current_user.username()):
                 flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la changer dans votre profil", 'danger')
@@ -531,7 +512,4 @@ app.jinja_env.globals['url_for_other_page'] = url_for_other_page
 
 
 if __name__ == '__main__':
-    # This is used when running locally only. When deploying to Google App
-    # Engine, a webserver process such as Gunicorn will serve the app. This
-    # can be configured by adding an `entrypoint` to app.yaml.
     app.run(host='127.0.0.1', port=5555, debug=True)
