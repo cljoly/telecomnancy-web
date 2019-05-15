@@ -243,7 +243,7 @@
                 for (let l of lines) {
                     let student = l.split(',');
                     let select = document.getElementById("loaded_students");
-                    select.options.add(new Option(student[0] + " " + student[1], student[3], false, false));
+                    select.options.add(new Option(student[0] + " " + student[1], l, false, false));
                 }
 
             });

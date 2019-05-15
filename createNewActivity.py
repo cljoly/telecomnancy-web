@@ -4,6 +4,8 @@ from datetime import datetime
 import gitlab
 import random
 from flask import flash, url_for
+import smtplib
+from email.message import EmailMessage
 
 
 def create_new_activity(result, db, gl):
@@ -11,7 +13,9 @@ def create_new_activity(result, db, gl):
     # Vérification des modules : création d'un nouveau si demandé par l'utilisateur
 
     if result.get('moduleName') and result.get('moduleAbbreviation'):
-        module = Module(name=result.get('moduleName'), short_name=result.get('moduleAbbreviation'))
+        module = Module(name=result.get('moduleName'),
+                        short_name=result.get('moduleAbbreviation')
+                        )
 
         try:
             db.session.add(module)
@@ -43,8 +47,8 @@ def create_new_activity(result, db, gl):
         return 8, None, None
 
     # Conversion des dates
-    beginDate = datetime.strptime(result.get('beginDate'), '%Y-%m-%d')
-    endDate = datetime.strptime(result.get('endDate'), '%Y-%m-%d')
+    begin_date = datetime.strptime(result.get('beginDate'), '%Y-%m-%d')
+    end_date = datetime.strptime(result.get('endDate'), '%Y-%m-%d')
 
     teacher = Teacher.query.filter(Teacher.id == result.get('selectedTeacher')).first()
 
@@ -53,17 +57,30 @@ def create_new_activity(result, db, gl):
     potential_activity = Activity.query.filter(Activity.name == result.get('activityName')).first()
     if not potential_activity:
         try:
-            project = gl.projects.create({'name': result.get('activityName'), 'visibility': 'private', 'issues_enabled': True, 'merge_requests_enabled': True, 'jobs_enabled': True, 'wiki_enabled': True })
+            project = gl.projects.create({'name': result.get('activityName'),
+                                          'visibility': 'private',
+                                          'issues_enabled': True,
+                                          'merge_requests_enabled': True,
+                                          'jobs_enabled': True,
+                                          'wiki_enabled': True
+                                          })
         except Exception as e:
             print("Erreur de création du dépôt de l'activité: ", e)
             return 10, None, None
     else:
         return 11, None, None
 
-    #Création de la nouvelle activité
-    new_activity = Activity(module_id=module.id, name=result.get('activityName'), year=int(datetime.now().year),
-                            start_date=beginDate, end_date=endDate, nbOfStudent=result.get('numberOfStudents', type=int),
-                            teacher_id=teacher.id, id_gitlab_master_repo=project.id, url_master_repo=project.web_url)
+    # Création de la nouvelle activité
+    new_activity = Activity(module_id=module.id,
+                            name=result.get('activityName'),
+                            year=int(datetime.now().year),
+                            start_date=begin_date,
+                            end_date=end_date,
+                            nbOfStudent=result.get('numberOfStudents', type=int),
+                            teacher_id=teacher.id,
+                            id_gitlab_master_repo=project.id,
+                            url_master_repo=project.web_url
+                            )
 
     try:
         db.session.add(new_activity)
@@ -82,15 +99,15 @@ def create_groups_for_an_activity_with_card_1(activity, db, gl, gitlab_activity_
 
     # Fork du dépôt de l'activité pour créer un repo par élève
     try:
-        print("entrée fonc : ", selected_students)
+        # print("entrée fonc : ", selected_students)
         for username in selected_students:
             list_of_users_with_this_username = gl.users.list(username=username)
-            print(username)
+            # print(username)
             if list_of_users_with_this_username:
                 user = list_of_users_with_this_username[0]
                 name = "%s %s" % (gitlab_activity_project.name, user.name)
                 path = "%s_%s" % (gitlab_activity_project.path, user.username)
-                print(user)
+                # print(user)
 
                 # Création du fork
                 fork = gitlab_activity_project.forks.create({"name": name, "path": path})
@@ -126,3 +143,40 @@ def create_groups_for_an_activity_with_multiple_card(activity, db):
     activity.form_number = number
     db.session.commit()
     return url_for('group_form', form_number=number)
+
+
+def send_email_to_students(url_form, activity, emails):
+    server = smtplib.SMTP_SSL(host="venus.telecomnancy.eu",port=465)
+    server.connect(host='venus.telecomnancy.eu',port=465)
+    server.login("gitlab-bravo@telecomnancy.eu", "prioriteaudirect")
+    server.helo()
+
+    sujet = "Lien d'inscription pour l'activite %s" % activity.name.encode("ascii", "replace")
+    fromaddr = '"Gitly from TELECOM Nancy" <gitlab-bravo@telecomnancy.eu>'
+
+    toaddrs = emails
+
+    message = """Bonjour,
+
+Voici le lien pour vous inscrire a l'activite %s : %s.
+        
+Ceci est un mail automatique, merci de ne pas y repondre.
+        
+Gitly for Gitlab TELECOM Nancy
+""" % (activity.name.encode("ascii", "replace"), url_form)
+
+    msg = """From: %s
+To: %s
+Subject: %s
+         
+         
+%s
+         """ % (fromaddr, ",".join(toaddrs), sujet, message)
+    server.sendmail(fromaddr, toaddrs, msg)
+
+    try:
+        server.sendmail(fromaddr, toaddrs, msg)
+        return 0
+    except smtplib.SMTPException as e:
+        print(e)
+        return 3

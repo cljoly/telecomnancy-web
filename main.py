@@ -67,7 +67,7 @@ db.session.add(rep3)
 from tools import *
 from gitlab_actions import gitlab_server_connection
 from createNewActivity import create_new_activity, create_groups_for_an_activity_with_card_1, \
-    create_groups_for_an_activity_with_multiple_card
+    create_groups_for_an_activity_with_multiple_card, send_email_to_students
 import urllib.parse
 from sqlalchemy.exc import IntegrityError as IntegrityError
 
@@ -174,7 +174,14 @@ def new_activity():
             return redirect(url_for("my_profile"))
 
         result = request.form
-        print(result)
+        usernames = list()
+        emails = list()
+        selected_students = result.to_dict(flat=False).get('selectedStudents')
+        for student in selected_students:
+            s = student.split(',')
+            usernames.append(s[3])
+            emails.append(s[2])
+
         create_new_activity_result, activity_created, gitlab_activity_project = create_new_activity(result, db, gl)
 
         if create_new_activity_result == 1:
@@ -199,10 +206,9 @@ def new_activity():
             flash('Une activité porte déjà le nom de l\'activité que vous souhaitez créer. Activité non créée', 'danger')
         elif create_new_activity_result == 0:
             flash('Activité ajoutée à la base de données', 'success')
-            # print(result)
-            # print(result.to_dict(flat=False).get('selectedStudents'))
+
             if int(result.get('numberOfStudents')) == 1:
-                res = create_groups_for_an_activity_with_card_1(activity_created, db, gl, gitlab_activity_project, result.to_dict(flat=False).get('selectedStudents'))
+                res = create_groups_for_an_activity_with_card_1(activity_created, db, gl, gitlab_activity_project, usernames)
                 if res == 0:
                     flash('Création du dépôt de l\'activité effectuée', 'success')
                     flash('Tous les dépôts des élèves ont été créés', 'success')
@@ -212,8 +218,14 @@ def new_activity():
                     flash('Erreur dans le fork de l\'activité', 'danger')
             elif 1 < int(result.get('numberOfStudents')) <= 6:
                 url_form = create_groups_for_an_activity_with_multiple_card(activity_created, db)
-                flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes pour l\'activité puissent être créés', 'info')
-                flash('Formulaire : ' + url_form, 'warning')
+                url = "http://%s%s" % (request.host, url_form)
+                res = send_email_to_students(url, activity_created, emails)
+                if res == 0:
+                    flash("Un mail vient d'être envoyé à vos étudiants pour s'inscrire et ainsi créer leur dépôt", 'success')
+                elif res == 3:
+                    flash("Erreur dans l'envoi du mail. Lien à envoyer aux élèves : " + url, 'warning')
+                # flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes pour l\'activité puissent être créés', 'info')
+                # flash('Formulaire : ' + url_form, 'warning')
 
         teachers = Teacher.query.all()
         modules = Module.query.all()
