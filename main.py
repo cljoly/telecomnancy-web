@@ -21,7 +21,7 @@ db = SQLAlchemy(app)
 
 # XXX Nécessaire de le mettre ici pour avoir la bd
 from authentication import login_form, AuthUser
-from database.db_objects import User, Activity, Repository, Module, Teacher
+from database.db_objects import User, Activity, Repository, Module, Teacher, UrlPasswordHash
 db.create_all()
 
 
@@ -49,6 +49,8 @@ from createNewActivity import create_new_activity, create_groups_for_an_activity
     create_groups_for_an_activity_with_multiple_card, send_email_to_students
 import urllib.parse
 from sqlalchemy.exc import IntegrityError as IntegrityError
+from reset_password import send_email_to_reset_password, make_url
+import datetime
 
 
 @app.route('/')
@@ -207,8 +209,6 @@ def new_activity():
                     flash("Un mail vient d'être envoyé à vos étudiants pour s'inscrire et ainsi créer leur dépôt", 'success')
                 elif res == 3:
                     flash("Erreur dans l'envoi du mail. Lien à envoyer aux élèves : " + url, 'warning')
-                # flash('Veuillez envoyer le formulaire créé à vos élèves pour que les groupes pour l\'activité puissent être créés', 'info')
-                # flash('Formulaire : ' + url_form, 'warning')
 
         teachers = Teacher.query.all()
         modules = Module.query.all()
@@ -364,10 +364,71 @@ def my_profile():
             return render_template("homepage.html")
 
 
-@app.route('/forgottenPassword')
+@app.route('/forgottenPassword', methods=['GET', 'POST'])
 def forgotten_password():
     """ Forgotten password """
-    return render_template("forgottenPassword.html")
+    if request.method == 'GET':
+        return render_template("forgottenPassword.html")
+    elif request.method == 'POST':
+        email_address = request.get("email")
+        if not email_address:
+            flash("Veuillez entrez votre adresse email afin de pouvoir réinitialiser votre mot de passe", 'danger')
+            return render_template("forgottenPassword.html")
+
+        user = User.query.filter_by(email=email_address).first()
+        if not user:
+            flash("Aucun compte n'est associé à cette adresse mail. Réinitialisation de mot de passe impossible.", 'danger')
+            return render_template("forgottenPassword.html")
+
+        error, after_root_url = make_url(db, user)
+        if error != 0:
+            flash("Une erreur s'est produite, veuillez réessayer", 'danger')
+            return render_template("forgottenPassword.html")
+        url = "http://%s%s" % (request.host, after_root_url)
+        res = send_email_to_reset_password(email_address, url)
+        if res == 0:
+            flash("Un mail vient de vous être envoyé pour réinitialiser votre mot de passe. Ce lien est valable 24 heures.", 'success')
+            return render_template("forgottenPassword.html")
+        if res == 1:
+            flash("Erreur dans l'envoi du mail. Veuillez contacter l'administrateur du site", 'danger')
+            return render_template("homepage.html")
+
+
+@app.route('/reset_password/<hash_url>', methods=['GET', 'POST'])
+def reset_password(hash_url):
+    """ Reset password """
+    if request.method == 'GET':
+        current_datetime = datetime.datetime.now()
+        url_password_hash = UrlPasswordHash.query.filter(UrlPasswordHash.hash == hash_url).first()
+        if not url_password_hash:
+            flash("Ce lien n'est pas valable.", "danger")
+            return redirect(url_for('homepage'))
+        viable_link = UrlPasswordHash.query.filter(UrlPasswordHash.hash == hash_url, UrlPasswordHash.expire_date > current_datetime).first()
+        if not viable_link:
+            flash('Lien de réinitialisation du mot de passe expiré.  Veuillez recommencer la procédure pour réinitialiser votre mot de passe.', 'danger')
+            return redirect(url_for('homepage'))
+        render_template("reset_password.html")
+
+    elif request.method == 'POST':
+        current_datetime = datetime.datetime.now()
+        url_password_hash = UrlPasswordHash.query.filter(UrlPasswordHash.hash == hash_url, UrlPasswordHash.expire_date > current_datetime).first()
+        if not url_password_hash:
+            flash('Lien de réinitialisation du mot de passe expiré. Veuillez recommencer la procédure pour réinitialiser votre mot de passe.', 'danger')
+            return redirect(url_for('homepage'))
+        new_password = request.form.get('password')
+        new_password2 = request.form.get('password2')
+        if not new_password or not new_password2:
+            flash('Veuillez compléter les deux champs', 'danger')
+            return render_template("reset_password.html")
+        if new_password != new_password2:
+            flash('Veuillez entrer deux mots de passes identiques', 'danger')
+            return render_template("reset_password.html")
+        salt, h = hashnsalt(new_password)
+        url_password_hash.user.salt = salt
+        url_password_hash.user.password_hash = h
+        db.session.commit()
+        flash('Votre mot de passe a été réinitialisé', 'success')
+        return redirect(url_for('homepage'))
 
 
 @app.route('/activity/<int:activity_id>', defaults={'page': 1}, methods=['GET', 'POST'])
