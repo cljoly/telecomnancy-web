@@ -8,7 +8,7 @@
     <section id="activityContent" class="container">
         <form method="post">
         <div class="btn-group" style="margin-bottom: 50px; margin-top: 20px">
-            <a class="btn btn-success" href="{{ activity_link }}">Répertoire parent</a>
+            <a class="btn btn-success" href="{{ activity_link }}">Dépôt de l'activité</a>
             <button type="button" name="new_issue" class="btn btn-danger" onclick="show()"> Nouvelle Issue</button>
             <div class="btn-group">
                 <input name="merger" value="Créer une Merge Request" type="submit" class="btn btn-success">
@@ -43,7 +43,7 @@
                     <tr>
                         <th scope="col"><input id="multiSelection" type="checkbox" style="display: none"></th>
                         <th scope="col">Nom du groupe</th>
-                        <th scope="col">Répertoire git</th>
+                        <th scope="col">Liens vers les dépôts git</th>
                         <th scope="col">Statistiques</th>
                     </tr>
                     </thead>
@@ -52,7 +52,7 @@
                         <tr>
                             <td><input class="check" name="{{ g.name }}" type="checkbox" style="display: none"></td>
                             <th scope="row">{{ g.name }}</th>
-                            <td><a class="btn btn-primary" href="{{ g.repository }}">Répertoire</a></td>
+                            <td><a class="btn btn-primary" href="{{ g.repository }}">Dépôt</a></td>
                             <td><a class="btn btn-primary" href="{{ g.stat_link }}">Statistiques</a></td>
                         </tr>
                     {% endfor %}
