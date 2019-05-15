@@ -37,6 +37,8 @@ def load_user(user_id):
     s’il n’existe pas, renvoie un objet AuthUser sinon"""
     from database.db_objects import User
     db_user = User.query.get(int(user_id))
+    if not db_user:
+        return None
     auth_user = AuthUser(db_user)
     return auth_user
 
