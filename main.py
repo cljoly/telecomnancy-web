@@ -10,7 +10,7 @@ from flask_login import login_required, LoginManager, current_user, \
     logout_user, login_user
 from typing import Dict
 import gitlab
-from pass_utils import hashnsalt
+from pass_utils import hashnsalt, verify_password
 
 
 import os
@@ -339,9 +339,12 @@ def my_profile():
         elif pw is not None:
             npw = form.get("newPassword")
             npw2 = form.get("newPassword2")
-            if pw == current_user.get_db_user().password_hash:
+            db_user = current_user.get_db_user()
+            if verify_password(pw, db_user.salt, db_user.password_hash):
                 if npw == npw2:
-                    current_user.get_db_user().password_hash = npw
+                    salt, pass_hash = hashnsalt(npw)
+                    current_user.get_db_user().password_hash = pass_hash
+                    current_user.get_db_user().salt = salt
                     flash("Changement de mot de passe effectué", "success")
                     db.session.commit()
                     return render_template("my_profile.html", name=current_user.get_db_user().name,
