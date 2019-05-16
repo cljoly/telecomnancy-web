@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from subprocess import run, CalledProcessError
-import subprocess
+from subprocess import run, CalledProcessError, TimeoutExpired
 import os
+import sys
 import json
 from json.decoder import JSONDecodeError
 
@@ -17,14 +17,19 @@ SSH_KEY = "./gitly_ssh.key"
 # Dossier pour conserver les dépôts clonés le temps de faire des statistiques
 CLONE_DIR = "./clone_dir"
 # Chemin vers le script Gitinspector
-GITINSPECTOR_PATH="./gitinspector/gitinspector.py"
+GITINSPECTOR_PATH="../../gitinspector/gitinspector.py"
+
+# Timeout pour cloner
+CLONETIMEOUT=15
+# Pour l’exécution des commandes en général
+TIMEOUT=3
 
 
 class InvalidKey(Exception):
 
     """Exception levée quand la clé SSH n’est pas valide"""
 
-    def __init__(self):
+    def __init__(self, message):
         """TODO: to be defined1. """
         Exception.__init__(self)
 
@@ -34,7 +39,7 @@ class ErrorExtractingStat(Exception):
     """Exception levée quand gitinspector renvoie une erreur sur le dépot ou
     s’il écrit un JSON incorrect"""
 
-    def __init__(self):
+    def __init__(self, message):
         """TODO: to be defined1. """
         Exception.__init__(self)
 
@@ -47,19 +52,35 @@ def get_stat_for(repo_url):
     :returns: TODO
 
     """
-    repo_name = repo_url.split("/")[-1]
-
+    # TODO SSH à partir d’http
     env = os.environ.copy()
+    repo_name = repo_url.split("/")[-1]
+    repo_abs_path = os.path.join(
+        env["PWD"],
+        CLONE_DIR, repo_name)
+
+    # Suppression du dépôt si nécessaire
+    if (os.path.isdir(repo_abs_path)):
+        print("rm -rf ", repo_abs_path)
+        run(["rm", "-rf", repo_abs_path])
+
     env["GIT_SSH_COMMAND"] = "ssh -i ../{} -F /dev/null".format(SSH_KEY)
     try:
-        # TODO Ajouter check=True pour que l’exception soit effectivement levée
-        run(["git", "clone", repo_url, repo_name], env=env,
-            capture_output=True, timeout=10, cwd=CLONE_DIR)
-    except CalledProcessError:
+        # TODO Ajouter check=True pour que l’exception CalledProcessError soit
+        # effectivement levée
+        gclone = run(["git", "clone", repo_url, repo_name], env=env,
+                     timeout=CLONETIMEOUT, cwd=CLONE_DIR)
+    except TimeoutExpired:
+        raise InvalidKey("Problème au clonage, la clé est sans doute invalide \
+                         (timeout)")
+    if gclone.returncode != 0:
         raise InvalidKey("Problème au clonage, la clé est sans doute invalide")
-    wd = "{}/{}/{}".format(env["PWD"], CLONE_DIR, repo_name)
-    gi = run([GITINSPECTOR_PATH, "--format=json", "-HlmrTw"], env=env,
-             check=True, capture_output=True, cwd=wd)
+    try:
+        gi = run([GITINSPECTOR_PATH, "--format=json", "-HlmrTw"], env=env,
+                 check=True, capture_output=True, cwd=repo_abs_path,
+                 timeout=TIMEOUT)
+    except:
+        raise ErrorExtractingStat("gitinspector timed out")
     json_result = json.loads(gi.stdout)
     print(json_result)
     return json_result
