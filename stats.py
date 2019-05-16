@@ -86,52 +86,88 @@ def get_stat_for(repo_url):
     return json_result
 
 
-def getHisto(json_result):
-    histLength = len(json_result['gitinspector']['timeline']['periods'])
-    histLabels = []
-    histValues = []
-    histLegend = []
-    for i in range(histLength):
-        histLabels.append(json_result['gitinspector']['timeline']['periods'][i]['name'])
-        for author in json_result['gitinspector']['timeline']['periods'][i]['authors']:
-            if not (author['name'] in histLegend):
-                histLegend.append(author['name'])
-                histValues.append([])
+def get_histo_plus(json_result):
+    try:
+        histLength = len(json_result['gitinspector']['timeline']['periods'])
+        histLabels = []
+        histValues = []
+        histLegend = []
+        for i in range(histLength):
+            histLabels.append(json_result['gitinspector']['timeline']['periods'][i]['name'])
+            for author in json_result['gitinspector']['timeline']['periods'][i]['authors']:
+                if not (author['name'] in histLegend):
+                    histLegend.append(author['name'])
+                    histValues.append([])
 
-    for i in range(histLength):
-        authors = json_result['gitinspector']['timeline']['periods'][i]['authors']
-        authorsNames = [author['name'] for author in authors]
-        for j in range(len(histLegend)):
-            author = histLegend[j]
-            if author in authorsNames:
-                pos = authorsNames.index(author)
-                histValues[j].append(len(authors[pos]['work']))
-            else:
-                histValues[j].append(0)
+        for i in range(histLength):
+            authors = json_result['gitinspector']['timeline']['periods'][i]['authors']
+            authorsNames = [author['name'] for author in authors]
+            for j in range(len(histLegend)):
+                author = histLegend[j]
+                if author in authorsNames:
+                    pos = authorsNames.index(author)
+                    histValues[j].append(authors[pos]['work'].count('+'))
+                else:
+                    histValues[j].append(0)
 
-    return [histLabels, histValues, histLegend]
+        return [histLabels, histValues, histLegend]
+    except KeyError:
+        return [[],[],[]]
 
-def getResp(json_result):
-    respLength = len(json_result['gitinspector']['responsibilities']['authors'])
-    respNames = []
-    respValues = []
-    respFiles = []
-    for i in range(respLength):
-        respNames.append(json_result['gitinspector']['responsibilities']['authors'][i]['name'])
-        for file in json_result['gitinspector']['responsibilities']['authors'][i]['files']:
-            if not (file['name'] in respFiles):
-                respFiles.append(file['name'])
-                respValues.append([])
 
-    for i in range(respLength):
-        files = json_result['gitinspector']['responsibilities']['authors'][i]['files']
-        fileNames = [file['name'] for file in files]
-        for j in range(len(respFiles)):
-            file = respFiles[j]
-            if file in fileNames:
-                pos = fileNames.index(file)
-                respValues[j].append(files[pos]['rows'])
-            else:
-                respValues[j].append(0)
+def get_histo_moins(json_result):
+    try:
+        histLength = len(json_result['gitinspector']['timeline']['periods'])
+        histLabels = []
+        histValues = []
+        histLegend = []
+        for i in range(histLength):
+            histLabels.append(json_result['gitinspector']['timeline']['periods'][i]['name'])
+            for author in json_result['gitinspector']['timeline']['periods'][i]['authors']:
+                if not (author['name'] in histLegend):
+                    histLegend.append(author['name'])
+                    histValues.append([])
 
-    return [respNames, respValues, respFiles]
+        for i in range(histLength):
+            authors = json_result['gitinspector']['timeline']['periods'][i]['authors']
+            authorsNames = [author['name'] for author in authors]
+            for j in range(len(histLegend)):
+                author = histLegend[j]
+                if author in authorsNames:
+                    pos = authorsNames.index(author)
+                    histValues[j].append(authors[pos]['work'].count('-'))
+                else:
+                    histValues[j].append(0)
+
+        return [histLabels, histValues, histLegend]
+    except KeyError:
+        return [[],[],[]]
+
+
+def get_resp(json_result):
+    try:
+        respLength = len(json_result['gitinspector']['responsibilities']['authors'])
+        respNames = []
+        respValues = []
+        respFiles = []
+        for i in range(respLength):
+            respNames.append(json_result['gitinspector']['responsibilities']['authors'][i]['name'])
+            for file in json_result['gitinspector']['responsibilities']['authors'][i]['files']:
+                if not (file['name'] in respFiles):
+                    respFiles.append(file['name'])
+                    respValues.append([])
+
+        for i in range(respLength):
+            files = json_result['gitinspector']['responsibilities']['authors'][i]['files']
+            fileNames = [file['name'] for file in files]
+            for j in range(len(respFiles)):
+                file = respFiles[j]
+                if file in fileNames:
+                    pos = fileNames.index(file)
+                    respValues[j].append(files[pos]['rows'])
+                else:
+                    respValues[j].append(0)
+
+        return [respNames, respValues, respFiles]
+    except KeyError:
+        return [[],[],[]]

@@ -70,19 +70,21 @@ class ActivityDisplay:
         self.link = link  # link to the activity page
 
 
-def get_activities_for_page(page, count):
+def get_activities_for_page(page):
     """Effectue les requêtes necessaires pour récupérer les infos de Activities correspondantes à la page page"""
     result = db.session.query(
         Activity.name, func.count(Repository.id).label("count"), Activity.start_date, Activity.end_date, Activity.id
+    ).outerjoin(
+        Repository
     ).filter(
-        Activity.id == Repository.activity_id and
         Activity.teacher_id == current_user.id
     ).group_by(
         Activity.name
     )
+
     return [ActivityDisplay(result[i].name,
                             result[i].count,
+                            "/activity/%s" % result[i].id,
                             result[i].start_date.strftime("%d/%m/%Y"),
-                            result[i].end_date.strftime("%d/%m/%Y"),
-                            "/activity/%s" % result[i].id)
-            for i in range((page - 1) * PER_PAGE, min((page - 1) * PER_PAGE + PER_PAGE, count))]
+                            result[i].end_date.strftime("%d/%m/%Y"))
+            for i in range((page - 1) * PER_PAGE, min((page - 1) * PER_PAGE + PER_PAGE, result.count()))]

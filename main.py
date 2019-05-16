@@ -498,7 +498,7 @@ def activity(page, activity_id):
 def home(page):
     """Home page"""
     count = Activity.query.filter(Activity.teacher_id == current_user.id).group_by(Activity.name).count()
-    activities = get_activities_for_page(page, count)
+    activities = get_activities_for_page(page)
 
     if not activities and page != 1:
         abort(404)
@@ -523,31 +523,53 @@ def stats(activity_id):
         flash("GitInspector n’a pas pu être exécuté", "danger")
         return redirect(request.path, code=302)
 
-    [histLabels, histValues, histLegend] = getHisto(json_result)
+    try:
+        [histLabelsPlus, histValuesPlus, histLegendPlus] = get_histo_plus(json_result)
+        [histLabelsMoins, histValuesMoins, histLegendMoins] = get_histo_moins(json_result)
 
-    changeLength = len(json_result['gitinspector']['changes']['authors'])
-    changeLabels = [json_result['gitinspector']['changes']['authors'][i]['name']
-                    for i in range(changeLength)]
-    changeValues = [json_result['gitinspector']['changes']['authors'][i]['percentage_of_changes']
-                    for i in range(changeLength)]
+        changeLength = len(json_result['gitinspector']['changes']['authors'])
+        changeLabels = [json_result['gitinspector']['changes']['authors'][i]['name']
+                        for i in range(changeLength)]
+        changeValues = [json_result['gitinspector']['changes']['authors'][i]['percentage_of_changes']
+                        for i in range(changeLength)]
 
-    [respNames, respValues, respFiles] = getResp(json_result)
+        comLength = len(json_result['gitinspector']['blame']['authors'])
+        comLabels = [json_result['gitinspector']['blame']['authors'][i]['name']
+                        for i in range(comLength)]
+        comValues = [json_result['gitinspector']['blame']['authors'][i]['percentage_in_comments']
+                        for i in range(comLength)]
 
-    ignored = json_result['gitinspector']['extensions']['unused'][1::]
+        [respNames, respValues, respFiles] = get_resp(json_result)
 
-    return render_template('stats.html',
-                           histValues=histValues,
-                           histLabels=histLabels,
-                           histLegend=histLegend,
+        ignored = json_result['gitinspector']['extensions']['unused'][1::]
 
-                           doValues=changeValues,
-                           doLabels=changeLabels,
+        print(histValuesMoins)
+        print(histLabelsMoins)
+        print(histLegendMoins)
 
-                           respNames=respNames,
-                           respValues=respValues,
-                           respFiles=respFiles,
+        return render_template('stats.html',
+                               histValuesPlus=histValuesPlus,
+                               histLabelsPlus=histLabelsPlus,
+                               histLegendPlus=histLegendPlus,
 
-                           ignored=ignored)
+                               histValuesMoins=histValuesMoins,
+                               histLabelsMoins=histLabelsMoins,
+                               histLegendMoins=histLegendMoins,
+
+                               doValues=changeValues,
+                               doLabels=changeLabels,
+
+                               comValues=comValues,
+                               comLabels=comLabels,
+
+                               respNames=respNames,
+                               respValues=respValues,
+                               respFiles=respFiles,
+
+                               ignored=ignored)
+
+    except KeyError:
+        flash("Erreur dans le chargement des statistiques")
 
 
 def url_for_other_page(page):
