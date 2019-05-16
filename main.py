@@ -11,6 +11,7 @@ from flask_login import login_required, LoginManager, current_user, \
 from typing import Dict
 import gitlab
 from pass_utils import hashnsalt, verify_password
+from stats import *
 
 
 import os
@@ -316,11 +317,15 @@ def my_profile():
         if gitlab_server_connection(current_user.username()) is None:
             flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la "
                   "changer dans votre profil", 'danger')
+        with open("gitly_ssh.key.pub", "r") as file:
+            ssh_key = file.readline()
         return render_template("my_profile.html", name=current_user.get_db_user().name,
                                firstName=current_user.get_db_user().firstname,
-                               mail=current_user.get_db_user().email)
+                               mail=current_user.get_db_user().email, ssh_key=ssh_key)
 
     elif request.method == 'POST':
+        with open("gitly_ssh.key.pub", "r") as file:
+            ssh_key = file.readline()
         teacher = Teacher.query.filter_by(user_id=current_user.get_db_user().id).first()
         form = request.form
         api = form.get("newApi")
@@ -335,7 +340,7 @@ def my_profile():
                       "changer dans votre profil", 'danger')
             return render_template("my_profile.html", name=current_user.get_db_user().name,
                                    firstName=current_user.get_db_user().firstname,
-                                   mail=current_user.get_db_user().email)
+                                   mail=current_user.get_db_user().email, ssh_key=ssh_key)
         elif pw is not None:
             npw = form.get("newPassword")
             npw2 = form.get("newPassword2")
@@ -349,17 +354,17 @@ def my_profile():
                     db.session.commit()
                     return render_template("my_profile.html", name=current_user.get_db_user().name,
                                            firstName=current_user.get_db_user().firstname,
-                                           mail=current_user.get_db_user().email)
+                                           mail=current_user.get_db_user().email, ssh_key=ssh_key)
                 else:
                     flash('Les mots de passes doivent correspondre', "danger")
                     return render_template("my_profile.html", name=current_user.get_db_user().name,
                                            firstName=current_user.get_db_user().firstname,
-                                           mail=current_user.get_db_user().email)
+                                           mail=current_user.get_db_user().email, ssh_key=ssh_key)
             else:
                 flash("Erreur dans le mot de passe", "danger")
                 return render_template("my_profile.html", name=current_user.get_db_user().name,
                                        firstName=current_user.get_db_user().firstname,
-                                       mail=current_user.get_db_user().email)
+                                       mail=current_user.get_db_user().email, ssh_key=ssh_key)
         else:
             User.query.filter_by(id=current_user.get_db_user().id).delete()
             db.session.commit()
@@ -542,7 +547,7 @@ def activity(page, activity_id):
 def home(page):
     """Home page"""
     count = Activity.query.filter(Activity.teacher_id == current_user.id).group_by(Activity.name).count()
-    activities = get_activities_for_page(page, count)
+    activities = get_activities_for_page(page)
 
     if not activities and page != 1:
         abort(404)
@@ -552,20 +557,68 @@ def home(page):
                            activities=activities)
 
 
-@app.route("/activity/<int:activity_id>/stats")
+@app.route("/stats/<int:repo_id>")
 @login_required
-def stats(activity_id):
-    #todo: backend pour récupérer les données
-    labels = ["January", "February", "March", "April", "May", "June", "July", "August"]
-    values = [10, 9, 8, 7, 6, 4, 7, 8]
-    legend = "user1"
-    return render_template('stats.html',
-                           histValues=values,
-                           histLabels=labels,
-                           histLegend=legend,
+def stats(repo_id):
+    # TODO Rendre générique pour n’importe quel projet
+    try:
+        json_result = get_stat_for("git@gitlab.telecomnancy.univ-lorraine.fr:gitlab-bravo/ne-pas-supprimer-sert-aux-stats.git")
+    except InvalidKey:
+        print("Clé invalide")
+        flash("Le clonage du dépôt a rencontré une erreur, veuillez ajouter \
+              la clé SSH de votre profile dans Gitlab", "danger")
+        return redirect(url_for("my_profile"), code=302)
+    except ErrorExtractingStat:
+        flash("GitInspector n’a pas pu être exécuté", "danger")
+        return redirect(request.path, code=302)
 
-                           doValues=values,
-                           doLabels=labels)
+    try:
+        [histLabelsPlus, histValuesPlus, histLegendPlus] = get_histo_plus(json_result)
+        [histLabelsMoins, histValuesMoins, histLegendMoins] = get_histo_moins(json_result)
+
+        changeLength = len(json_result['gitinspector']['changes']['authors'])
+        changeLabels = [json_result['gitinspector']['changes']['authors'][i]['name']
+                        for i in range(changeLength)]
+        changeValues = [json_result['gitinspector']['changes']['authors'][i]['percentage_of_changes']
+                        for i in range(changeLength)]
+
+        comLength = len(json_result['gitinspector']['blame']['authors'])
+        comLabels = [json_result['gitinspector']['blame']['authors'][i]['name']
+                        for i in range(comLength)]
+        comValues = [json_result['gitinspector']['blame']['authors'][i]['percentage_in_comments']
+                        for i in range(comLength)]
+
+        [respNames, respValues, respFiles] = get_resp(json_result)
+
+        ignored = json_result['gitinspector']['extensions']['unused'][1::]
+
+        print(histValuesMoins)
+        print(histLabelsMoins)
+        print(histLegendMoins)
+
+        return render_template('stats.html',
+                               histValuesPlus=histValuesPlus,
+                               histLabelsPlus=histLabelsPlus,
+                               histLegendPlus=histLegendPlus,
+
+                               histValuesMoins=histValuesMoins,
+                               histLabelsMoins=histLabelsMoins,
+                               histLegendMoins=histLegendMoins,
+
+                               doValues=changeValues,
+                               doLabels=changeLabels,
+
+                               comValues=comValues,
+                               comLabels=comLabels,
+
+                               respNames=respNames,
+                               respValues=respValues,
+                               respFiles=respFiles,
+
+                               ignored=ignored)
+
+    except KeyError:
+        flash("Erreur dans le chargement des statistiques")
 
 
 def url_for_other_page(page):
