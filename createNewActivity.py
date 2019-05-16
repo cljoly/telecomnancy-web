@@ -3,9 +3,8 @@ from sqlalchemy.exc import IntegrityError as IntegrityError
 from datetime import datetime
 import gitlab
 import random
-from flask import flash, url_for
+from flask import url_for
 import smtplib
-from email.message import EmailMessage
 
 
 def create_new_activity(result, db, gl):

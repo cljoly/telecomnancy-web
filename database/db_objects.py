@@ -69,6 +69,7 @@ class Activity(db.Model):
     # Nombre aléatoire pour retrouver le formulaire associé si cardinalité > 1
     form_number = Column(Integer, nullable=True)
 
+
 # Dépot git particulier
 class Repository(db.Model):
     id = Column(Integer, primary_key=True)
@@ -76,3 +77,13 @@ class Repository(db.Model):
     # Activity
     activity_id = Column(Integer, db.ForeignKey('activity.id'))
     activity = relationship("Activity")
+
+
+# Hash des URL de réinitialisation de mot de passe et utilisateur associé
+class UrlPasswordHash(db.Model):
+    id = Column(Integer, primary_key=True)
+    hash = Column(db.String(200), unique=False, nullable=False)
+    # User associé
+    id_user = Column(Integer, db.ForeignKey('user.id'))
+    user = relationship("User")
+    expire_date = Column(DateTime, nullable=False)
