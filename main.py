@@ -508,9 +508,9 @@ def home(page):
                            activities=activities)
 
 
-@app.route("/activity/<int:activity_id>/stats")
+@app.route("/stats/<int:repo_id>")
 @login_required
-def stats(activity_id):
+def stats(repo_id):
     # TODO Rendre générique pour n’importe quel projet
     try:
         json_result = get_stat_for("git@gitlab.telecomnancy.univ-lorraine.fr:gitlab-bravo/ne-pas-supprimer-sert-aux-stats.git")

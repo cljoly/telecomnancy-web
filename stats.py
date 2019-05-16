@@ -52,9 +52,9 @@ def get_stat_for(repo_url):
     :returns: TODO
 
     """
-    # TODO SSH à partir d’http
     env = os.environ.copy()
     repo_name = repo_url.split("/")[-1]
+    # TODO Interdire / dans repo_name
     repo_abs_path = os.path.join(
         env["PWD"],
         CLONE_DIR, repo_name)
