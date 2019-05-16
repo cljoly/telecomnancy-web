@@ -297,3 +297,4 @@ fabric.properties
 
 *.DS_Store
 cle_api.txt
+clone_dir/*.git
