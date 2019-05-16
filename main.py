@@ -335,14 +335,14 @@ def my_profile():
             flash("Connexion à Gitlab impossible, veuillez générer une nouvelle clé d'API (access token) et la "
                   "changer dans votre profil", 'danger')
         with open("gitly_ssh.key.pub", "r") as file:
-            ssh_key = file.readline().split(" ")[1]
+            ssh_key = file.readline()
         return render_template("my_profile.html", name=current_user.get_db_user().name,
                                firstName=current_user.get_db_user().firstname,
                                mail=current_user.get_db_user().email, ssh_key=ssh_key)
 
     elif request.method == 'POST':
         with open("gitly_ssh.key.pub", "r") as file:
-            ssh_key = file.readline().split(" ")[1]
+            ssh_key = file.readline()
         teacher = Teacher.query.filter_by(user_id=current_user.get_db_user().id).first()
         form = request.form
         api = form.get("newApi")

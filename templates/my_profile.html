@@ -29,7 +29,7 @@
 
         <div class="form-group">
             <label for="ssh">Clé SSH à ajouter à Gitlab pour pouvoir générer les statistiques</label>
-            <input type="text" class="form-control form-control-lg" id="ssh" placeholder="{{ ssh_key }}" readonly>
+            <div type="text" class="container" style="word-wrap: break-word" id="ssh">{{ ssh_key }}</div>
         </div>
 
         <hr class="container horiz-bar"/>
