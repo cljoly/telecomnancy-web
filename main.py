@@ -618,7 +618,7 @@ def stats(repo_id):
                                ignored=ignored)
 
     except KeyError:
-        flash("Erreur dans le chargement des statistiques")
+        flash("Erreur: Votre dépot est vide")
 
 
 def url_for_other_page(page):
