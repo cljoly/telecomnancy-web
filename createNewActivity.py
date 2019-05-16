@@ -118,7 +118,7 @@ def create_groups_for_an_activity_with_card_1(activity, db, gl, gitlab_activity_
                 fork_project.members.create({'user_id': user.id, 'access_level': gitlab.DEVELOPER_ACCESS})
 
                 # Liaison du repo à l'activité dans la BD
-                repo = Repository(url=fork_project.web_url, activity=activity)
+                repo = Repository(url=fork_project.web_url, ssh_url=fork_project.ssh_url_to_repo, activity=activity)
 
                 try:
                     db.session.add(repo)

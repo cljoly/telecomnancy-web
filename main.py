@@ -279,7 +279,7 @@ def group_form(form_number):
                     fork_project.members.create({'user_id': user.id, 'access_level': gitlab.DEVELOPER_ACCESS})
 
             # Liaison du repo à l'activité dans la BD
-            repo = Repository(url=fork_project.web_url, activity=activity)
+            repo = Repository(url=fork_project.web_url, ssh_url=fork_project.ssh_url_to_repo, activity=activity)
 
             try:
                 db.session.add(repo)
