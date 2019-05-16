@@ -560,9 +560,12 @@ def home(page):
 @app.route("/stats/<int:repo_id>")
 @login_required
 def stats(repo_id):
-    # TODO Rendre générique pour n’importe quel projet
+    repo = Repository.query.get(repo_id)
+    if not repo:
+        flash("Id de dépôt invalide", "danger")
+        return redirect(url_for('homepage'))
     try:
-        json_result = get_stat_for("git@gitlab.telecomnancy.univ-lorraine.fr:gitlab-bravo/ne-pas-supprimer-sert-aux-stats.git")
+        json_result = get_stat_for(repo.ssh_url)
     except InvalidKey:
         print("Clé invalide")
         flash("Le clonage du dépôt a rencontré une erreur, veuillez ajouter \
@@ -618,7 +621,10 @@ def stats(repo_id):
                                ignored=ignored)
 
     except KeyError:
-        flash("Erreur dans le chargement des statistiques")
+        flash("Erreur dans le chargement des statistiques", "danger")
+        # TODO Lucas : il faudrait peut-être afficher ce message sur la page de
+        # statistiques, non ? Je (Clément) mets ça en attendant
+        return redirect(url_for('homepage'))
 
 
 def url_for_other_page(page):

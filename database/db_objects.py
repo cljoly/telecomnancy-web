@@ -74,6 +74,7 @@ class Activity(db.Model):
 class Repository(db.Model):
     id = Column(Integer, primary_key=True)
     url = Column(db.String(120), unique=False, nullable=False)
+    # Url de clone en SSH
     ssh_url = Column(db.String(120), unique=False, nullable=False)
     # Activity
     activity_id = Column(Integer, db.ForeignKey('activity.id'))
