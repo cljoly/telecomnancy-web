@@ -381,10 +381,11 @@ def forgotten_password():
             flash("Aucun compte n'est associé à cette adresse mail. Réinitialisation de mot de passe impossible.", 'danger')
             return render_template("forgottenPassword.html")
 
-        error, after_root_url = make_url(db, user)
+        error, hashed = make_url(db, user)
         if error != 0:
             flash("Une erreur s'est produite, veuillez réessayer", 'danger')
             return render_template("forgottenPassword.html")
+        after_root_url = url_for("reset_password", hash_url=hashed)
         url = "http://%s%s" % (request.host, after_root_url)
         res = send_email_to_reset_password(email_address, url)
         if res == 0:

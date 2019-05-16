@@ -21,7 +21,7 @@ def make_url(db, user):
             print(e)
             return 1, None
     else:
-        return 0, url_for('reset_password', hash_url=url_password_hash.hash)
+        return 0, url_password_hash.hash
 
 
 def send_email_to_reset_password(email_address, url):
