@@ -449,7 +449,7 @@ def activity(page, activity_id):
         data_base_all_groups = Repository.query.filter_by(activity_id=activity_id).all()
         count = len(data_base_all_groups)
         all_groups = [Group(data_base_all_groups[i].url.split("/")[-1],
-                            data_base_all_groups[i].url) for i in range(count)]
+                            data_base_all_groups[i].url, "/stats/" + str(data_base_all_groups[i].id)) for i in range(count)]
         activity_name = Activity.query.get(activity_id).name
         activity_link = Activity.query.get(activity_id).url_master_repo
         activity_bdd = Activity.query.get(activity_id)
@@ -471,7 +471,7 @@ def activity(page, activity_id):
         data_base_all_groups = Repository.query.filter_by(activity_id=activity_id).all()
         count = len(data_base_all_groups)
         all_groups = [Group(data_base_all_groups[i].url.split("/")[-1],
-                            data_base_all_groups[i].url) for i in range(count)]
+                            data_base_all_groups[i].url, "/stats/" + str(data_base_all_groups[i].id)) for i in range(count)]
         activity_name = Activity.query.get(activity_id).name
         activity_link = Activity.query.get(activity_id).url_master_repo
         activity_bdd = Activity.query.get(activity_id)
@@ -621,7 +621,8 @@ def stats(repo_id):
                                ignored=ignored)
 
     except KeyError:
-        flash("Erreur dans le chargement des statistiques", "danger")
+        flash("Erreur dans le chargement des statistiques, veuillez vous assurer que le dépôt " +
+              "n'est pas vide et ressayez", "danger")
         # TODO Lucas : il faudrait peut-être afficher ce message sur la page de
         # statistiques, non ? Je (Clément) mets ça en attendant
         return redirect(url_for('homepage'))
