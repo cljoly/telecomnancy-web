@@ -7,4 +7,5 @@ if [ -f $SSHKEY ]; then
 fi
 
 ssh-keygen -t rsa -C "" -N "" -f $SSHKEY
+chmod 600 $SSHKEY $SSHKEY.pub
 mkdir -p clone_dir

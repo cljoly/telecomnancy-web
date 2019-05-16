@@ -11,6 +11,11 @@ pip install -r requirements.txt
 Pour ajouter des dépendances, il suffit de les référencer dans le fichier
 [requirements.txt](./requirements.txt) et de relancer la commande ci-dessus.
 
+Lancer le script de génération des fichiers nécessaires au statistiques :
+```
+./setup.sh
+```
+
 ### Lancer le serveur
 
 ```
