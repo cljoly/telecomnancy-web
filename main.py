@@ -211,7 +211,6 @@ def new_activity():
         elif create_new_activity_result == 12:
             flash('Veuillez entrer une date de fin postérieure à la date de début. Activité non créée', 'danger')
         elif create_new_activity_result == 0:
-            flash('Activité ajoutée à la base de données', 'success')
 
             if int(result.get('numberOfStudents')) == 1:
                 res = create_groups_for_an_activity_with_card_1(activity_created, db, gl, gitlab_activity_project, usernames)
@@ -219,7 +218,8 @@ def new_activity():
                     flash('Création du dépôt de l\'activité effectuée', 'success')
                     flash('Tous les dépôts des élèves ont été créés', 'success')
                 elif res == 1:
-                    flash('Erreur dans l\'insertion dans la BD le fork de l\'activité', 'danger')
+                    flash("Une erreur interne s'est produite, veuillez contacter l'administrateur système.", 'danger')
+                    print("Erreur dans l\'insertion dans la BD le fork de l\'activité")
                 elif res == 2:
                     flash('Erreur dans le fork de l\'activité', 'danger')
             elif 1 < int(result.get('numberOfStudents')) <= 6:
