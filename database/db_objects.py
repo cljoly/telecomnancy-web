@@ -16,7 +16,6 @@ class User(db.Model):
     password_hash = Column(db.String(120), unique=False, nullable=False)
     salt = Column(db.String(120), unique=False, nullable=False)
 
-    gitlab_username = Column(db.String(80), unique=False, nullable=False)
 
 
 # Propriétés propres à un utilisateur enseignant
