@@ -48,6 +48,8 @@ def create_new_activity(result, db, gl):
     # Conversion des dates
     begin_date = datetime.strptime(result.get('beginDate'), '%Y-%m-%d')
     end_date = datetime.strptime(result.get('endDate'), '%Y-%m-%d')
+    if begin_date > end_date:
+        return 12, None, None
 
     teacher = Teacher.query.filter(Teacher.id == result.get('selectedTeacher')).first()
 

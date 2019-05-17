@@ -66,45 +66,63 @@ def signup():
     method = request.method
     if method == 'GET':
         return render_template("signup.html")
+
     elif method == 'POST':
-        error = False
         form = request.form
         username = form.get('username')
-        nb_user_with_username = User.query.filter(username == username).count()
-        if nb_user_with_username > 0:
-            flash("Un utilisateur portant ce nom existe déjà",
-                  "danger")
-            error = True
-        firstname = form.get('firstname')
-        name = form.get('name')
+        potential_user = User.query.filter(User.username == username).first()
+
+        if potential_user:
+            flash("Un utilisateur portant ce nom existe déjà", "danger")
+            return render_template("signup.html")
+
         email = form.get('email')
-        nb_user_with_email = User.query.filter(email == email).count()
-        if nb_user_with_email > 0:
-            flash("Un utilisateur avec cette adresse mail existe déjà",
-                  "danger")
-            error = True
+        potential_existing_email = User.query.filter(User.email == email).first()
+        if potential_existing_email:
+            flash("Un utilisateur avec cette adresse mail existe déjà", "danger")
+            return render_template("signup.html")
+
         password = form.get('password')
         password2 = form.get('password2')
+
         if password != password2:
             flash("Les mots de passe ne correspondent pas", "danger")
-            error = True
+            return render_template("signup.html")
+
+        firstname = form.get('firstname')
+        name = form.get('name')
         salt, h = hashnsalt(password)
-        u = User(username=username, firstname=firstname, name=name,
-                 email=email, password_hash=h, salt=salt,
-                 gitlab_username='')
-        db.session.add(u)
+        u = User(username=username,
+                 firstname=firstname,
+                 name=name,
+                 email=email,
+                 password_hash=h,
+                 salt=salt)
+        try:
+            db.session.add(u)
+            db.session.commit()
+        except IntegrityError as error:
+            print(error)
+            db.session.rollback()
+            flash("Une erreur interne s'est produite, veuillez contacter l'administrateur système.", 'danger')
+            return render_template("signup.html")
 
         gitlab_api_key = form.get('gitlab_api')
         if gitlab_api_key is not None:
             # L’utilisateur est prof
             t = Teacher(user=u, user_id=u.id, gitlab_key=gitlab_api_key)
-            db.session.add(t)
-        if not error:
-            db.session.commit()
-            flash("Vous êtes inscrit, identifiez-vous maintenant", 'success')
-            return redirect(url_for("signin"))
+            try:
+                db.session.add(t)
+                db.session.commit()
+                flash("Vous êtes inscrit, identifiez-vous maintenant", 'success')
+                return redirect(url_for("signin"))
+            except IntegrityError as error:
+                print(error)
+                db.session.rollback()
+                flash("Une erreur interne s'est produite, veuillez contacter l'administrateur système.", 'danger')
         else:
-            return redirect(url_for("signup"))
+            flash("Veuillez entrer une clé d'API.", 'danger')
+            return render_template("signup.html")
 
 
 @app.route('/signin', methods=['GET', 'POST'])
@@ -190,6 +208,8 @@ def new_activity():
             flash('Erreur de création du dépôt de l\'activité. Activité non créée', 'danger')
         elif create_new_activity_result == 11:
             flash('Une activité porte déjà le nom de l\'activité que vous souhaitez créer. Activité non créée', 'danger')
+        elif create_new_activity_result == 12:
+            flash('Veuillez entrer une date de fin postérieure à la date de début. Activité non créée', 'danger')
         elif create_new_activity_result == 0:
             flash('Activité ajoutée à la base de données', 'success')
 
