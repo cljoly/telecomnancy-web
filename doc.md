@@ -112,8 +112,8 @@ Cette page n'est accessible que si l'utilisateur est connecté et que sa clé d'
 
     Tous les élèves alors présents dans le fichier CSV sont chargés dans la colonne "Étudiants disponibles". Pour sélectionner plusieurs étudiants dans la liste, il suffit de garder la touche `CTRL` enfoncée et cliquer sur les étudiants désirés. Il faut alors déplacer les étudiants que l'on souhaite ajouter à l'activité dans la colonne "Étudiants de l'activité".Pour cela, quatre flèches sont disponibles :
 
-        - **&larr;** et **&rarr;** : Permet de déplacer les étudiants sélectionnés d'une colonne à l'autre. 
-        - **>** et **<** : Permet de déplacer tous les étudiants d'une colonne vers l'autre.
+    - **&larr;** et **&rarr;** : Permet de déplacer les étudiants sélectionnés d'une colonne à l'autre. 
+    - **>** et **<** : Permet de déplacer tous les étudiants d'une colonne vers l'autre.
     
  Pour valider la création de l'activité, il faut cliquer ensuite sur le bouton "Créer l'activité" :
 
