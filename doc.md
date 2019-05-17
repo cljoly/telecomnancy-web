@@ -10,7 +10,9 @@ dates étaient alors incohérentes. Nous avons finalement passé en revue les is
 ouvertes, qui constituaient un backlog des problèmes restants.
 
 En ce qui concerne les réunions, nous avons fait le point sur l’avancement à
-une fréquence hebdomadaire. Nous avons aussi souvent profité de ces séances
+une fréquence hebdomadaire. Nous fusionnions les différentes branches, rangées
+dans des Merge Requests (MR) Gitlab. Nous avons aussi souvent profité de ces
+séances
 pour travailler ensemble et nous mettre d’accord sur les parties communes de
 l’application. Par exemple, nous avons dû décider du vocabulaire et de la
 structure de la base de données en commun, puisque cela impactait tout le monde.
