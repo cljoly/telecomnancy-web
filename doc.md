@@ -1,3 +1,80 @@
+# Gestion de projet
+
+Nous avons utilisé la fonctionnalité d’issue de Gitlab pour nous coordonner et
+nous répartir le travail. Nous avons organisé les issues par release (encart
+milestone de Gitlab) et avons assigné une personne (ou plusieurs dans certains
+cas). Nous avons initialement utilisé aussi la possibilité de fixer des dates
+pour les issues. Ceci s’est avéré peu souple et inadapté à notre emploi du
+temps : nous étions parfois ammenés à avancer ou repousser une réunion et les
+dates étaient alors incohérentes.
+
+En ce qui concerne les réunions, nous avons fait le point sur l’avancement à
+une fréquence hebdomadaire. Nous avons aussi souvent profité de ces séances
+pour travailler ensemble et nous mettre d’accord sur les parties communes de
+l’application. Par exemple, nous avons dû décider du vocabulaire et de la
+structure de la base de données en commun, puisque cela impactait tout le monde.
+
+
+Nous avons enfin pris en charge chacun une ou plusieurs pages, selon leur
+complexité : certains membres du groupe avaient des pages simples et ont donc
+pris en charge plusieurs pages. Les release ont été faîtes sur les dernières
+semaines du projet, parce qu’à cause de cette parallélisation des tâches, nous
+n’avons eu des ensemble de fonctionnaliés cohérents qu’assez tardivement.
+
+# Vocabulaire
+
+Nous avons pris les conventions suivantes. On appelle :
+- activité
+- dépôt
+- …
+
+# Choix techniques
+
+Nous avons choisi d’utiliser une base de donnée SQLite avec l’ORM SQLAlchemy.
+SQLite présente l’avantage d’être extrement simple à installer et de ne pas
+présenter de latence particulière, contrairement à une base de donnée de type
+PostgreSQL. L’inconvénient de ce choix est qu’on ne pourrait pas avoir un grand
+nombre d’utilisateur et déployer plusieurs serveur avec la même application
+pour un seul serveur serveur de base de donnée, comme vu dans le MOOC.
+Toutefois, cette inconvénient est minime, dans la mesure où peu d’utilisateurs
+seront ammenés à utiliser le service (quelques enseignants de Télécom Nancy).
+De plus, l’ORM est générique et permettrait de passer à un autre moteur de base
+de donnée de manière transparente, sans adaptation particulière de notre code.
+
+De plus, nous faisons appel à l’API de Gitlab grâce à une bibliothèque python.
+Même si celle-ci n’est pas forcément toujours bien documentée, elle a permis un
+gain de temps non négligeable dans la mesure où les objets pour représenter les
+différents concepts de Gitlab existaient déjà (dépôts, utilisateurs).
+
+Nous utilisons aussi le framework CSS Bootstrap, ce qui a facilité la compatibilité mobile.
+
+## Route `signup`
+
+### Partie utilisateur
+
+Cette page permet à l’utilisateur d’entrer toutes les informations nécessaires
+pour créer son compte et utiliser l’application. Nous avons choisi de ne pas
+permettre à l’utilisateur qui vient de s’inscrire d’être directement connecté.
+
+### Difficultés rencontrées
+
+Il a fallu s’assurer que les utilisateurs ne cherchent pas à s’inscrire avec une adresse mail ou un nom d’utilisateur déjà existant. Il a donc fallu afficher un message d’erreur propre à chaque champ. En effet, pour des questions d’ergonomie, on ne peut pas seulement afficher à l’utilisateur que le formulaire est invalide utilisateur
+
+# Route `signin`
+
+### Partie utilisateur
+
+Il s’agit d’une page classique d’identification. On rentre l’utilisateur et le mot de passe. Il y a une fonction se souvenir de moi.
+
+### Difficultés rencontrées
+
+Les mots de passe ont été hachés et salés, pour respecter les bonnes pratiques en matière de sécurité. Il a donc fallu vérifier le mot de passe avec précautions, en hachant le mot de passe et en passant le sel dans la fonction hmac.
+
+# Route `statistiques`
+
+<!-- TODO Fusionner avec Lucas -->
+
+
 # Sources
 
 - https://www.sqlalchemy.org/, documentation de l’ORM
