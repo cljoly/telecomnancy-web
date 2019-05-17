@@ -53,13 +53,13 @@ Nous utilisons aussi le framework CSS Bootstrap, ce qui a facilité la compatibi
 
 ![Schéma de la base de donnée](./schema_bd.png)
 
-La table `user` contient les utilisateurs du site après inscription. Nous avons aussi la table `teacher` qui contient les clés d’API. Ce choix permet d’avoir des utilisateurs inscrits qui ne soient pas des enseignants, par exemple pour implémenter la fonctionnalité facultative d’interface pour les étudiants. Nous nous étions gardé cette possibilité même si nous n’avons finalement pas implémenté la fonctionnalité.
+La table `user` contient les utilisateurs du site après inscription. Nous avons aussi la table `teacher` qui contient les clés d’API. Ce choix permet d’avoir des utilisateurs inscrits qui ne soient pas des enseignants, par exemple pour implémenter la fonctionnalité facultative d’interface pour les étudiants. Nous nous étions gardé cette possibilité même si nous ne l'avons finalement pas implémenté.
 
-Les activités, conservées dans la table `activity`, contiennent une date de début et de fin ainsi que l’adresse du dépôt modèle à partir du quel les dépôts étudiants sont créés. On conserve aussi le nombre d’étudiant par groupe dans un dépot. Les dépôt sont conservés dans la table `repository` avec les urls necessaire pour aller sur la page web gitlab du dépôt et avec l’url ssh pour cloner le dépôt, pour la collecte de statistiques.
+Les activités, conservées dans la table `activity`, contiennent une date de début et de fin ainsi que l’adresse du dépôt modèle à partir duquel les dépôts étudiants sont créés. On conserve aussi le nombre d’étudiant par groupe dans un dépôt. Les dépôt sont conservés dans la table `repository` avec les URLs nécessaires pour aller sur la page web gitlab du dépôt et avec l’URL ssh pour cloner le dépôt, servant lors de la collecte de statistiques.
 
-La table `module` conserve le nom long et l’abréviation d’un module et est référencée par l’activité. Chaque enseignant responsable de module est associé à celui-ci par la table `teacher_module`.
+La table `module` conserve le nom long et l’abréviation d’un module. La table `activity` contient une clé étangère vers la table `module`. Chaque enseignant responsable de module est associé à celui-ci par la table `teacher_module`.
 
-Une table supplémentaire, `url_password_hash`, a dû être ajouté pour stocker les urls de réinitialisation des mots de passe ainsi que leur date de réinitialisation. Il faut en effet contrôler que l’url de récupération du mot de passe n’ait pas expiré au moment où l’utilisateur accède à celle-ci.
+Une table supplémentaire, `url_password_hash`, a dû être ajoutée pour stocker les URLs de réinitialisation des mots de passe, ainsi que la date de fin de validité du lien de réinitialisation du mot de passe. Il faut en effet contrôler que l’URL de récupération du mot de passe n’ait pas expiré au moment où l’utilisateur accède à celle-ci pour des raisons de sécurité de l'application.
 
 # Routes de l’application
 
@@ -163,7 +163,7 @@ Les autres langages sont ignorés.
 
 Les couleurs ont été choisies dans une palette pour être harmonieuses les unes
 avec les autres. Pour un même utilisateur, une seule couleur est utilisée sur
-tous les diagrammes.
+tous les diagrammes pour plus de lisibilité.
 
 # Particularités de l'application : 
 ## La pagination
