@@ -35,7 +35,6 @@ Une barre de navigation est en permanence affichée en haut du site. À partir d
 Cette page regroupe les activités qui concernent un professeur connecté. Si un utilisateur non connecté essaye d'accéder cette page, il est redirigé sur l'accueil. On utilise la pagination pour naviguer dans les entrées du tableau. En backend sont faites des requêtes SQL pour la page concernée. Depuis cette page sont accessibles les les pages des activités grace aux liens situés à gauche de leurs entrées dans le tableau, et la page de création de groupe. 
 
 ## Route : /home/newactivity
-### Partie utilisateur
 
 Cette page n'est accessible que si l'utilisateur est connecté et que sa clé d'API est valide. Elle permet de créer une nouvelle activité. Il faut alors entrer : 
  - son nom,
@@ -55,6 +54,21 @@ Cette page n'est accessible que si l'utilisateur est connecté et que sa clé d'
  Pour valider la création de l'activité il faut cliquer ensuite sur le bouton "Créer l'activité" :
  - Le dépot sur Gitlab de l'activité est créé 
   - Lorsqu'on créé des groupes avec un élève : pour tous les élèves renseignés, un nouveau dépôt est créé en effectuant un fork du dépôt de l'activité. 
- - Lorsqu'on crée des groupes avec plusieurs élèves : un lien est envoyé par mail à tous les étudiants renseignés 
+ - Lorsqu'on crée des groupes avec plusieurs élèves : un lien est envoyé par mail à tous les étudiants renseignés afin qu'il créent leur groupe. Ce lien est unique pour une activité.
 
-### Difficultés rencontrées
+## Route : '/newactivity/form/<form_number>'
+
+Cette route affiche la page d'un formulaire de création de groupe pour les groupes comptant plus d'un élève. Elle est accessible pour toute personne disposant du lien (qui doit normalement avoir été reçu par mail pour les élèves concernés). Il n'y a pas besoin d'être connecté pour pouvoir accéder à cette page. Les élèves doivent alors renseigner :
+ - Le nom de leur groupe
+ - Le nom d'utilisateur Gitlab de chacun des membres du groupe
+ 
+ Pour valider la création du groupe, il faut cliquer sur le bouton "Créer le groupe". Un dépôt sera alors créé via un fork du dépôt de l'activité, et en ajoutant tous les élèves en tant que "Développeur". Si un des noms d'utilisateur n'existe pas, le dépôt ne sera pas créé. 
+ 
+ ## Route : '/forgottenPassword'
+ 
+ Cette page permet de rentrer son adresse mail afin de réinitialiser son mot de passe. Une erreur sera affichée si aucun compte ne correspond à l'adresse mail renseignée. Si l'adresse est valable, un email est envoyé contenant un lien de réinitialisation du mot de passe. Le lien n'est valable que pour l'adresse mail renseignée et ceci pour une durée de 24 heures pour des raisons de sécurité. Si l'utilisateur demande une nouvelle fois à réinitialiser son mot de passe alors qu'un lien est toujours valable, ce même lien sera renvoyé. 
+ 
+ ## Route : '/reset_password/<hash_url>'
+ 
+ Cette page n'est accessible que depuis un lien de réinitialisation de mot de passe reçu par mail et seulement si ce lien est toujours valide. 
+ <!-- TODO : continuer -->
