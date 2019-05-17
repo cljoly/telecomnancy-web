@@ -34,4 +34,27 @@ Une barre de navigation est en permanence affichée en haut du site. À partir d
 
 Cette page regroupe les activités qui concernent un professeur connecté. Si un utilisateur non connecté essaye d'accéder cette page, il est redirigé sur l'accueil. On utilise la pagination pour naviguer dans les entrées du tableau. En backend sont faites des requêtes SQL pour la page concernée. Depuis cette page sont accessibles les les pages des activités grace aux liens situés à gauche de leurs entrées dans le tableau, et la page de création de groupe. 
 
+## Route : /home/newactivity
+### Partie utilisateur
 
+Cette page n'est accessible que si l'utilisateur est connecté et que sa clé d'API est valide. Elle permet de créer une nouvelle activité. Il faut alors entrer : 
+ - son nom,
+ - ses dates de début et de fin,
+ - le module associé : il est possible de choisir soit dans la liste des modules déjà existants, soit de créer un nouveau module en renseignant le nom long et le nom abrégé. L'affichage est intelligent, cela affiche le volet des modules existants s'il en existe au moins un, sinon cela affiche le volet de création d'un nouveau module.
+ - l'enseignant référent : la liste des enseignants existants est affichée sous la forme d'une liste. Il suffit alors de cliquer sur l'enseignant que l'on souhaite affecter comme référent.
+ - le nombre d'étudiants par groupe de l'activité : il s'agit ici de déterminer la cardinalité des groupes qui seront composés pour l'activité. Par exemple, si on choisit "un étudiant", chaque groupe ne sera composé que d'un élève, il y aura alors un dépôt par élève qui sera créé. Ce cas est idéal dans la création de TPs. Dans le cas des groupes avec plusieurs élèves, on peut choisir entre deux et six élèves. 
+ - les élèves qui participeront à l'activité : il faut pour cela choisir un fichier au format CSV, ne comprenant pas d'entête et  contenant les champs suivants :
+ 
+    | Nom | Prénom | Adresse mail | Nom d'utilisateur Gitlab |
+    |-----|--------|--------------|--------------------------|
+
+    Tous les élèves alors présents dans le fichier CSV sont chargés dans la colonne "Étudiants disponibles". Pour sélectionner plusieurs étudiants dans la liste, il suffit de garder la touche `CTRL` enfoncée et cliquer sur les étudiants désirés. Il faut alors déplacer les étudiants que l'on souhaite ajouter à l'activité dans la colonne "Étudiants de l'activité".Pour cela quatre flèches sont disponibles :
+        - **&larr;** et **&rarr;** : Permet de déplacer les étudiants sélectionnés d'une colonne à l'autre. 
+        - **>** et **<** : Permet de déplacer tous les étudiants d'une colonne vers l'autre.
+    
+ Pour valider la création de l'activité il faut cliquer ensuite sur le bouton "Créer l'activité" :
+ - Le dépot sur Gitlab de l'activité est créé 
+  - Lorsqu'on créé des groupes avec un élève : pour tous les élèves renseignés, un nouveau dépôt est créé en effectuant un fork du dépôt de l'activité. 
+ - Lorsqu'on crée des groupes avec plusieurs élèves : un lien est envoyé par mail à tous les étudiants renseignés 
+
+### Difficultés rencontrées
