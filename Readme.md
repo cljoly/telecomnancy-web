@@ -1,5 +1,8 @@
 # Gitly
 
+> Vidéos : 
+> [Documentation](./doc.md)
+
 ## Développement
 
 ### Installer les dépendances
@@ -29,7 +32,17 @@ a donc pas de persistance des actions utilisateurs au delà de quelques heures.
 
 https://pweb2019.herokuapp.com/
 
+Nous ne sommes pas parvenu à faire fonctionner le clone du dépot sur Heroku,
+parce que le serveur Gitlab refuse les permissions de clonage depuis Heroku.
+Nous avons néanmons fait fonctionner cette fonctionnalité sur nos machines en
+local.
+
 ## Release
+
+### 0.3
+
+- Statistiques fonctionnelles
+- 
 
 ### 0.2
 
