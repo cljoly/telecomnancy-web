@@ -145,3 +145,43 @@ La page **activity** permet de présenter ce que l'on appelle une activité dans
 - Créer des Issues sur une sélection de dépôts parmis les dépôts des étudiants
 
 L'une des principales difficultés rencontrée pour l'élaboration de cette page est la création de la Merge Request sur les dépôts des élèves. En effet, l'API de Gitlab ne permet pas de répercuter une Merge Request qui a été faite sur le dépôt parent sur les dépôts créé avec le fork. Il faut donc pour chaque dépôt copier l'intégralité de la branche dont on souhaite faire une Merge Request dans une nouvelle branche qui porte le même nom si celle-ci n'existe pas déjà et la renomme si c'est le cas (on peut également noter qu'à partir d'un certain nombre de branches, l'API de gitlab ne permet pas de récupérer l'intégralité des branches d'un d'un dépôt et il devient donc impossible de vérifier que la branche n'existe pas déjà).
+
+## Route : /home/newactivity
+
+Cette page n'est accessible que si l'utilisateur est connecté et que sa clé d'API est valide. Elle permet de créer une nouvelle activité. Il faut alors entrer : 
+ - son nom,
+ - ses dates de début et de fin,
+ - le module associé : il est possible de choisir soit dans la liste des modules déjà existants, soit de créer un nouveau module en renseignant le nom long et le nom abrégé. L'affichage est intelligent, cela affiche le volet des modules existants s'il en existe au moins un, sinon cela affiche le volet de création d'un nouveau module.
+ - l'enseignant référent : la liste des enseignants existants est affichée sous la forme d'une liste. Il suffit alors de cliquer sur l'enseignant que l'on souhaite affecter comme référent.
+ - le nombre d'étudiants par groupe de l'activité : il s'agit ici de déterminer la cardinalité des groupes qui seront composés pour l'activité. Par exemple, si on choisit "un étudiant", chaque groupe ne sera composé que d'un élève, il y aura alors un dépôt par élève qui sera créé. Ce cas est idéal dans la création de TPs. Dans le cas des groupes avec plusieurs élèves, on peut choisir entre deux et six élèves. 
+ - les élèves qui participeront à l'activité : il faut pour cela choisir un fichier au format CSV, ne comprenant pas d'entête et  contenant les champs suivants :
+ 
+    | Nom | Prénom | Adresse mail | Nom d'utilisateur Gitlab |
+    |-----|--------|--------------|--------------------------|
+
+    Tous les élèves alors présents dans le fichier CSV sont chargés dans la colonne "Étudiants disponibles". Pour sélectionner plusieurs étudiants dans la liste, il suffit de garder la touche `CTRL` enfoncée et cliquer sur les étudiants désirés. Il faut alors déplacer les étudiants que l'on souhaite ajouter à l'activité dans la colonne "Étudiants de l'activité".Pour cela quatre flèches sont disponibles :
+        - **&larr;** et **&rarr;** : Permet de déplacer les étudiants sélectionnés d'une colonne à l'autre. 
+        - **>** et **<** : Permet de déplacer tous les étudiants d'une colonne vers l'autre.
+    
+ Pour valider la création de l'activité il faut cliquer ensuite sur le bouton "Créer l'activité" :
+ - Le dépot sur Gitlab de l'activité est créé 
+  - Lorsqu'on créé des groupes avec un élève : pour tous les élèves renseignés, un nouveau dépôt est créé en effectuant un fork du dépôt de l'activité. 
+ - Lorsqu'on crée des groupes avec plusieurs élèves : un lien est envoyé par mail à tous les étudiants renseignés afin qu'il créent leur groupe. Ce lien est unique pour une activité.
+
+## Route : '/newactivity/form/<form_number>'
+
+Cette route affiche la page d'un formulaire de création de groupe pour les groupes comptant plus d'un élève. Elle est accessible pour toute personne disposant du lien (qui doit normalement avoir été reçu par mail pour les élèves concernés). Il n'y a pas besoin d'être connecté pour pouvoir accéder à cette page. Les élèves doivent alors renseigner :
+ - Le nom de leur groupe
+ - Le nom d'utilisateur Gitlab de chacun des membres du groupe
+ 
+ Pour valider la création du groupe, il faut cliquer sur le bouton "Créer le groupe". Un dépôt sera alors créé via un fork du dépôt de l'activité, et en ajoutant tous les élèves en tant que "Développeur". Si un des noms d'utilisateur n'existe pas, le dépôt ne sera pas créé. 
+ 
+ ## Route : '/forgottenPassword'
+ 
+ Cette page permet de rentrer son adresse mail afin de réinitialiser son mot de passe. Une erreur sera affichée si aucun compte ne correspond à l'adresse mail renseignée. Si l'adresse est valable, un email est envoyé contenant un lien de réinitialisation du mot de passe. Le lien n'est valable que pour l'adresse mail renseignée et ceci pour une durée de 24 heures pour des raisons de sécurité. Si l'utilisateur demande une nouvelle fois à réinitialiser son mot de passe alors qu'un lien est toujours valable, ce même lien sera renvoyé. 
+ 
+ ## Route : '/reset_password/<hash_url>'
+ 
+ Cette page n'est accessible que depuis un lien de réinitialisation de mot de passe reçu par mail et seulement si ce lien est toujours valide. Il faut alors rentrer son nouveau mot de passe deux fois afin d'éviter toute erreur de frappe. 
+ 
+
