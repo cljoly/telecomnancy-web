@@ -6,7 +6,7 @@ milestone de Gitlab) et avons assigné une personne (ou plusieurs dans certains
 cas). Nous avons initialement utilisé aussi la possibilité de fixer des dates
 pour les issues. Ceci s’est avéré peu souple et inadapté à notre emploi du
 temps : nous étions parfois ammenés à avancer ou repousser une réunion et les
-dates étaient alors incohérentes.
+dates étaient alors incohérentes. Nous avons fianlement passés en revue les issues ouvertes, qui constituaient un backlog des problèmes restant.
 
 En ce qui concerne les réunions, nous avons fait le point sur l’avancement à
 une fréquence hebdomadaire. Nous avons aussi souvent profité de ces séances
@@ -49,6 +49,16 @@ différents concepts de Gitlab existaient déjà (dépôts, utilisateurs).
 Nous utilisons aussi le framework CSS Bootstrap, ce qui a facilité la compatibilité mobile.
 
 # Modèle de la base de donnée
+
+![Schéma de la base de donnée](./schema_bd.png)
+
+La table `user` contient les utilisateurs du site après inscription. Nous avons aussi la table `teacher` qui contient les clés d’API. Ce choix permet d’avoir des utilisateurs inscrits qui ne soient pas des enseignants, par exemple pour implémenter la fonctionnalité facultative d’interface pour les étudiants. Nous nous étions gardé cette possibilité même si nous n’avons finalement pas implémenté la fonctionnalité.
+
+Les activités, conservées dans la table `activity`, contiennent une date de début et de fin ainsi que l’adresse du dépôt modèle à partir du quel les dépôts étudiants sont créés. On conserve aussi le nombre d’étudiant par groupe dans un dépot. Les dépôt sont conservés dans la table `repository` avec les urls necessaire pour aller sur la page web gitlab du dépôt et avec l’url ssh pour cloner le dépôt, pour la collecte de statistiques.
+
+La table `module` conserve le nom long et l’abréviation d’un module et est référencée par l’activité. Chaque enseignant responsable de module est associé à celui-ci par la table `teacher_module`.
+
+Une table supplémentaire, `url_password_hash`, a dû être ajouté pour stocker les urls de réinitialisation des mots de passe ainsi que leur date de réinitialisation. Il faut en effet contrôler que l’url de récupération du mot de passe n’ait pas expiré au moment où l’utilisateur accède à celle-ci.
 
 # Routes de l’application
 
