@@ -43,7 +43,8 @@ local.
 ### 0.3
 
 - Statistiques fonctionnelles
-- 
+- Transitions pour les requêtes un peu longues
+- Création d'issue en séléctionnant les dépôts
 
 ### 0.2
 
