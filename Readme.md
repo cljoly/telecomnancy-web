@@ -42,13 +42,17 @@ local.
 
 ### 0.3
 
-- Statistiques fonctionnelles
-- Transitions pour les requêtes un peu longues
-- Création d'issue en séléctionnant les dépôts
+- Statistiques 
+- Page de transition pour les requêtes un peu longues
+- Création d'issue en sélectionnant les dépôts
+- Réinitialisation du mot de passe via envoi d'un mail
+- Création de dépôt de l'API de Gitlab dans tous les cas (groupes de cardinalité 1 ou multiple)
+- Envoi d'un mail contenant un lien pour créer un groupe de cardinalité multiple
+- Se souvenir de moi
 
 ### 0.2
 
-- Création de dépot avec l’API de Gitlab dans le cas de groupe d’un seul élève
+- Création de dépôt avec l’API de Gitlab dans le cas de groupe d’un seul élève
   et dans le cas de groupes de plusieurs élèves.
   - Vérification systématique de la clé d’API à la connexion et sur chaque page
     où l’utilisateur est connecté (s’il est connecté, il peut potentiellement
