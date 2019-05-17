@@ -23,10 +23,10 @@ n’avons eu des ensemble de fonctionnaliés cohérents qu’assez tardivement.
 
 # Vocabulaire
 
-Nous avons pris les conventions suivantes. On appelle :
-- activité
-- dépôt
-- …
+Nous avons pris les entités suivantes dans la terminologie de l’application. On appelle :
+- module : une matière telle que défini à Telecom Nancy
+- activité : un projet d’un module, par exemple, le projet de la semaine bloquée de PCD.
+- dépot : dépôt git d’une activité sur Gitlab, pour un étudiant ou groupe d’étudiants
 
 # Choix techniques
 
@@ -48,6 +48,10 @@ différents concepts de Gitlab existaient déjà (dépôts, utilisateurs).
 
 Nous utilisons aussi le framework CSS Bootstrap, ce qui a facilité la compatibilité mobile.
 
+# Modèle de la base de donnée
+
+# Routes de l’application
+
 ## Route `signup`
 
 ### Partie utilisateur
@@ -60,7 +64,7 @@ permettre à l’utilisateur qui vient de s’inscrire d’être directement con
 
 Il a fallu s’assurer que les utilisateurs ne cherchent pas à s’inscrire avec une adresse mail ou un nom d’utilisateur déjà existant. Il a donc fallu afficher un message d’erreur propre à chaque champ. En effet, pour des questions d’ergonomie, on ne peut pas seulement afficher à l’utilisateur que le formulaire est invalide utilisateur
 
-# Route `signin`
+## Route `signin`
 
 ### Partie utilisateur
 
@@ -70,22 +74,10 @@ Il s’agit d’une page classique d’identification. On rentre l’utilisateur
 
 Les mots de passe ont été hachés et salés, pour respecter les bonnes pratiques en matière de sécurité. Il a donc fallu vérifier le mot de passe avec précautions, en hachant le mot de passe et en passant le sel dans la fonction hmac.
 
-# Route `statistiques`
+## Route `statistiques`
 
 <!-- TODO Fusionner avec Lucas -->
 
-
-# Sources
-
-- https://www.sqlalchemy.org/, documentation de l’ORM
-- http://flask-sqlalchemy.pocoo.org/2.3/quickstart/
-- https://getbootstrap.com/docs/4.3/getting-started/introduction/ Documentation bootstrap
-- https://openclassrooms.com/fr/courses/2984401-apprenez-a-coder-avec-javascript
-- https://devdocs.io/javascript/
-- http://flask.pocoo.org/docs/1.0/quickstart/
-- https://www.w3schools.com/
-- https://docs.python.org/3/
-- https://material.io/tools/icons/?search=G&icon=label_important&style=sharp
 
 ## Déploiement sur Google App Engine
 
@@ -126,8 +118,6 @@ Cette page regroupe les activités qui concernent un professeur connecté. Si un
 # Route : /my_profile
 
 La page **my_profile** permet de présenter toutes les informations que l'application possède sur l'utilisateur. L'utilisateur peut également y modifier son mot de passe et y mettre à jour sa clé d'API Gitlab. On y trouve également la clé SSH que l'utilisateur doit ajouter à Gitlab pour pouvoir générer les statistiques des dépôts git des étudiants.
-
-# Route : /activity/id
 
 # Route : /stats/<int:numéro_dépot>
 
@@ -184,4 +174,16 @@ Cette route affiche la page d'un formulaire de création de groupe pour les grou
  
  Cette page n'est accessible que depuis un lien de réinitialisation de mot de passe reçu par mail et seulement si ce lien est toujours valide. Il faut alors rentrer son nouveau mot de passe deux fois afin d'éviter toute erreur de frappe. 
  
+
+# Sources
+
+- https://www.sqlalchemy.org/, documentation de l’ORM
+- http://flask-sqlalchemy.pocoo.org/2.3/quickstart/
+- https://getbootstrap.com/docs/4.3/getting-started/introduction/ Documentation bootstrap
+- https://openclassrooms.com/fr/courses/2984401-apprenez-a-coder-avec-javascript
+- https://devdocs.io/javascript/
+- http://flask.pocoo.org/docs/1.0/quickstart/
+- https://www.w3schools.com/
+- https://docs.python.org/3/
+- https://material.io/tools/icons/?search=G&icon=label_important&style=sharp
 
