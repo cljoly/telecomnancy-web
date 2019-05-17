@@ -1,6 +1,7 @@
 # Gitly
 
-> Vidéos : 
+> Vidéos :
+
 > [Documentation](./doc.md)
 
 ## Développement
