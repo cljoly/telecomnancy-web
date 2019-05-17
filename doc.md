@@ -70,5 +70,5 @@ Cette route affiche la page d'un formulaire de création de groupe pour les grou
  
  ## Route : '/reset_password/<hash_url>'
  
- Cette page n'est accessible que depuis un lien de réinitialisation de mot de passe reçu par mail et seulement si ce lien est toujours valide. 
- <!-- TODO : continuer -->
+ Cette page n'est accessible que depuis un lien de réinitialisation de mot de passe reçu par mail et seulement si ce lien est toujours valide. Il faut alors rentrer son nouveau mot de passe deux fois afin d'éviter toute erreur de frappe. 
+ 
