@@ -148,10 +148,20 @@ L'une des principales difficultés rencontrée pour l'élaboration de cette page
  
 ## Route : `/stats/<int:numéro_dépôt>`
 
-Cette page permet d'afficher un certain nombre de statistiques liées au dépôt. On récupère ces statistiques à partir d'un fichier de sortie de gitinspector lancé sur un clone du dépôt concerné. On en ressort: Un histogramme des changements par auteur et par semaine en terme d'ajout et de suppression, un camembert des responsabilités par ligne des changements sur la totalité du projet, un diagramme en barre de la part des changements en commentaire par auteur, et un tableau indiquant la responsabilité par ligne sur chaque fichier par auteur.
-Ces statistiques sont calculées uniquement pour le langage principal du dépôt. Les autres langages sont ignorés.
+Cette page permet d'afficher un certain nombre de statistiques liées au dépôt. On récupère ces statistiques à partir d'un fichier JSON produit par une exécution de la commande `gitinspector`, lancée sur un clone en SSH du dépôt considéré. On construit à partir de ces données :
 
-<!-- TODO Clément ajouter un mot --> 
+- un histogramme des changements par auteur et par semaine en terme d'ajout,
+- un deuxième histogramme, identique au premier mais avec les suppressions,
+- un diagramme circulaire des responsabilités par ligne des changements sur la totalité du projet,
+- un diagramme en barre de la part des changements en commentaire par auteur,
+- un tableau indiquant la responsabilité par ligne sur chaque fichier par auteur.
+
+Ces statistiques sont calculées uniquement pour le langage principal du dépôt, par exemple le langage C.
+Les autres langages sont ignorés.
+
+Les couleurs ont été choisies dans une palette pour être harmonieuses les unes
+avec les autres. Pour un même utilisateur, une seule couleur est utilisée sur
+tous les diagrammes.
 
 # Particularités de l'application : 
 ## La pagination
