@@ -34,4 +34,7 @@ Une barre de navigation est en permanence affichée en haut du site. À partir d
 
 Cette page regroupe les activités qui concernent un professeur connecté. Si un utilisateur non connecté essaye d'accéder cette page, il est redirigé sur l'accueil. On utilise la pagination pour naviguer dans les entrées du tableau. En backend sont faites des requêtes SQL pour la page concernée. Depuis cette page sont accessibles les les pages des activités grace aux liens situés à gauche de leurs entrées dans le tableau, et la page de création de groupe. 
 
+# Route : /stats/<int:numéro_dépot>
 
+Cette page permet d'afficher un certain nombre de statistiques liées au dépot. On récupère ces statistiques à partir d'un fichier de sortie de gitinspector lancé sur un clone du dépot concerné. On en ressort: Un histogramme des changements par auteur et par semaine en terme d'ajout et de suppression, un camembert des responsabilités par ligne des changements sur la totalité du projet, un diagramme en barre de la part des changements en commentaire par auteur, et un tableau indiquant la responsabilité par ligne sur chaques fichiers par auteur.
+Ces statistiques sont calculées uniquement pour le langage principal du dépot. Les autres langages sont ignorés.
