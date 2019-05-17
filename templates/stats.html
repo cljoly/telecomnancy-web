@@ -10,211 +10,237 @@
 
 
 {% block content %}
-    <div class="container">
-        <p class="text-center"><strong>Les extensions suivantes ont été ignorées:
-            {% for item in ignored %}
-                {{ item }}
-            {% endfor %}
-        </strong></p>
-
-        <br>
-
+    {% if histValuesPlus is defined %}
         <div class="container">
-            <div class="row">
-                <div class="col-sm">
-                    <div style="width: 450px">
-                        <canvas class="centered" id="histogramePlus" width="450" height="400"></canvas>
-                    </div>
-                    <p class="text-center">Historique des ajouts par personne</p>
-                </div>
-                <div class="col-sm">
-                    <div style="width: 450px">
-                        <canvas class="centered" id="histogrameMoins" width="450" height="400"></canvas>
-                    </div>
-                    <p class="text-center">Historique des suppressions par personne</p>
-                </div>
-            </div>
-        </div>
-
-        <br>
-        <br>
-
-        <div class="container">
-            <div class="row">
-                <div class="col-sm">
-                    <div style="width: 450px">
-                        <canvas class="centered" id="doughnut" width="450" height="400"></canvas>
-                    </div>
-                    <p class="text-center">Part des contributions par utilisateur</p>
-                </div>
-                <div class="col-sm">
-                    <div style="width: 450px">
-                        <canvas class="centered" id="com" width="450" height="400"></canvas>
-                    </div>
-                    <p class="text-center">Part des contributions en commentaire par utilisateur</p>
-                </div>
-            </div>
-        </div>
-
-        <br>
-        <br>
-
-        <p class="text-center"><strong>Responsabilités par fichier (nombre de lignes propres à chaque personne par
-            fichier)</strong></p>
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th scope="col">Fichier</th>
-                {% for name in respNames %}
-                    <th scope="col">{{ name }}</th>
+            <p class="text-center"><strong>Les extensions suivantes ont été ignorées:
+                {% for item in ignored %}
+                    {{ item }}
                 {% endfor %}
-            </tr>
-            </thead>
-            <tbody>
-            {% for file in respFiles %}
+            </strong></p>
+
+            <br>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <div style="width: 450px">
+                            <canvas class="centered" id="histogramePlus" width="450" height="400"></canvas>
+                        </div>
+                        <p class="text-center">Historique des ajouts par personne</p>
+                    </div>
+                    <div class="col-sm">
+                        <div style="width: 450px">
+                            <canvas class="centered" id="histogrameMoins" width="450" height="400"></canvas>
+                        </div>
+                        <p class="text-center">Historique des suppressions par personne</p>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+            <br>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <div style="width: 450px">
+                            <canvas class="centered" id="doughnut" width="450" height="400"></canvas>
+                        </div>
+                        <p class="text-center">Part des contributions par utilisateur</p>
+                    </div>
+                    <div class="col-sm">
+                        <div style="width: 450px">
+                            <canvas class="centered" id="com" width="450" height="400"></canvas>
+                        </div>
+                        <p class="text-center">Part des contributions en commentaire par utilisateur</p>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+            <br>
+
+            <p class="text-center"><strong>Responsabilités par fichier (nombre de lignes propres à chaque personne par
+                fichier)</strong></p>
+            <table class="table table-striped">
+                <thead>
                 <tr>
-                    <th scope="row">{{ file }}</th>
-                    {% for value in respValues[loop.index -1] %}
-                        <td>{{ value }}</td>
+                    <th scope="col">Fichier</th>
+                    {% for name in respNames %}
+                        <th scope="col">{{ name }}</th>
                     {% endfor %}
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                {% for file in respFiles %}
+                    <tr>
+                        <th scope="row">{{ file }}</th>
+                        {% for value in respValues[loop.index -1] %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
 
 
 
-    <script>
-        /* inspired by https://www.patricksoftwareblog.com/creating-charts-with-chart-js-in-a-flask-application/ */
-        //////////////////////////////////HISTOGRAME PLUS//////////////////////////////////
-        // Global parameters:
-        // do not resize the chart canvas when its container does
-        Chart.defaults.global.responsive = false;
+        <script>
+            let colorPalette = [
+                "rgb(159, 63, 52)",
+                "rgb(244, 204, 127)",
+                "rgb(107, 148, 94)",
+                "rgb(77, 103, 107)",
+                "rgb(152, 152, 83)"
+            ];
 
-        // define the chart data
-        var histogrameDataPlus = {
-            labels: [{% for item in histLabelsPlus %}
+            var paletteLength = colorPalette.length;
+
+            var authors = [{% for item in authors %}
                 "{{item}}",
-            {% endfor %}],
-            datasets: [{% for user in histLegendPlus %}
-                {
-                    label: '{{ user }}',
-                    backgroundColor: "rgba(60, 255, 60, 0.2)",
-                    borderColor: random_rgba(1),
-                    borderWidth: 2,
-                    data: [{% for item in histValuesPlus[loop.index -1] %}
-                        {{item}},
-                    {% endfor %}]
-                },
-            {% endfor %}]
+            {% endfor %}];
 
-        };
+            var authorLength = authors.length;
 
-        // get chart canvas
-        var ctx = document.getElementById("histogramePlus").getContext("2d");
-
-        // create the chart using the chart canvas
-        var myhistogramePlus = new Chart(ctx, {
-            type: 'line',
-            data: histogrameDataPlus,
-        });
-
-        /////////////////////////////// Histogramme Moins /////////////////////
-
-        var histogrameDataMoins = {
-            labels: [{% for item in histLabelsMoins %}
-                "{{item}}",
-            {% endfor %}],
-            datasets: [{% for user in histLegendMoins %}
-                {
-                    label: '{{ user }}',
-                    backgroundColor: "rgba(255, 60, 60, 0.8)",
-                    borderColor: random_rgba(1),
-                    borderWidth: 4,
-                    data: [{% for item in histValuesMoins[loop.index -1] %}
-                        {{item}},
-                    {% endfor %}]
-                },
-            {% endfor %}]
-
-        };
-
-        // get chart canvas
-        ctx = document.getElementById("histogrameMoins").getContext("2d");
-
-        // create the chart using the chart canvas
-        var myhistogrameMoins = new Chart(ctx, {
-            type: 'bar',
-            data: histogrameDataMoins,
-        });
-
-        /////////////////////////////////doughnut//////////////////////////////////
-        var doughnutData = {
-            labels: [{% for item in doLabels %}
-                "{{item}}",
-            {% endfor %}],
-            datasets: [{
-                data: [{% for item in doValues %}
-                    {{item}},
-                {% endfor %}],
-                backgroundColor:
-                    [{% for item in doValues %}
-                        getRandomColor(),
-                    {% endfor %}],
-            }]
-        };
-
-        // get chart canvas
-        ctx = document.getElementById("doughnut").getContext("2d");
-
-        // create the chart using the chart canvas
-        var mydoughnut = new Chart(ctx, {
-            type: 'doughnut',
-            data: doughnutData,
-        });
-
-        ////////////////////COMMENTAIRES//////////////
-
-        var comData = {
-            labels: [{% for item in comLabels %}
-                "{{item}}",
-            {% endfor %}],
-            datasets: [{
-                data: [{% for item in comValues %}
-                    {{item}},
-                {% endfor %}],
-                backgroundColor:
-                    [{% for item in comValues %}
-                        getRandomColor(),
-                    {% endfor %}],
-            }]
-        };
-
-        // get chart canvas
-        ctx = document.getElementById("com").getContext("2d");
-
-        // create the chart using the chart canvas
-        var myCom = new Chart(ctx, {
-            type: 'doughnut',
-            data: comData,
-        });
-
-        function getRandomColor() {
-            // helper function inpired from https://stackoverflow.com/questions/25594478/different-color-for-each-bar-in-a-bar-chart-chartjs
-            var letters = '0123456789ABCDEF'.split('');
-            var color = '#';
-            for (var i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
+            for (var i = paletteLength; i < authorLength; i++) {
+                colorPalette.push(getRandomColor());
             }
-            return color;
-        }
 
-        function random_rgba(t) {
-            var o = Math.round, r = Math.random, s = 255;
-            return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + t + ')';
-        }
 
-    </script>
+            /* inspired by https://www.patricksoftwareblog.com/creating-charts-with-chart-js-in-a-flask-application/ */
+            //////////////////////////////////HISTOGRAME PLUS//////////////////////////////////
+            // Global parameters:
+            // do not resize the chart canvas when its container does
+            Chart.defaults.global.responsive = false;
+
+            // define the chart data
+            var histogrameDataPlus = {
+                labels: [{% for item in histLabelsPlus %}
+                    "{{item}}",
+                {% endfor %}],
+                datasets: [{% for user in histLegendPlus %}
+                    {
+                        label: '{{ user }}',
+                        borderColor: colorPalette[authors.indexOf("{{ user }}")],
+                        borderWidth: 4,
+                        data: [{% for item in histValuesPlus[loop.index -1] %}
+                            {{item}},
+                        {% endfor %}]
+                    },
+                {% endfor %}]
+
+            };
+
+            // get chart canvas
+            var ctx = document.getElementById("histogramePlus").getContext("2d");
+
+            // create the chart using the chart canvas
+            var myhistogramePlus = new Chart(ctx, {
+                type: 'bar',
+                data: histogrameDataPlus,
+            });
+
+            /////////////////////////////// Histogramme Moins /////////////////////
+
+            var histogrameDataMoins = {
+                labels: [{% for item in histLabelsMoins %}
+                    "{{item}}",
+                {% endfor %}],
+                datasets: [{% for user in histLegendMoins %}
+                    {
+                        label: '{{ user }}',
+                        borderColor: colorPalette[authors.indexOf("{{ user }}")],
+                        borderWidth: 4,
+                        data: [{% for item in histValuesMoins[loop.index -1] %}
+                            {{item}},
+                        {% endfor %}]
+                    },
+                {% endfor %}]
+
+            };
+
+            // get chart canvas
+            ctx = document.getElementById("histogrameMoins").getContext("2d");
+
+            // create the chart using the chart canvas
+            var myhistogrameMoins = new Chart(ctx, {
+                type: 'bar',
+                data: histogrameDataMoins,
+            });
+
+            /////////////////////////////////doughnut//////////////////////////////////
+            var doughnutData = {
+                labels: [{% for item in doLabels %}
+                    "{{item}}",
+                {% endfor %}],
+                datasets: [{
+                    data: [{% for item in doValues %}
+                        {{item}},
+                    {% endfor %}],
+                    backgroundColor:
+                        [{% for item in doLabels %}
+                            colorPalette[authors.indexOf("{{ item }}")],
+                        {% endfor %}],
+                }]
+            };
+
+            // get chart canvas
+            ctx = document.getElementById("doughnut").getContext("2d");
+
+            // create the chart using the chart canvas
+            var mydoughnut = new Chart(ctx, {
+                type: 'doughnut',
+                data: doughnutData,
+            });
+
+            ////////////////////COMMENTAIRES//////////////
+
+            var comData = {
+                labels: [{% for item in comLabels %}
+                    "{{item}}",
+                {% endfor %}],
+                datasets: [{
+                    data: [{% for item in comValues %}
+                        {{item}},
+                    {% endfor %}],
+                    backgroundColor:
+                        [{% for item in comLabels %}
+                            colorPalette[authors.indexOf("{{ item }}")],
+                        {% endfor %}],
+                }]
+            };
+
+            // get chart canvas
+            ctx = document.getElementById("com").getContext("2d");
+
+            // create the chart using the chart canvas
+            var myCom = new Chart(ctx, {
+                type: 'bar',
+                data: comData,
+                options: {
+                    legend: {
+                        display:false
+                    }
+                }
+            });
+
+            function getRandomColor() {
+                // helper function inpired from https://stackoverflow.com/questions/25594478/different-color-for-each-bar-in-a-bar-chart-chartjs
+                var letters = '0123456789ABCDEF'.split('');
+                var color = '#';
+                for (var i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+
+            function random_rgba(t) {
+                var o = Math.round, r = Math.random, s = 255;
+                return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + t + ')';
+            }
+
+        </script>
+    {% endif %}
 {% endblock %}
