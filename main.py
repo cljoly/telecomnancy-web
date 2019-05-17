@@ -621,9 +621,7 @@ def stats(repo_id):
                                authors=authors)
 
     except KeyError:
-        flash("Aucune stats à afficher: Ce dépot est vide", "danger")
-        render_template('stats.html')
-
+        return render_template('stats.html')
 
 def url_for_other_page(page):
     args = request.view_args.copy()
