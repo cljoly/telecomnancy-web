@@ -449,8 +449,7 @@ def activity(page, activity_id):
         data_base_all_groups = Repository.query.filter_by(activity_id=activity_id).all()
         count = len(data_base_all_groups)
         all_groups = [Group(data_base_all_groups[i].url.split("/")[-1],
-                            data_base_all_groups[i].url,
-                            data_base_all_groups[i].id) for i in range(count)]
+                            data_base_all_groups[i].url, "/stats/" + str(data_base_all_groups[i].id)) for i in range(count)]
         activity_name = Activity.query.get(activity_id).name
         activity_link = Activity.query.get(activity_id).url_master_repo
         activity_bdd = Activity.query.get(activity_id)
@@ -472,7 +471,7 @@ def activity(page, activity_id):
         data_base_all_groups = Repository.query.filter_by(activity_id=activity_id).all()
         count = len(data_base_all_groups)
         all_groups = [Group(data_base_all_groups[i].url.split("/")[-1],
-                            data_base_all_groups[i].url) for i in range(count)]
+                            data_base_all_groups[i].url, "/stats/" + str(data_base_all_groups[i].id)) for i in range(count)]
         activity_name = Activity.query.get(activity_id).name
         activity_link = Activity.query.get(activity_id).url_master_repo
         activity_bdd = Activity.query.get(activity_id)
@@ -561,10 +560,12 @@ def home(page):
 @app.route("/stats/<int:repo_id>")
 @login_required
 def stats(repo_id):
-    # TODO Rendre générique pour n’importe quel projet
+    repo = Repository.query.get(repo_id)
+    if not repo:
+        flash("Id de dépôt invalide", "danger")
+        return redirect(url_for('homepage'))
     try:
-        json_result = get_stat_for("git@gitlab.telecomnancy.univ-lorraine.fr:gitlab-bravo/ne-pas-supprimer-sert-aux-stats.git")
-
+        json_result = get_stat_for(repo.ssh_url)
     except InvalidKey:
         print("Clé invalide")
         flash("Le clonage du dépôt a rencontré une erreur, veuillez ajouter \

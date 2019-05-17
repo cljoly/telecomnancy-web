@@ -44,12 +44,12 @@ class Pagination(object):
 
 
 class Group:
-    def __init__(self, name, repository, id):
+    def __init__(self, name, repository, link):
         self.name = name
         self.repository = repository
         self.nb_commits = 1
         self.last_commit = time.strftime("%d/%m/%Y")
-        self.stat_link = "/stats/%s" % id
+        self.stat_link = link
 
 
 def get_groups_for_page(page, all_groups, count):
