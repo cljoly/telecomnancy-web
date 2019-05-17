@@ -3,7 +3,6 @@ import time
 from database.db_objects import Activity, Repository
 from main import db
 from sqlalchemy import func
-from main import current_user
 
 PER_PAGE = 10
 
@@ -70,14 +69,14 @@ class ActivityDisplay:
         self.link = link  # link to the activity page
 
 
-def get_activities_for_page(page):
+def get_activities_for_page(page, current_user):
     """Effectue les requêtes necessaires pour récupérer les infos de Activities correspondantes à la page page"""
     result = db.session.query(
         Activity.name, func.count(Repository.id).label("count"), Activity.start_date, Activity.end_date, Activity.id
     ).outerjoin(
         Repository
     ).filter(
-        Activity.teacher_id == current_user.id
+        Activity.teacher_id == current_user.get_db_user().id
     ).group_by(
         Activity.name
     )
