@@ -132,7 +132,7 @@ La page **my_profile** permet de présenter toutes les informations que l'applic
 # Route : /stats/<int:numéro_dépot>
 
 Cette page permet d'afficher un certain nombre de statistiques liées au dépot. On récupère ces statistiques à partir d'un fichier de sortie de gitinspector lancé sur un clone du dépot concerné. On en ressort: Un histogramme des changements par auteur et par semaine en terme d'ajout et de suppression, un camembert des responsabilités par ligne des changements sur la totalité du projet, un diagramme en barre de la part des changements en commentaire par auteur, et un tableau indiquant la responsabilité par ligne sur chaques fichiers par auteur.
-Ces statistiques sont calculées uniquement pour le langage principal du dépot. Les autres langages sont ignorés.
+Ces statistiques sont calculées uniquement pour le langage principal du dépot. Les autres langages sont ignorées.
 
 
 ## Route `/activity/<int:activity_id>`
