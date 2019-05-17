@@ -208,6 +208,8 @@ def new_activity():
             flash('Erreur de création du dépôt de l\'activité. Activité non créée', 'danger')
         elif create_new_activity_result == 11:
             flash('Une activité porte déjà le nom de l\'activité que vous souhaitez créer. Activité non créée', 'danger')
+        elif create_new_activity_result == 12:
+            flash('Veuillez entrer une date de fin postérieure à la date de début. Activité non créée', 'danger')
         elif create_new_activity_result == 0:
             flash('Activité ajoutée à la base de données', 'success')
 
