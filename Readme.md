@@ -1,8 +1,8 @@
 # Gitly
 
-> Vidéos :
+> [Vidéo de présentation](https://youtu.be/MpnWMEORVLo)
 
-> [Documentation](./doc.md)
+> [Documentation de l'application](./doc.md)
 
 ## Développement
 
@@ -15,7 +15,7 @@ pip install -r requirements.txt
 Pour ajouter des dépendances, il suffit de les référencer dans le fichier
 [requirements.txt](./requirements.txt) et de relancer la commande ci-dessus.
 
-Lancer le script de génération des fichiers nécessaires au statistiques :
+Lancer le script de génération des fichiers nécessaires aux statistiques :
 ```
 ./setup.sh
 ```
@@ -29,13 +29,13 @@ FLASK_DEBUG=1 FLASK_APP=main.py flask run
 ### Démonstration en ligne
 
 Nous avons déployé en ligne sur une version gratuite du service Heroku. Il n’y
-a donc pas de persistance des actions utilisateurs au delà de quelques heures.
+a donc pas de persistance des actions de l'utilisateur au-delà de quelques heures.
 
 https://pweb2019.herokuapp.com/
 
-Nous ne sommes pas parvenu à faire fonctionner le clone du dépot sur Heroku,
+Nous ne sommes pas parvenus à faire fonctionner le clone du dépôt sur Heroku,
 parce que le serveur Gitlab refuse les permissions de clonage depuis Heroku.
-Nous avons néanmons fait fonctionner cette fonctionnalité sur nos machines en
+Nous avons néanmoins fait fonctionner cette fonctionnalité sur nos machines en
 local.
 
 ## Release
