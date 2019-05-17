@@ -5,7 +5,7 @@ nous répartir le travail. Nous avons organisé les issues par release (encart
 milestone de Gitlab) et avons assigné une personne (ou plusieurs dans certains
 cas). Nous avons initialement utilisé aussi la possibilité de fixer des dates
 pour les issues. Ceci s’est avéré peu souple et inadapté à notre emploi du
-temps : nous étions parfois ammenés à avancer ou repousser une réunion et les
+temps : nous étions parfois amenés à avancer ou repousser une réunion et les
 dates étaient alors incohérentes.
 
 En ce qui concerne les réunions, nous avons fait le point sur l’avancement à
@@ -17,33 +17,33 @@ structure de la base de données en commun, puisque cela impactait tout le monde
 
 Nous avons enfin pris en charge chacun une ou plusieurs pages, selon leur
 complexité : certains membres du groupe avaient des pages simples et ont donc
-pris en charge plusieurs pages. Les release ont été faîtes sur les dernières
+pris en charge plusieurs pages. Les releases ont été faites sur les dernières
 semaines du projet, parce qu’à cause de cette parallélisation des tâches, nous
-n’avons eu des ensemble de fonctionnaliés cohérents qu’assez tardivement.
+n’avons eu des ensembles de fonctionnalités cohérents qu’assez tardivement.
 
 # Vocabulaire
 
 Nous avons pris les entités suivantes dans la terminologie de l’application. On appelle :
 - module : une matière telle que défini à Telecom Nancy
 - activité : un projet d’un module, par exemple, le projet de la semaine bloquée de PCD.
-- dépot : dépôt git d’une activité sur Gitlab, pour un étudiant ou groupe d’étudiants
+- dépôt : dépôt git d’une activité sur Gitlab, pour un étudiant ou groupe d’étudiants
 
 # Choix techniques
 
 Nous avons choisi d’utiliser une base de donnée SQLite avec l’ORM SQLAlchemy.
-SQLite présente l’avantage d’être extrement simple à installer et de ne pas
+SQLite présente l’avantage d’être extrêmement simple à installer et de ne pas
 présenter de latence particulière, contrairement à une base de donnée de type
 PostgreSQL. L’inconvénient de ce choix est qu’on ne pourrait pas avoir un grand
-nombre d’utilisateur et déployer plusieurs serveur avec la même application
-pour un seul serveur serveur de base de donnée, comme vu dans le MOOC.
-Toutefois, cette inconvénient est minime, dans la mesure où peu d’utilisateurs
-seront ammenés à utiliser le service (quelques enseignants de Télécom Nancy).
+nombre d’utilisateurs et déployer plusieurs serveur avec la même application
+pour un seul serveur de base de données, comme vu dans le MOOC.
+Toutefois, cet inconvénient est minime, dans la mesure où peu d’utilisateurs
+seront amenés à utiliser le service (quelques enseignants de Télécom Nancy).
 De plus, l’ORM est générique et permettrait de passer à un autre moteur de base
-de donnée de manière transparente, sans adaptation particulière de notre code.
+de données de manière transparente, sans adaptation particulière de notre code.
 
 De plus, nous faisons appel à l’API de Gitlab grâce à une bibliothèque python.
 Même si celle-ci n’est pas forcément toujours bien documentée, elle a permis un
-gain de temps non négligeable dans la mesure où les objets pour représenter les
+gain de temps non-négligeable dans la mesure où les objets pour représenter les
 différents concepts de Gitlab existaient déjà (dépôts, utilisateurs).
 
 Nous utilisons aussi le framework CSS Bootstrap, ce qui a facilité la compatibilité mobile.
@@ -83,20 +83,20 @@ Les mots de passe ont été hachés et salés, pour respecter les bonnes pratiqu
 
 Nous n'avons pas effectué le déploiement de l'application sur Google App Engine pour plusieurs raisons :
 - nous avons commencé le projet sans penser au déploiement et nous n'avons donc pas utilisé les outils de Google
-- les permissions sur un serveur de ce type ne sont pas représentatives de celles que l'on aurait si on était si le site était déployé depuis les serveurs de l'école
+- les permissions sur un serveur de ce type ne sont pas représentatives de celles que l'on aurait si on était si le site était déployé depuis les serveurs de l'école.
 
-Aussi, pour que le déploiement sur Google App Engine soit possible et fonctionnel au même niveau que celui sur Heroku, il aurait fallu que nous utilisions le cloud de google pour la base de données et surtout pour cloner les dépôts des élèves dont on veut récupérer les statistiques. La limite de taille offerte par le cloud de Google étant assez faible, nous avons estimé qu'il serait compliquer d'envisager une utilisation sur le long terme de cette solution sachant que l'application devrait être déployé sur les serveurs de l'école.
+Aussi, pour que le déploiement sur Google App Engine soit possible et fonctionnel au même niveau que celui sur Heroku, il aurait fallu que nous utilisions le Cloud de google pour la base de données et surtout pour cloner les dépôts des élèves dont on veut récupérer les statistiques. La limite de taille offerte par le Cloud de Google étant assez faible, nous avons estimé qu'il serait difficile d'envisager une utilisation sur le long terme de cette solution sachant que l'application devrait être déployé sur les serveurs de l'école.
 
 ## Pagination
 
-La pagination sert pour les pages liées aux activités afin de limiter le nombre de dépôts ou de groupes à l'écran en même temps et de faciliter la navigation. La liste des entrées du tableau est calculée dynamiquement en ne faisant des requêtes que sur la partie concernée. Pour l'interface on crée un itérable qui indique quels numéros de page sont clickables en dessous du tableau. Enfin on se sert de l'url pour savoir à quelle page l'utilisateur se situe.
+La pagination sert pour les pages liées aux activités afin de limiter le nombre de dépôts ou de groupes à l'écran en même temps et de faciliter la navigation. La liste des entrées du tableau est calculée dynamiquement en ne faisant des requêtes que sur la partie concernée. Pour l'interface on crée un itérable qui indique quels numéros de page sont clickables en dessous du tableau. Enfin on se sert de l'URL pour savoir à quelle page l'utilisateur se situe.
 
-## Difficultés rencontrées:
+## Difficultés rencontrées :
 la manipulation des itérables en Python ne m'était plus très familière, il m'a fallu faire quelques recherches dans la documentation.
 
 # Gestion de comptes
 
-Les accès utilisateurs sont gérés avec un système de comptes protégés par mots de passe. Ceux-ci sont hachés et salés, on n'en conserve que le hash dans la base de donnée. Un utilisateur non connecté voit ses options restreintes dans le menu d'accueil tandis qu'un utilisateur connecté peut naviguer dans ses pages grâce à ce même menu. Pour ce dernier la page d'accueil (/home) contient déjà des informations le concernant.
+Les accès utilisateurs sont gérés avec un système de comptes protégés par mots de passe. Ceux-ci sont hachés et salés, on n'en conserve que le hash dans la base de données. Un utilisateur non connecté voit ses options restreintes dans le menu d'accueil tandis qu'un utilisateur connecté peut naviguer dans ses pages grâce à ce même menu. Pour ce dernier, la page d'accueil (/home) contient déjà des informations le concernant.
 
 # Connexion avec Gitlab
 
@@ -113,28 +113,28 @@ La page **homepage** est la page d'accueil de Gitly, seul un message de bienvenu
 
 # Route : /home
 
-Cette page regroupe les activités qui concernent un professeur connecté. Si un utilisateur non connecté essaye d'accéder cette page, il est redirigé sur l'accueil. On utilise la pagination pour naviguer dans les entrées du tableau. En backend sont faites des requêtes SQL pour la page concernée. Depuis cette page sont accessibles les les pages des activités grace aux liens situés à gauche de leurs entrées dans le tableau, et la page de création de groupe.
+Cette page regroupe les activités qui concernent un professeur connecté. Si un utilisateur non connecté essaye d'accéder cette page, il est redirigé sur l'accueil. On utilise la pagination pour naviguer dans les entrées du tableau. En backend sont faites des requêtes SQL pour la page concernée. Depuis cette page sont accessibles les pages des activités grace aux liens situés à gauche de leurs entrées dans le tableau, et la page de création de groupe.
 
 # Route : /my_profile
 
 La page **my_profile** permet de présenter toutes les informations que l'application possède sur l'utilisateur. L'utilisateur peut également y modifier son mot de passe et y mettre à jour sa clé d'API Gitlab. On y trouve également la clé SSH que l'utilisateur doit ajouter à Gitlab pour pouvoir générer les statistiques des dépôts git des étudiants.
 
-# Route : /stats/<int:numéro_dépot>
+# Route : /stats/<int:numéro_dépôt>
 
-Cette page permet d'afficher un certain nombre de statistiques liées au dépot. On récupère ces statistiques à partir d'un fichier de sortie de gitinspector lancé sur un clone du dépot concerné. On en ressort: Un histogramme des changements par auteur et par semaine en terme d'ajout et de suppression, un camembert des responsabilités par ligne des changements sur la totalité du projet, un diagramme en barre de la part des changements en commentaire par auteur, et un tableau indiquant la responsabilité par ligne sur chaques fichiers par auteur.
-Ces statistiques sont calculées uniquement pour le langage principal du dépot. Les autres langages sont ignorées.
+Cette page permet d'afficher un certain nombre de statistiques liées au dépôt. On récupère ces statistiques à partir d'un fichier de sortie de gitinspector lancé sur un clone du dépôt concerné. On en ressort: Un histogramme des changements par auteur et par semaine en terme d'ajout et de suppression, un camembert des responsabilités par ligne des changements sur la totalité du projet, un diagramme en barre de la part des changements en commentaire par auteur, et un tableau indiquant la responsabilité par ligne sur chaque fichier par auteur.
+Ces statistiques sont calculées uniquement pour le langage principal du dépôt. Les autres langages sont ignorés.
 
 
 ## Route `/activity/<int:activity_id>`
 
-La page **activity** permet de présenter ce que l'on appelle une activité dans l'application. Une activité est un regroupement de dépôts gits géré par le professeur responsable de cette activité (par exemple un TP ou un projet). Une fois qu'une activité est créée, il n'est plus possible de la modifier (une amélioration possible serait de permettre la modification d'une activité). Sur la page d'une activité, on peut accéder effectuer plusieurs actions :
+La page **activity** permet de présenter ce que l'on appelle une activité dans l'application. Une activité est un regroupement de dépôts gits géré par le professeur responsable de cette activité (par exemple un TP ou un projet). Une fois qu'une activité est créée, il n'est plus possible de la modifier (une amélioration possible serait de permettre la modification d'une activité). Sur la page d'une activité, on peut effectuer plusieurs actions :
 - Accéder au dépôt qui a été fork pour créer les dépôts des élèves (le répertoire parent)
 - Accéder aux dépôts de chacun des élèves ou groupes d'élèves selon le type d'activité
 - Accéder aux statistiques des dépôts des élèves
 - Créer une Merge Request d'une branche du dépôt parent sur les dépôts des élèves
-- Créer des Issues sur une sélection de dépôts parmis les dépôts des étudiants
+- Créer des Issues sur une sélection de dépôts parmi les dépôts des étudiants
 
-L'une des principales difficultés rencontrée pour l'élaboration de cette page est la création de la Merge Request sur les dépôts des élèves. En effet, l'API de Gitlab ne permet pas de répercuter une Merge Request qui a été faite sur le dépôt parent sur les dépôts créé avec le fork. Il faut donc pour chaque dépôt copier l'intégralité de la branche dont on souhaite faire une Merge Request dans une nouvelle branche qui porte le même nom si celle-ci n'existe pas déjà et la renomme si c'est le cas (on peut également noter qu'à partir d'un certain nombre de branches, l'API de gitlab ne permet pas de récupérer l'intégralité des branches d'un d'un dépôt et il devient donc impossible de vérifier que la branche n'existe pas déjà).
+L'une des principales difficultés rencontrée pour l'élaboration de cette page est la création de la Merge Request sur les dépôts des élèves. En effet, l'API de Gitlab ne permet pas de répercuter une Merge Request qui a été faite sur le dépôt parent sur les dépôts créé avec le fork. Il faut donc pour chaque dépôt copier l'intégralité de la branche dont on souhaite faire une Merge Request dans une nouvelle branche qui porte le même nom si celle-ci n'existe pas déjà et la renomme si c'est le cas (on peut également noter qu'à partir d'un certain nombre de branches, l'API de gitlab ne permet pas de récupérer l'intégralité des branches d'un dépôt et il devient donc impossible de vérifier que la branche n'existe pas déjà).
 
 ## Route : /home/newactivity
 
@@ -144,17 +144,17 @@ Cette page n'est accessible que si l'utilisateur est connecté et que sa clé d'
  - le module associé : il est possible de choisir soit dans la liste des modules déjà existants, soit de créer un nouveau module en renseignant le nom long et le nom abrégé. L'affichage est intelligent, cela affiche le volet des modules existants s'il en existe au moins un, sinon cela affiche le volet de création d'un nouveau module.
  - l'enseignant référent : la liste des enseignants existants est affichée sous la forme d'une liste. Il suffit alors de cliquer sur l'enseignant que l'on souhaite affecter comme référent.
  - le nombre d'étudiants par groupe de l'activité : il s'agit ici de déterminer la cardinalité des groupes qui seront composés pour l'activité. Par exemple, si on choisit "un étudiant", chaque groupe ne sera composé que d'un élève, il y aura alors un dépôt par élève qui sera créé. Ce cas est idéal dans la création de TPs. Dans le cas des groupes avec plusieurs élèves, on peut choisir entre deux et six élèves. 
- - les élèves qui participeront à l'activité : il faut pour cela choisir un fichier au format CSV, ne comprenant pas d'entête et  contenant les champs suivants :
+ - les élèves qui participeront à l'activité : il faut pour cela choisir un fichier au format CSV, ne comprenant pas d'en-tête et  contenant les champs suivants :
  
     | Nom | Prénom | Adresse mail | Nom d'utilisateur Gitlab |
     |-----|--------|--------------|--------------------------|
 
-    Tous les élèves alors présents dans le fichier CSV sont chargés dans la colonne "Étudiants disponibles". Pour sélectionner plusieurs étudiants dans la liste, il suffit de garder la touche `CTRL` enfoncée et cliquer sur les étudiants désirés. Il faut alors déplacer les étudiants que l'on souhaite ajouter à l'activité dans la colonne "Étudiants de l'activité".Pour cela quatre flèches sont disponibles :
+    Tous les élèves alors présents dans le fichier CSV sont chargés dans la colonne "Étudiants disponibles". Pour sélectionner plusieurs étudiants dans la liste, il suffit de garder la touche `CTRL` enfoncée et cliquer sur les étudiants désirés. Il faut alors déplacer les étudiants que l'on souhaite ajouter à l'activité dans la colonne "Étudiants de l'activité".Pour cela, quatre flèches sont disponibles :
         - **&larr;** et **&rarr;** : Permet de déplacer les étudiants sélectionnés d'une colonne à l'autre. 
         - **>** et **<** : Permet de déplacer tous les étudiants d'une colonne vers l'autre.
     
- Pour valider la création de l'activité il faut cliquer ensuite sur le bouton "Créer l'activité" :
- - Le dépot sur Gitlab de l'activité est créé 
+ Pour valider la création de l'activité, il faut cliquer ensuite sur le bouton "Créer l'activité" :
+ - Le dépôt sur Gitlab de l'activité est créé 
   - Lorsqu'on créé des groupes avec un élève : pour tous les élèves renseignés, un nouveau dépôt est créé en effectuant un fork du dépôt de l'activité. 
  - Lorsqu'on crée des groupes avec plusieurs élèves : un lien est envoyé par mail à tous les étudiants renseignés afin qu'il créent leur groupe. Ce lien est unique pour une activité.
 
